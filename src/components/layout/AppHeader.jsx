@@ -1,6 +1,8 @@
 import { Bell } from 'lucide-react';
 
-function AppHeader() {
+function AppHeader({ header }) {
+  if (!header) return null;
+
   return (
     <header className="app-header">
       <div className="brand-wrap">
@@ -18,17 +20,17 @@ function AppHeader() {
         </div>
 
         <div className="brand-text">
-          <h1>Anandam by Fathom</h1>
-          <p>Wellness for Seafarers</p>
+          <h1>{header.appName}</h1>
+          <p>{header.appSubtitle}</p>
         </div>
       </div>
 
       <div className="header-right">
-        <button className="icon-button" aria-label="Notifications">
+        <button className="icon-button" type="button" aria-label="Notifications">
           <Bell size={18} strokeWidth={2} />
         </button>
 
-        <div className="profile-badge">NC</div>
+        <div className="profile-badge">{header.userInitials}</div>
       </div>
     </header>
   );

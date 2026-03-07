@@ -1,19 +1,26 @@
 import AppHeader from '../components/layout/AppHeader';
 import BottomNav from '../components/layout/BottomNav';
+import HeroCard from '../components/home/HeroCard';
+import FeatureGrid from '../components/home/FeatureGrid';
+import StatsSection from '../components/home/StatsSection';
+import AssistantSection from '../components/home/AssistantSection';
+import { homePageMockData } from '../data/homeData';
 
 function HomePage() {
+  const pageData = homePageMockData;
+
   return (
     <div className="app-shell">
-      <AppHeader />
+      <AppHeader header={pageData.header} />
 
       <main className="page-content">
-        {/* 
-          Step by step we will add all sections here.
-          Right now only blank content area is shown after header.
-        */}
+        <HeroCard hero={pageData.hero} />
+        <FeatureGrid featureSections={pageData.featureSections} />
+        <StatsSection wellness={pageData.wellness} />
+        <AssistantSection assistant={pageData.assistant} />
       </main>
 
-      <BottomNav />
+      <BottomNav navigation={pageData.navigation} />
     </div>
   );
 }

@@ -7,27 +7,32 @@ import {
   TriangleAlert,
 } from 'lucide-react';
 
-const navItems = [
-  { id: 1, label: 'Home', icon: House, active: true },
-  { id: 2, label: 'Perfect Day', icon: CalendarDays, active: false },
-  { id: 3, label: 'Mood', icon: Heart, active: false },
-  { id: 4, label: 'Work/Rest', icon: Clock3, active: false },
-  { id: 5, label: 'Fitness', icon: Activity, active: false },
-  { id: 6, label: 'Emergency', icon: TriangleAlert, active: false },
-];
+const navIconMap = {
+  home: House,
+  calendar: CalendarDays,
+  heart: Heart,
+  clock: Clock3,
+  activity: Activity,
+  'alert-triangle': TriangleAlert,
+};
 
-function BottomNav() {
+function BottomNav({ navigation }) {
+  if (!navigation) return null;
+
+  const { items = [], activeTab = '' } = navigation;
+
   return (
     <nav className="bottom-nav">
-      {navItems.map((item) => {
-        const Icon = item.icon;
+      {items.map((item) => {
+        const Icon = navIconMap[item.icon];
 
         return (
           <button
             key={item.id}
-            className={`bottom-nav-item ${item.active ? 'active' : ''}`}
+            type="button"
+            className={`bottom-nav-item ${activeTab === item.id ? 'active' : ''}`}
           >
-            <Icon size={20} strokeWidth={1.8} />
+            {Icon ? <Icon size={20} strokeWidth={1.8} /> : null}
             <span>{item.label}</span>
           </button>
         );
