@@ -8,6 +8,11 @@ import {
   Brain,
   TrendingUp,
   GraduationCap,
+  Mail,
+  MessageCircle,
+  MessageSquare,
+  Phone,
+  Satellite,
 } from 'lucide-react';
 
 export const iconMap = {
@@ -22,4 +27,9 @@ export const iconMap = {
   chart: TrendingUp,
   graduation: GraduationCap,
   heartShield: Heart,
+  mail: Mail,
+  'message-circle': MessageCircle,
+  'message-square': MessageSquare,
+  phone: Phone,
+  satellite: Satellite,
 };
