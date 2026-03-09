@@ -4,6 +4,7 @@ import HeroCard from '../components/home/HeroCard';
 import FeatureGrid from '../components/home/FeatureGrid';
 import StatsSection from '../components/home/StatsSection';
 import AssistantSection from '../components/home/AssistantSection';
+import CardGridSection from '../components/home/CardGridSection';
 import { homePageMockData } from '../data/homeData';
 
 function DashboardPage() {
@@ -18,6 +19,14 @@ function DashboardPage() {
         <FeatureGrid featureSections={pageData.featureSections} />
         <StatsSection wellness={pageData.wellness} />
         <AssistantSection assistant={pageData.assistant} />
+        <CardGridSection
+          section={pageData.emergencyResponse}
+          variant="emergency"
+        />
+        <CardGridSection
+          section={pageData.communicationHub}
+          variant="communication"
+        />
       </main>
 
       <BottomNav navigation={pageData.navigation} />

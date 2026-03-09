@@ -180,6 +180,86 @@ export const homePageMockData = {
       'Marina monitors conversations for mental health concerns and can connect you with immediate professional support if needed.',
   },
 
+  emergencyResponse: {
+    title: 'Emergency Response',
+    subtitle: 'Crisis intervention and emergency communication',
+    cards: [
+      {
+        id: 'emergency-hub',
+        title: 'Emergency Hub',
+        subtitle: 'All systems green',
+        icon: 'alert',
+        accent: 'red',
+        bg: 'red-soft',
+      },
+      {
+        id: 'crisis-support',
+        title: 'Crisis Support',
+        subtitle: '24/7 monitoring',
+        icon: 'brain',
+        accent: 'orange',
+        bg: 'yellow-soft',
+      },
+      {
+        id: 'ai-analytics',
+        title: 'AI Analytics',
+        subtitle: 'Risk monitoring',
+        icon: 'brain',
+        accent: 'purple',
+        bg: 'purple-soft',
+      },
+      {
+        id: 'satellite-comm',
+        title: 'Satellite Comm',
+        subtitle: 'Connected',
+        icon: 'satellite',
+        accent: 'blue',
+        bg: 'blue-soft',
+      },
+    ],
+    ctaLabel: 'Emergency Response Center',
+  },
+
+  communicationHub: {
+    title: 'Communication Hub',
+    subtitle: 'WhatsApp, Email, Telegram, and Botim integration',
+    cards: [
+      {
+        id: 'whatsapp',
+        title: 'WhatsApp',
+        subtitle: '3 unread',
+        icon: 'message-circle',
+        accent: 'green',
+        bg: 'green-soft-2',
+      },
+      {
+        id: 'email',
+        title: 'Email',
+        subtitle: '1 new',
+        icon: 'mail',
+        accent: 'blue',
+        bg: 'blue-soft',
+      },
+      {
+        id: 'telegram',
+        title: 'Telegram',
+        subtitle: 'Online',
+        icon: 'message-square',
+        accent: 'blue',
+        bg: 'blue-soft',
+      },
+      {
+        id: 'botim',
+        title: 'Botim',
+        subtitle: 'Available',
+        icon: 'phone',
+        accent: 'purple',
+        bg: 'purple-soft',
+      },
+    ],
+    ctaLabel: 'Open Communication Hub',
+  },
+
   navigation: {
     activeTab: 'home',
     items: [
