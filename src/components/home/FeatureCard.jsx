@@ -1,22 +1,41 @@
-import { iconMap } from '../IconMap';
+function FeatureCard({
+  title,
+  subtitle,
+  accent,
+  bg,
+  full = false,
+  icon,
+  renderIcon,
+  onClick,
+}) {
+  const isClickable = typeof onClick === 'function';
 
-function FeatureCard({ title, subtitle, icon, accent, bg, full = false }) {
-  const Icon = iconMap[icon];
+  const cardClassName = `feature-card ${bg} ${
+    full ? 'feature-card-full' : ''
+  } ${isClickable ? 'feature-card-clickable' : 'feature-card-static'}`;
 
-  return (
-    <article
-      className={`feature-card ${bg} ${full ? 'feature-card-full' : ''}`}
-    >
+  const content = (
+    <>
       <div className={`feature-icon ${accent}`}>
-        {Icon ? <Icon size={28} strokeWidth={1.9} /> : null}
+        {renderIcon ? renderIcon(icon) : null}
       </div>
 
       <div className="feature-text">
         <h3>{title}</h3>
         <p>{subtitle}</p>
       </div>
-    </article>
+    </>
   );
+
+  if (isClickable) {
+    return (
+      <button type="button" className={cardClassName} onClick={onClick}>
+        {content}
+      </button>
+    );
+  }
+
+  return <article className={cardClassName}>{content}</article>;
 }
 
 export default FeatureCard;
