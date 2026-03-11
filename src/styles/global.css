@@ -793,3 +793,26 @@ button {
     text-align: left;
   }
 }
+
+.feature-card-clickable {
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.feature-card-clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+  border-color: #cfd9e8;
+}
+
+.feature-card-clickable:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.feature-card-static {
+  width: 100%;
+}

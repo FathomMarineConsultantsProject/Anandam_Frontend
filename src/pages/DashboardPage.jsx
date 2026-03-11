@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/layout/AppHeader';
 import BottomNav from '../components/layout/BottomNav';
 import HeroCard from '../components/home/HeroCard';
@@ -8,7 +9,13 @@ import CardGridSection from '../components/home/CardGridSection';
 import { homePageMockData } from '../data/homeData';
 
 function DashboardPage() {
+  const navigate = useNavigate();
   const pageData = homePageMockData;
+
+  function handleFeatureSelect(card) {
+    if (!card?.route) return;
+    navigate(card.route);
+  }
 
   return (
     <div className="app-shell">
@@ -16,7 +23,10 @@ function DashboardPage() {
 
       <main className="page-content">
         <HeroCard hero={pageData.hero} />
-        <FeatureGrid featureSections={pageData.featureSections} />
+        <FeatureGrid
+          featureSections={pageData.featureSections}
+          onFeatureSelect={handleFeatureSelect}
+        />
         <StatsSection wellness={pageData.wellness} />
         <AssistantSection assistant={pageData.assistant} />
         <CardGridSection

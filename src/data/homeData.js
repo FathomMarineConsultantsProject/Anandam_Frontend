@@ -20,6 +20,7 @@ export const homePageMockData = {
           icon: 'heart',
           accent: 'red',
           bg: 'blue-soft',
+          route: '/mood-quick',
         },
         {
           id: 'breathing-calm',
@@ -263,9 +264,9 @@ export const homePageMockData = {
   navigation: {
     activeTab: 'home',
     items: [
-      { id: 'home', label: 'Home', icon: 'home' },
+      { id: 'home', label: 'Home', icon: 'home', path: '/dashboard' },
       { id: 'perfect-day', label: 'Perfect Day', icon: 'calendar' },
-      { id: 'mood', label: 'Mood', icon: 'heart' },
+     { id: 'mood', label: 'Mood', icon: 'heart', path: '/mood' },
       { id: 'work-rest', label: 'Work/Rest', icon: 'clock' },
       { id: 'fitness', label: 'Fitness', icon: 'activity' },
       { id: 'emergency', label: 'Emergency', icon: 'alert-triangle' },
