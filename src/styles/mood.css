@@ -149,11 +149,13 @@
 
 .clover-rain-item {
   position: absolute;
-  top: -80px;
   left: var(--left);
+  top: -18vh;
   width: var(--size);
   height: var(--size);
-  animation: clover-fall var(--duration) linear var(--delay) forwards;
+  opacity: 0;
+  animation: clover-fall-smooth var(--duration) linear var(--delay) forwards;
+  will-change: transform, opacity;
 }
 
 .clover-rain-item img {
@@ -161,21 +163,25 @@
   height: 100%;
   object-fit: contain;
   transform: rotate(var(--rotate));
-  filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.12));
+  filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.10));
 }
 
-@keyframes clover-fall {
+@keyframes clover-fall-smooth {
   0% {
-    transform: translate3d(0, -100px, 0);
+    transform: translate3d(0, -8vh, 0);
     opacity: 0;
   }
 
-  10% {
-    opacity: 0.95;
+  8% {
+    opacity: 0.9;
+  }
+
+  75% {
+    opacity: 0.9;
   }
 
   100% {
-    transform: translate3d(20px, 115vh, 0);
+    transform: translate3d(var(--drift), 145vh, 0);
     opacity: 0;
   }
 }
