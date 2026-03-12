@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/layout/AppHeader';
 import BottomNav from '../components/layout/BottomNav';
 import MoodScale from '../components/mood/MoodScale';
@@ -6,9 +7,12 @@ import MoodHistoryTable from '../components/mood/MoodHistoryTable';
 import CloverRain from '../components/mood/CloverRain';
 import { getMoodPageData, submitMoodCheck } from '../api/moodApi';
 import { homePageMockData } from '../data/homeData';
+import { completeMoodGate } from '../utils/storage';
 import '../styles/mood.css';
 
 function MoodPage() {
+  const navigate = useNavigate();
+
   const [pageData, setPageData] = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
   const [history, setHistory] = useState([]);
@@ -59,7 +63,11 @@ function MoodPage() {
         });
       }
 
-      setSelectedMood(null);
+      completeMoodGate();
+
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, selectedMood === 5 ? 1200 : 250);
     } finally {
       setIsSubmitting(false);
     }

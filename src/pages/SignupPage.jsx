@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/authApi";
-import { saveAuthSession } from "../utils/storage";
+import { saveAuthSession, resetMoodGate } from "../utils/storage";
 import "../styles/auth.css";
 
 function SignupPage() {
@@ -37,7 +37,8 @@ function SignupPage() {
         user: data.user,
       });
 
-      navigate("/dashboard");
+      resetMoodGate();
+      navigate("/mood-quick");
     } catch (err) {
       setError(err.message || "Signup failed");
     } finally {
@@ -104,9 +105,12 @@ function SignupPage() {
           <button
             type="button"
             className="auth-dev-link"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => {
+              resetMoodGate();
+              navigate("/mood-quick");
+            }}
           >
-            Continue to dashboard
+            Continue to quick mood check
           </button>
         </div>
       </div>
