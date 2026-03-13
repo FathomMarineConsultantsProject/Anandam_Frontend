@@ -3,12 +3,10 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
-import MoodPage from "./pages/MoodPage";
 import MoodCheckinPage from "./pages/MoodCheckinPage";
-import {
-  hasCompletedMoodGate,
-  isAuthenticated,
-} from "./utils/storage";
+import PerfectDaySchedulePage from "./pages/PerfectDaySchedulePage";
+import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
+import MoodPage from "./pages/MoodPage";
 
 function RequireAuth({ children }) {
   if (!isAuthenticated()) {
@@ -64,6 +62,17 @@ function App() {
             </RequireAuth>
           }
         />
+
+        <Route
+          path="/app/perfect-day"
+          element={
+            <RequireAuth>
+              <PerfectDaySchedulePage />
+            </RequireAuth>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

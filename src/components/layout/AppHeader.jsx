@@ -1,36 +1,46 @@
-import { Bell } from 'lucide-react';
+import { Bell } from "lucide-react";
+import "../../styles/global.css";
 
 function AppHeader({ header }) {
   if (!header) return null;
 
   return (
-    <header className="app-header">
-      <div className="brand-wrap">
-        <div className="brand-logo">
-          <div className="brand-logo-outer"></div>
-          <div className="brand-logo-inner"></div>
-          <div className="brand-logo-person">
-            <div className="brand-logo-head"></div>
-            <div className="brand-logo-body"></div>
-            <div className="brand-logo-arm brand-logo-arm-left"></div>
-            <div className="brand-logo-arm brand-logo-arm-right"></div>
-            <div className="brand-logo-base"></div>
+    <header className="pd-app-header">
+      <div className="pd-app-header-inner">
+        <div className="pd-brand">
+          <div className="pd-brand-logo">
+            <div className="pd-brand-logo-outer" />
+            <div className="pd-brand-logo-inner" />
+            <div className="pd-brand-logo-person">
+              <div className="pd-brand-logo-person">
+                <div className="pd-brand-logo-head" />
+                <div className="pd-brand-logo-body">
+                  <div className="pd-brand-logo-arm pd-brand-logo-arm-left" />
+                  <div className="pd-brand-logo-arm pd-brand-logo-arm-right" />
+                </div>
+                <div className="pd-brand-logo-base" />
+              </div>
+            </div>
+            <div className="pd-brand-logo-dot" />
           </div>
-          <div className="brand-logo-dot"></div>
+
+          <div className="pd-brand-text">
+            <h1>{header.appName}</h1>
+            <p>{header.appSubtitle}</p>
+          </div>
         </div>
 
-        <div className="brand-text">
-          <h1>{header.appName}</h1>
-          <p>{header.appSubtitle}</p>
+        <div className="pd-header-actions">
+          <button
+            className="pd-header-icon-btn"
+            type="button"
+            aria-label="Notifications"
+          >
+            <Bell size={18} strokeWidth={2} />
+          </button>
+
+          <div className="pd-user-badge">{header.userInitials}</div>
         </div>
-      </div>
-
-      <div className="header-right">
-        <button className="icon-button" type="button" aria-label="Notifications">
-          <Bell size={18} strokeWidth={2} />
-        </button>
-
-        <div className="profile-badge">{header.userInitials}</div>
       </div>
     </header>
   );
