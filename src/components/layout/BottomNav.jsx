@@ -1,20 +1,20 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import {
   House,
-  CalendarDays,
+  Calendar,
   Heart,
-  Clock3,
+  Clock,
   Activity,
-  TriangleAlert,
-} from 'lucide-react';
+  TriangleAlert,    
+} from "lucide-react";
 
 const navIconMap = {
   home: House,
-  calendar: CalendarDays,
+  calendar: Calendar,
   heart: Heart,
-  clock: Clock3,
+  clock: Clock,
   activity: Activity,
-  'alert-triangle': TriangleAlert,
+  "alert-triangle": TriangleAlert,
 };
 
 function BottomNav({ navigation }) {
@@ -22,7 +22,7 @@ function BottomNav({ navigation }) {
 
   if (!navigation) return null;
 
-  const { items = [], activeTab = '' } = navigation;
+  const { items = [], activeTab = "" } = navigation;
 
   function handleNavClick(item) {
     if (!item.path) return;
@@ -30,22 +30,25 @@ function BottomNav({ navigation }) {
   }
 
   return (
-    <nav className="bottom-nav">
-      {items.map((item) => {
-        const Icon = navIconMap[item.icon];
+    <nav className="pd-bottom-nav">
+      <div className="pd-bottom-nav-grid">
+        {items.map((item) => {
+          const Icon = navIconMap[item.icon];
+          const isActive = activeTab === item.id;
 
-        return (
-          <button
-            key={item.id}
-            type="button"
-            className={`bottom-nav-item ${activeTab === item.id ? 'active' : ''}`}
-            onClick={() => handleNavClick(item)}
-          >
-            {Icon ? <Icon size={20} strokeWidth={1.8} /> : null}
-            <span>{item.label}</span>
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={`pd-bottom-nav-item ${isActive ? "active" : ""}`}
+              onClick={() => handleNavClick(item)}
+            >
+              {Icon ? <Icon size={20} strokeWidth={2} /> : null}
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }

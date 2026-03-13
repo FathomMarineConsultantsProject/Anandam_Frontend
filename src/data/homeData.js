@@ -265,8 +265,8 @@ export const homePageMockData = {
     activeTab: 'home',
     items: [
       { id: 'home', label: 'Home', icon: 'home', path: '/dashboard' },
-      { id: 'perfect-day', label: 'Perfect Day', icon: 'calendar' },
-     { id: 'mood', label: 'Mood', icon: 'heart', path: '/mood' },
+      { id: 'perfect-day', label: 'Perfect Day', icon: 'calendar', path: '/app/perfect-day' },
+      { id: 'mood', label: 'Mood', icon: 'heart', path: '/mood' },
       { id: 'work-rest', label: 'Work/Rest', icon: 'clock' },
       { id: 'fitness', label: 'Fitness', icon: 'activity' },
       { id: 'emergency', label: 'Emergency', icon: 'alert-triangle' },
