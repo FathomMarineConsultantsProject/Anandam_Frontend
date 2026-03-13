@@ -816,3 +816,96 @@ button {
 .feature-card-static {
   width: 100%;
 }
+
+/* ── Shared App Header ── */
+.pd-app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.pd-app-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+.pd-brand { display: flex; align-items: center; gap: 12px; }
+.pd-brand-logo { position: relative; width: 48px; height: 48px; flex: 0 0 48px; }
+.pd-brand-logo-outer {
+  position: absolute; inset: 0; border-radius: 999px;
+  background: linear-gradient(135deg, #fdba74 0%, #fb923c 55%, #f97316 100%);
+  box-shadow: 0 4px 10px rgba(249,115,22,0.22);
+}
+.pd-brand-logo-inner {
+  position: absolute; inset: 8px; border-radius: 999px;
+  background: linear-gradient(135deg, #a5f3fc 0%, #67e8f9 100%);
+  opacity: 0.70;
+}
+.pd-brand-logo-person {
+  position: absolute; inset: 4px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.pd-brand-logo-head {
+  width: 8px; height: 8px; border-radius: 999px;
+  background: #1e3a8a; margin-bottom: 2px;
+}
+.pd-brand-logo-body {
+  position: relative; width: 4px; height: 12px;
+  border-radius: 4px; background: #1e3a8a;
+}
+.pd-brand-logo-arm {
+  position: absolute; top: 4px; width: 12px; height: 2.5px;
+  border-radius: 999px; background: #1d4ed8;
+}
+.pd-brand-logo-arm-left  { left: -10px;  transform: rotate(-45deg); }
+.pd-brand-logo-arm-right { right: -10px; transform: rotate(45deg); }
+.pd-brand-logo-base {
+  width: 14px; height: 4px; border-radius: 999px;
+  background: #1e40af; margin-top: 1px;
+}
+.pd-brand-logo-dot {
+  position: absolute; right: -1px; bottom: -1px;
+  width: 12px; height: 12px; border-radius: 999px;
+  background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);
+  opacity: 0.85;
+}
+.pd-brand-text h1 {
+  margin: 0; font-size: 17px; font-weight: 700;
+  line-height: 1.15; color: #111827;
+}
+.pd-brand-text p { margin: 2px 0 0; font-size: 12px; color: #6b7280; }
+.pd-header-actions { display: flex; align-items: center; gap: 12px; }
+.pd-header-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border: none; background: transparent;
+  border-radius: 8px; color: #111827; cursor: pointer; transition: background 0.15s;
+}
+.pd-header-icon-btn:hover { background: #f3f4f6; }
+.pd-user-badge {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 999px;
+  background: #2563eb; color: #fff; font-size: 13px; font-weight: 700;
+}
+
+/* ── Shared Bottom Nav ── */
+.pd-bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: #fff; border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 14px rgba(15,23,42,0.08);
+}
+.pd-bottom-nav-grid {
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2px; padding: 6px 4px;
+}
+.pd-bottom-nav-item {
+  border: none; background: transparent; border-radius: 8px;
+  padding: 8px 4px; color: #6b7280; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px; transition: background 0.15s, color 0.15s;
+}
+.pd-bottom-nav-item span { font-size: 11px; font-weight: 500; line-height: 1; }
+.pd-bottom-nav-item.active { background: #dbeafe; color: #2563eb; }

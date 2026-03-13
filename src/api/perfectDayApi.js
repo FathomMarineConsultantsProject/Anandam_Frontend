@@ -1,95 +1,118 @@
-export async function getPerfectDaySchedule() {
-  // Later replace this mock with real backend API call
-  // Example:
-  // const response = await fetch("/api/perfect-day/schedule");
-  // if (!response.ok) throw new Error("Failed to fetch perfect day schedule");
-  // return response.json();
+// src/api/perfectDayApi.js
 
-  return Promise.resolve({
+export async function getPerfectDaySchedule() {
+  return {
     header: {
-      brandTitle: "Anandam by Fathom",
-      brandSubtitle: "Wellness for Seafarers",
+      appName: "Anandam by Fathom",
+      appSubtitle: "Wellness for Seafarers",
       userInitials: "NC",
       progressBadge: "0% Complete",
     },
+
     planner: {
       title: "Perfect Day Planner",
-      subtitle: "Design your ideal maritime day with balanced wellness and productivity",
-      tabs: ["Day Planner", "Maritime Habits", "Templates", "Analytics"],
-      activeTab: "Day Planner",
+      subtitle:
+        "Design your ideal maritime day with balanced wellness and productivity",
+      tabs: [
+        { id: "day-planner", label: "Day Planner" },
+        { id: "habits", label: "Maritime Habits" },
+        { id: "templates", label: "Templates" },
+        { id: "analytics", label: "Analytics" },
+      ],
+      activeTab: "day-planner",
+
       focusTitle: "Today's Focus",
       focusSubtitle: "Set your main intention for the day",
       dailyGoalLabel: "Daily Goal",
-      dailyGoalPlaceholder: "e.g., Maintain calm seas mindset during navigation",
+      dailyGoalPlaceholder:
+        "e.g., Maintain calm seas mindset during navigation",
+
       summaryCards: [
-        {
-          title: "Total Activities",
-          value: "13",
-          type: "blue",
-        },
-        {
-          title: "Completed",
-          value: "0",
-          type: "green",
-        },
-        {
-          title: "Progress",
-          value: "0%",
-          type: "purple",
-        },
+        { type: "total",     title: "Total Activities", value: "8" },
+        { type: "completed", title: "Completed",         value: "0" },
+        { type: "progress",  title: "Progress",          value: "0%" },
       ],
     },
+
     scheduleSection: {
       title: "Daily Schedule",
       subtitle: "Your perfectly planned maritime day",
-      completedText: "0 of 13 activities completed",
       progressPercent: 0,
+      completedText: "0 of 8 activities completed",
       items: [
         {
-          id: 1,
-          title: "Professional Development Reading",
-          time: "14:00",
+          id: "1",
+          icon: "heart",
+          title: "Port Morning Routine",
+          time: "07:00",
           duration: "60 minutes",
-          category: "learning",
-          completed: false,
-          icon: "book",
-        },
-        {
-          id: 2,
-          title: "Evening Watch",
-          time: "18:00",
-          duration: "240 minutes",
-          category: "work",
-          completed: false,
-          icon: "anchor",
-        },
-        {
-          id: 3,
-          title: "Dinner with Crew",
-          time: "19:00",
-          duration: "60 minutes",
-          category: "social",
-          completed: false,
-          icon: "phone",
-        },
-        {
-          id: 4,
-          title: "Personal Time - Journaling",
-          time: "21:00",
-          duration: "30 minutes",
           category: "wellness",
           completed: false,
-          icon: "heart",
+        },
+        {
+          id: "2",
+          icon: "utensils",
+          title: "Shore Breakfast",
+          time: "08:00",
+          duration: "45 minutes",
+          category: "nutrition",
+          completed: false,
+        },
+        {
+          id: "3",
+          icon: "dumbbell",
+          title: "Port Exploration Walking Tour",
+          time: "09:00",
+          duration: "180 minutes",
+          category: "fitness",
+          completed: false,
+        },
+        {
+          id: "4",
+          icon: "utensils",
+          title: "Local Cuisine Experience",
+          time: "12:00",
+          duration: "90 minutes",
+          category: "nutrition",
+          completed: false,
+        },
+        {
+          id: "5",
+          icon: "book",
+          title: "Cultural Learning",
+          time: "14:00",
+          duration: "120 minutes",
+          category: "learning",
+          completed: false,
+        },
+        {
+          id: "6",
+          icon: "dumbbell",
+          title: "Port Shopping Walk",
+          time: "16:00",
+          duration: "60 minutes",
+          category: "fitness",
+          completed: false,
+        },
+        {
+          id: "7",
+          icon: "dumbbell",
+          title: "Harbor Sunset Yoga",
+          time: "18:00",
+          duration: "45 minutes",
+          category: "fitness",
+          completed: false,
+        },
+        {
+          id: "8",
+          icon: "phone",
+          title: "Social Dinner with Crew",
+          time: "20:00",
+          duration: "90 minutes",
+          category: "social",
+          completed: false,
         },
       ],
     },
-    bottomNav: [
-      { label: "Home", active: false, icon: "home" },
-      { label: "Perfect Day", active: true, icon: "calendar" },
-      { label: "Mood", active: false, icon: "heart" },
-      { label: "Work/Rest", active: false, icon: "clock" },
-      { label: "Fitness", active: false, icon: "pulse" },
-      { label: "Emergency", active: false, icon: "warning" },
-    ],
-  });
+  };
 }

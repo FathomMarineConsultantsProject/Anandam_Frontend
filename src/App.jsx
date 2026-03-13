@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import MoodCheckinPage from "./pages/MoodCheckinPage";
 import PerfectDaySchedulePage from "./pages/PerfectDaySchedulePage";
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
+import MoodPage from "./pages/MoodPage";
 
 function RequireAuth({ children }) {
   if (!isAuthenticated()) {
@@ -39,7 +40,7 @@ function App() {
           path="/mood-quick"
           element={
             <RequireAuth>
-              <MoodCheckinPage />
+              <MoodPage />
             </RequireAuth>
           }
         />
