@@ -1,0 +1,361 @@
+/* work-rest.css
+   Import: import "../styles/work-rest.css";
+*/
+
+/* ── Page layout ─────────────────────────────────────────────────────────── */
+.wr-page {
+  display: flex; flex-direction: column; gap: 24px;
+  padding: 24px 16px 80px;
+  background: #f8fafc; min-height: 100vh;
+}
+
+/* ── Card shell ──────────────────────────────────────────────────────────── */
+.wr-card {
+  background: #ffffff; border: 1px solid #e2e8f0;
+  border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+/* ── Schedule header ─────────────────────────────────────────────────────── */
+.wr-schedule-header  { padding: 24px 24px 16px; }
+.wr-schedule-title   { font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px; margin: 0 0 10px; }
+.wr-meta-row         { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13px; color: #64748b; }
+.wr-meta-row strong  { color: #0f172a; font-weight: 600; }
+.wr-header-actions   { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+
+.wr-badge {
+  display: inline-flex; align-items: center; border-radius: 9999px;
+  padding: 3px 10px; font-size: 12px; font-weight: 600;
+  background: #cffafe; color: #0e7490; border: 1px solid #a5f3fc; white-space: nowrap;
+}
+
+.wr-edit-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; font-size: 13px; font-weight: 500;
+  color: #374151; background: #ffffff;
+  border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.wr-edit-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+.wr-tabs     { padding: 0 16px 16px; }
+.wr-tab-list {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: #f1f5f9; border-radius: 6px; padding: 4px; gap: 2px;
+}
+.wr-tab-btn {
+  padding: 7px 12px; font-size: 13px; font-weight: 500;
+  color: #64748b; background: transparent; border: none;
+  border-radius: 4px; cursor: pointer; white-space: nowrap;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.wr-tab-btn.active {
+  background: #ffffff; color: #0f172a; font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* ── Schedule grid ───────────────────────────────────────────────────────── */
+.wr-schedule-wrap   { padding: 0 16px 16px; }
+.wr-schedule-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.wr-schedule-inner  { min-width: 2200px; }
+
+.wr-date-label { text-align: center; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 12px; }
+
+.wr-grid-row {
+  display: grid; grid-template-columns: 200px repeat(48, 1fr);
+  gap: 2px; align-items: center; margin-bottom: 2px;
+}
+.wr-grid-head-cell {
+  font-size: 10px; font-weight: 600; text-align: center;
+  padding: 5px 2px; background: #f1f5f9; border-radius: 3px;
+  color: #475569; white-space: nowrap; overflow: hidden;
+}
+.wr-grid-sub-cell { font-size: 9px; text-align: center; color: #94a3b8; padding: 1px 0; }
+.wr-name-cell     { padding: 4px 0; }
+.wr-crew-name     { font-size: 13px; font-weight: 600; color: #0f172a; line-height: 1.3; }
+.wr-crew-rank     { font-size: 11px; color: #64748b; }
+
+.wr-period-cell {
+  height: 36px; border-radius: 4px; border: 1px solid #e2e8f0; background: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+}
+.wr-period-cell.working { background: #06b6d4; border-color: #0891b2; }
+.wr-period-cell.working::after {
+  content: ""; width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.6);
+}
+
+.wr-schedule-summary {
+  display: flex; justify-content: flex-end; gap: 24px;
+  padding: 8px 0 0; font-size: 13px; color: #374151;
+}
+.wr-schedule-summary strong { font-weight: 700; color: #0f172a; }
+
+/* ── MLC Compliance ──────────────────────────────────────────────────────── */
+.wr-compliance-card { padding: 24px; }
+.wr-compliance-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 20px;
+}
+.wr-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 24px; text-align: center; }
+.wr-stat-value       { font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.wr-stat-value.green { color: #16a34a; }
+.wr-stat-value.red   { color: #dc2626; }
+.wr-stat-value.blue  { color: #2563eb; }
+.wr-stat-label       { font-size: 13px; color: #64748b; }
+.wr-requirements h3  { font-size: 14px; font-weight: 700; color: #0f172a; margin: 0 0 8px; }
+.wr-requirements ul  { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.wr-requirements ul li { font-size: 13px; color: #374151; }
+.wr-requirements ul li::before { content: "• "; }
+
+/* ── Remarks ─────────────────────────────────────────────────────────────── */
+.wr-remarks-card     { padding: 24px; }
+.wr-remarks-title    { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 16px; }
+.wr-remarks-list     { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.wr-remarks-list li  { font-size: 13px; color: #374151; }
+.wr-remarks-list li::before { content: "• "; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FACE RECOGNITION TAB
+═══════════════════════════════════════════════════════════════════════════ */
+.wr-fr-card-inner { padding: 24px; }
+
+.wr-fr-title-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 20px; color: #374151;
+}
+.wr-fr-title    { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 2px; }
+.wr-fr-subtitle { font-size: 13px; color: #64748b; margin: 0; }
+
+.wr-fr-two-col  { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 640px) { .wr-fr-two-col { grid-template-columns: 1fr; } }
+
+.wr-fr-info-col { display: flex; flex-direction: column; }
+.wr-fr-info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px;
+}
+.wr-fr-info-row:last-child { border-bottom: none; }
+.wr-fr-info-row--header    { padding-bottom: 12px; }
+.wr-fr-info-key            { color: #374151; font-size: 13px; }
+.wr-fr-info-val            { color: #0f172a; font-weight: 500; font-size: 13px; }
+
+.wr-fr-status-badge {
+  display: inline-flex; align-items: center; border-radius: 9999px;
+  padding: 2px 10px; font-size: 12px; font-weight: 600; border: 1px solid;
+}
+.wr-fr-status-badge.inactive { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+.wr-fr-status-badge.active   { background: #dcfce7; color: #16a34a;  border-color: #86efac; }
+
+.wr-fr-camera-col    { display: flex; flex-direction: column; }
+.wr-fr-camera-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px; background: #eff6ff;
+  border: 1px solid #bfdbfe; border-radius: 6px 6px 0 0; font-size: 13px;
+}
+.wr-fr-camera-label { color: #1d4ed8; font-weight: 500; }
+
+.wr-fr-camera-box {
+  position: relative; width: 100%; aspect-ratio: 4/3;
+  background: #e2e8f0; border: 1px solid #d1d5db;
+  border-top: none; border-bottom: none; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.wr-fr-video {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; object-fit: cover;
+}
+.fr-canvas-overlay {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%; pointer-events: none; z-index: 2;
+}
+.wr-fr-camera-placeholder {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  width: 100%; height: 100%; gap: 8px;
+}
+.wr-fr-camera-error { font-size: 12px; color: #ef4444; text-align: center; padding: 0 12px; margin: 0; }
+
+.wr-fr-activate-btn {
+  width: 100%; padding: 12px; font-size: 14px; font-weight: 500; color: #ffffff;
+  background: #3b82f6; border: none; border-radius: 0 0 6px 6px; cursor: pointer;
+  transition: background 0.15s;
+}
+.wr-fr-activate-btn:hover    { background: #2563eb; }
+.wr-fr-deactivate-btn        { background: #6b7280; }
+.wr-fr-deactivate-btn:hover  { background: #4b5563; }
+
+/* ── Location-Based Time Clock (inside Face Recognition tab) ─────────────── */
+.wr-tc-card-inner { padding: 24px; }
+.wr-tc-title-row  { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; color: #374151; }
+.wr-tc-title      { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 2px; }
+.wr-tc-subtitle   { font-size: 13px; color: #64748b; margin: 0; }
+
+.wr-tc-two-col    { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 640px) { .wr-tc-two-col { grid-template-columns: 1fr; } }
+
+.wr-tc-left, .wr-tc-right { display: flex; flex-direction: column; gap: 16px; }
+
+.wr-tc-field      { display: flex; flex-direction: column; gap: 6px; }
+.wr-tc-label      { font-size: 14px; font-weight: 500; color: #0f172a; }
+
+.wr-tc-select-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; height: 40px; padding: 0 12px; font-size: 13px;
+  background: #ffffff; border: 1px solid #d1d5db; border-radius: 6px;
+  cursor: pointer; color: #0f172a; box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.wr-tc-select-btn:hover { border-color: #94a3b8; }
+
+.wr-tc-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #ffffff; border: 1px solid #d1d5db; border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 50; overflow: hidden;
+}
+.wr-tc-dropdown-item {
+  display: block; width: 100%; text-align: left;
+  padding: 9px 14px; font-size: 13px; color: #374151;
+  background: transparent; border: none; cursor: pointer; transition: background 0.1s;
+}
+.wr-tc-dropdown-item:hover    { background: #f1f5f9; }
+.wr-tc-dropdown-item.selected { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+
+.wr-tc-clock-box  { padding: 12px 14px; background: #f8fafc; border-radius: 6px; }
+.wr-tc-clock-time { font-size: 22px; font-weight: 700; color: #2563eb; }
+.wr-tc-clock-date { font-size: 13px; color: #64748b; margin-top: 2px; }
+
+.wr-tc-clock-btns { display: flex; flex-direction: column; gap: 8px; }
+.wr-tc-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 10px 16px; font-size: 14px; font-weight: 500;
+  color: #ffffff; border: none; border-radius: 6px; cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+.wr-tc-btn:disabled                  { opacity: 0.5; cursor: not-allowed; }
+.wr-tc-btn--in                       { background: #16a34a; }
+.wr-tc-btn--in:not(:disabled):hover  { background: #15803d; }
+.wr-tc-btn--out                      { background: #dc2626; }
+.wr-tc-btn--out:not(:disabled):hover { background: #b91c1c; }
+
+.wr-tc-pin-box    { padding: 16px; background: #fff7ed; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
+.wr-tc-pin-header { display: flex; align-items: center; gap: 6px; }
+.wr-tc-pin-title  { font-size: 13px; font-weight: 600; color: #9a3412; }
+.wr-tc-pin-desc   { font-size: 13px; color: #64748b; margin: 0; }
+
+.wr-tc-pin-input {
+  width: 100%; height: 40px; padding: 0 12px; font-size: 16px;
+  text-align: center; letter-spacing: 4px;
+  background: #ffffff; border: 1px solid #d1d5db; border-radius: 6px;
+  box-sizing: border-box; transition: border-color 0.15s;
+}
+.wr-tc-pin-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.15); }
+
+.wr-tc-pin-auth-btn {
+  width: 100%; padding: 9px 16px; font-size: 13px; font-weight: 500;
+  color: #374151; background: #ffffff;
+  border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; transition: background 0.15s;
+}
+.wr-tc-pin-auth-btn:not(:disabled):hover { background: #f1f5f9; }
+.wr-tc-pin-auth-btn:disabled             { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Face Recognition Activity (inside Face Recognition tab) ─────────────── */
+.wr-tc-activity-inner { padding: 24px; }
+.wr-tc-activity-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 16px;
+}
+.wr-tc-activity-list { display: flex; flex-direction: column; gap: 8px; }
+
+.wr-tc-activity-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-radius: 8px;
+}
+.wr-tc-activity-row--success { background: #f0fdf4; }
+.wr-tc-activity-row--backup  { background: #fefce8; }
+.wr-tc-activity-row--failed  { background: #fef2f2; }
+
+.wr-tc-activity-left { display: flex; align-items: center; gap: 12px; }
+.wr-tc-activity-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.wr-tc-activity-dot--success { background: #22c55e; }
+.wr-tc-activity-dot--backup  { background: #eab308; }
+.wr-tc-activity-dot--failed  { background: #ef4444; }
+.wr-tc-activity-name { font-size: 13px; font-weight: 600; color: #0f172a; }
+.wr-tc-activity-meta { font-size: 12px; color: #64748b; margin-top: 1px; }
+
+.wr-tc-activity-badge {
+  display: inline-flex; align-items: center; border-radius: 9999px;
+  padding: 2px 10px; font-size: 11px; font-weight: 600;
+}
+.wr-tc-activity-badge--success { background: #dcfce7; color: #166534; }
+.wr-tc-activity-badge--backup  { background: #fef9c3; color: #854d0e; }
+.wr-tc-activity-badge--failed  { background: #fee2e2; color: #991b1b; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TIME CLOCK TAB
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Time Clock Records card ─────────────────────────────────────────────── */
+.wr-tcr-inner { padding: 24px; }
+
+.wr-tcr-title-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 20px; color: #374151;
+}
+.wr-tcr-title    { font-size: 18px; font-weight: 700; color: #0f172a; margin: 0 0 2px; }
+.wr-tcr-subtitle { font-size: 13px; color: #64748b; margin: 0; }
+
+.wr-tcr-list { display: flex; flex-direction: column; gap: 10px; }
+
+.wr-tcr-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border: 1px solid #e2e8f0; border-radius: 8px;
+  background: #ffffff; gap: 12px;
+}
+
+/* Left: dot + name + location */
+.wr-tcr-left {
+  display: flex; align-items: center; gap: 14px;
+  flex: 1; min-width: 0;
+}
+.wr-tcr-dot       { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.wr-tcr-dot--in   { background: #22c55e; }
+.wr-tcr-dot--out  { background: #ef4444; }
+.wr-tcr-name      { font-size: 14px; font-weight: 600; color: #0f172a; }
+.wr-tcr-location  { font-size: 13px; color: #64748b; margin-top: 1px; }
+
+/* Middle: action + time */
+.wr-tcr-middle    { text-align: right; flex-shrink: 0; }
+.wr-tcr-action    { font-size: 14px; font-weight: 600; color: #0f172a; }
+.wr-tcr-time      { font-size: 13px; color: #64748b; margin-top: 1px; }
+
+/* Right: auth badge */
+.wr-tcr-right     { flex-shrink: 0; }
+.wr-tcr-badge {
+  display: inline-flex; align-items: center; border-radius: 9999px;
+  padding: 3px 10px; font-size: 12px; font-weight: 600;
+}
+.wr-tcr-badge--face { background: #dbeafe; color: #1d4ed8; }
+.wr-tcr-badge--pin  { background: #fed7aa; color: #9a3412; }
+
+/* ── Daily Time Summary card ─────────────────────────────────────────────── */
+.wr-dts-inner { padding: 24px; }
+.wr-dts-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 20px; }
+
+.wr-dts-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+@media (max-width: 640px) { .wr-dts-grid { grid-template-columns: 1fr; } }
+
+.wr-dts-stat {
+  padding: 16px; border-radius: 8px; text-align: center;
+}
+.wr-dts-stat--green  { background: #f0fdf4; }
+.wr-dts-stat--blue   { background: #eff6ff; }
+.wr-dts-stat--purple { background: #faf5ff; }
+
+.wr-dts-value        { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+.wr-dts-value.green  { color: #16a34a; }
+.wr-dts-value.blue   { color: #2563eb; }
+.wr-dts-value.purple { color: #7c3aed; }
+.wr-dts-label        { font-size: 13px; color: #64748b; }
