@@ -279,4 +279,31 @@ export const homePageMockData = {
     appSubtitle: 'Wellness for Seafarers',
     userInitials: 'NC',
   },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+// PATCH: src/data/homeData.js
+// ─────────────────────────────────────────────────────────────────────────────
+// Find the `navigation` object in homeData.js / homePageMockData and replace
+// its `items` array with the one below (add the work-rest entry if missing).
+//
+// The navigation block should look exactly like this:
+// ─────────────────────────────────────────────────────────────────────────────
+
+navigation: {
+  activeTab: "home",   // <-- keep whatever the current activeTab value is
+  items: [
+    { id: "home",        label: "Home",        icon: "home",           path: "/dashboard" },
+    { id: "perfect-day", label: "Perfect Day", icon: "calendar",       path: "/app/perfect-day" },
+    { id: "mood",        label: "Mood",        icon: "heart",          path: "/mood" },
+    { id: "work-rest",   label: "Work/Rest",   icon: "clock",          path: "/app/work-rest" },
+    { id: "fitness",     label: "Fitness",     icon: "activity",       path: "/app/fitness" },
+    { id: "emergency",   label: "Emergency",   icon: "alert-triangle", path: "/app/emergency" },
+  ],
+},
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WHY: BottomNav now derives the active highlight from the current URL
+// (via useLocation), so you never need to manually set activeTab per page —
+// it just works. But ALL items must be present so every page can be reached.
+// ─────────────────────────────────────────────────────────────────────────────
 };
