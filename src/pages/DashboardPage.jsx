@@ -13,13 +13,23 @@ function DashboardPage() {
   const pageData = homePageMockData;
 
   function handleFeatureSelect(card) {
-  if (!card?.route) return;
-  if (card.route.startsWith('http')) {
-    window.open(card.route, '_blank');
-  } else {
+    if (!card?.route) return;
+
+    // External URLs (https, http, WhatsApp deep links) → new tab
+    if (card.route.startsWith('http')) {
+      window.open(card.route, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    // Phone dialer (tel:) → same window so device handles it natively
+    if (card.route.startsWith('tel:')) {
+      window.location.href = card.route;
+      return;
+    }
+
+    // Internal routes → navigate
     navigate(card.route);
   }
-}
 
   return (
     <div className="app-shell">
