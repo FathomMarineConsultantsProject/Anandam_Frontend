@@ -1,3 +1,4 @@
+// App.jsx – updated with /app/work-rest route
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -5,6 +6,7 @@ import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
 import MoodCheckinPage from "./pages/MoodCheckinPage";
 import PerfectDaySchedulePage from "./pages/PerfectDaySchedulePage";
+import WorkRestPage from "./pages/WorkRestPage";          // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
 
@@ -12,7 +14,6 @@ function RequireAuth({ children }) {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
-
   return children;
 }
 
@@ -20,11 +21,9 @@ function RequireMoodBeforeDashboard({ children }) {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
-
   if (!hasCompletedMoodGate()) {
     return <Navigate to="/mood-quick" replace />;
   }
-
   return children;
 }
 
@@ -68,6 +67,16 @@ function App() {
           element={
             <RequireAuth>
               <PerfectDaySchedulePage />
+            </RequireAuth>
+          }
+        />
+
+        {/* ── NEW: Work/Rest page ── */}
+        <Route
+          path="/app/work-rest"
+          element={
+            <RequireAuth>
+              <WorkRestPage />
             </RequireAuth>
           }
         />
