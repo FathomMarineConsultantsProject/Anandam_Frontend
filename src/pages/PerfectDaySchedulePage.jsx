@@ -406,7 +406,13 @@ function TemplatesTab() {
           </div>
           <div className="tpl-fitness-chips">
             <span className="tpl-chip"><Dumbbell size={13} strokeWidth={2} /> Physical Fitness</span>
-            <span className="tpl-chip"><Heart size={13} strokeWidth={2} /> Yoga &amp; Stretching</span>
+            <span
+              className="tpl-chip"
+              style={{ cursor: "pointer" }}
+              onClick={() => window.open("https://web.monkify.app/category?id=10&name=Meditations", "_blank", "noopener,noreferrer")}
+            >
+              <Heart size={13} strokeWidth={2} /> Yoga &amp; Stretching
+            </span>
           </div>
           <p className="tpl-fitness-note">
             Use the "Perfect Fitness Day" template to integrate comprehensive maritime fitness routines.
