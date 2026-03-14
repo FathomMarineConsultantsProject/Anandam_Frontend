@@ -13,9 +13,13 @@ function DashboardPage() {
   const pageData = homePageMockData;
 
   function handleFeatureSelect(card) {
-    if (!card?.route) return;
+  if (!card?.route) return;
+  if (card.route.startsWith('http')) {
+    window.open(card.route, '_blank');
+  } else {
     navigate(card.route);
   }
+}
 
   return (
     <div className="app-shell">

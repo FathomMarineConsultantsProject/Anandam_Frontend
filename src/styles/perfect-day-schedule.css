@@ -1,4 +1,6 @@
-/* src/styles/perfect-day-schedule.css*/
+/* src/styles/perfect-day-schedule.css
+   Pixel-faithful recreation of the live MHTML snapshot
+   ─────────────────────────────────────────────────── */
 
 :root {
   --pd-bg: #f9fafb;
@@ -977,4 +979,552 @@ body {
   font-size: 13px;
   color: #6b7280;
   line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════
+   TEMPLATES TAB
+   ══════════════════════════════════════════════ */
+
+/* ── Dropdown ── */
+.tpl-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tpl-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tpl-dropdown:hover {
+  border-color: #9ca3af;
+}
+
+.tpl-dropdown-value {
+  font-size: 14px;
+  color: #111827;
+}
+
+.tpl-dropdown-value.placeholder {
+  color: #9ca3af;
+}
+
+.tpl-dropdown-chevron {
+  color: #6b7280;
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.tpl-dropdown-chevron.open {
+  transform: rotate(180deg);
+}
+
+.tpl-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.tpl-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.tpl-dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.tpl-dropdown-item.active {
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* ── Fitness Integration banner ── */
+.tpl-fitness-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.tpl-fitness-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.tpl-fitness-banner-icon {
+  color: #2563eb;
+}
+
+.tpl-fitness-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.tpl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.tpl-fitness-note {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+/* ── Template card list ── */
+.tpl-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Each template card — separated by a border line like in screenshots */
+.tpl-card {
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tpl-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.tpl-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.tpl-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.tpl-card-desc {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Apply Template button */
+.tpl-apply-btn {
+  flex: 0 0 auto;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.tpl-apply-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.tpl-apply-btn.applied {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+/* ── 2-column activity grid ── */
+.tpl-act-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 24px;
+}
+
+.tpl-act-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tpl-act-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tpl-act-icon {
+  color: #6b7280;
+  flex: 0 0 auto;
+}
+
+.tpl-act-text {
+  font-size: 13px;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.tpl-act-time {
+  color: #374151;
+  font-weight: 400;
+}
+
+/* Inline fitness badge in template rows */
+.tpl-act-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  margin-left: 2px;
+}
+
+/* "+N more activities..." */
+.tpl-more {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .tpl-act-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tpl-card-top {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tpl-apply-btn {
+    align-self: flex-start;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   ANALYTICS TAB
+   ══════════════════════════════════════════════ */
+
+/* ── Top 2-col panels (Daily Progress + Habit Streaks) ── */
+.anl-top-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.anl-panel {
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.anl-panel.blue  { background: #eff6ff; border: 1px solid #bfdbfe; }
+.anl-panel.green { background: #f0fdf4; border: 1px solid #bbf7d0; }
+
+/* Panel title row */
+.anl-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.anl-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-panel-icon.blue  { color: #2563eb; }
+.anl-panel-icon.green { color: #16a34a; }
+
+/* "Activities  0/8" row */
+.anl-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.anl-panel-label {
+  font-size: 13px;
+  color: #374151;
+}
+
+.anl-panel-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Progress bar inside panel */
+.anl-bar-wrap {
+  width: 100%;
+}
+
+.anl-bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.anl-bar-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+  transition: transform 0.3s ease;
+}
+
+/* Motivational text / streak note */
+.anl-panel-note {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ── Section heading ── */
+.anl-section {
+  margin-bottom: 20px;
+}
+
+.anl-section-title {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ── Activity Categories grid ── */
+/* 3 columns first row, 2 columns second row — CSS grid auto-flows */
+.anl-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.anl-cat-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.anl-cat-icon {
+  color: #374151;
+}
+
+.anl-cat-label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-cat-count {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1;
+}
+
+/* ── Fitness Integration panel ── */
+.anl-fitness-panel {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.anl-fitness-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.anl-fitness-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.anl-fitness-icon {
+  color: #16a34a;
+}
+
+.anl-fitness-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-fitness-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.anl-fitness-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.anl-fitness-stats {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.anl-fitness-stat {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* Coloured dot */
+.anl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex: 0 0 8px;
+}
+
+.anl-dot.green { background: #16a34a; }
+.anl-dot.blue  { background: #2563eb; }
+
+/* ── Perfect Day Insights panel ── */
+.anl-insight-panel {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.anl-insight-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.anl-insight-icon {
+  color: #d97706;
+}
+
+.anl-insight-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-insight-text {
+  margin: 0;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .anl-top-panels {
+    grid-template-columns: 1fr;
+  }
+
+  .anl-cat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .anl-fitness-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .anl-fitness-stats {
+    gap: 16px;
+  }
 }
