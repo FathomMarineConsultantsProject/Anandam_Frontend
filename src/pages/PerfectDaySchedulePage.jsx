@@ -3,79 +3,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Target, Calendar, Clock, CheckCircle2, Award, Star,
   Anchor, Heart, Utensils, BookOpen, Phone, Waves, Dumbbell,
-  Bell, House, Activity, TriangleAlert, Zap, TrendingUp,
+  Bell, Activity, TriangleAlert, Zap, TrendingUp,
   Shield, Plus, Waves as WavesIcon, ChevronDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getPerfectDaySchedule, getPerfectDayAnalytics, getPerfectDayHabits } from "../api/perfectDayApi";
 import { homePageMockData } from "../data/homeData";
+// ── Use the shared BottomNav (auto-highlights from URL via useLocation) ──
+import BottomNav from "../components/layout/BottomNav";
+import AppHeader from "../components/layout/AppHeader";
 import "../styles/perfect-day-schedule.css";
-
-// ─── AppHeader ────────────────────────────────────────────────────────────────
-function AppHeader({ header }) {
-  if (!header) return null;
-  return (
-    <header className="pd-app-header">
-      <div className="pd-app-header-inner">
-        <div className="pd-brand">
-          <div className="pd-brand-logo">
-            <div className="pd-brand-logo-outer" />
-            <div className="pd-brand-logo-inner" />
-            <div className="pd-brand-logo-person">
-              <div className="pd-brand-logo-head" />
-              <div className="pd-brand-logo-body">
-                <div className="pd-brand-logo-arm pd-brand-logo-arm-left" />
-                <div className="pd-brand-logo-arm pd-brand-logo-arm-right" />
-              </div>
-              <div className="pd-brand-logo-base" />
-            </div>
-            <div className="pd-brand-logo-dot" />
-          </div>
-          <div className="pd-brand-text">
-            <h1>{header.appName}</h1>
-            <p>{header.appSubtitle}</p>
-          </div>
-        </div>
-        <div className="pd-header-actions">
-          <button className="pd-header-icon-btn" type="button" aria-label="Notifications">
-            <Bell size={16} strokeWidth={2} />
-          </button>
-          <div className="pd-user-badge">{header.userInitials}</div>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-// ─── BottomNav ────────────────────────────────────────────────────────────────
-const navIconMap = {
-  home: House, calendar: Calendar, heart: Heart,
-  clock: Clock, activity: Activity, "alert-triangle": TriangleAlert,
-};
-
-function BottomNav({ navigation }) {
-  const navigate = useNavigate();
-  if (!navigation) return null;
-  const { items = [], activeTab = "" } = navigation;
-  return (
-    <nav className="pd-bottom-nav">
-      <div className="pd-bottom-nav-grid">
-        {items.map((item) => {
-          const Icon = navIconMap[item.icon];
-          const isActive = activeTab === item.id;
-          return (
-            <button key={item.id} type="button"
-              className={`pd-bottom-nav-item ${isActive ? "active" : ""}`}
-              onClick={() => item.path && navigate(item.path)}>
-              {Icon ? <Icon size={20} strokeWidth={2} /> : null}
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
 
 // ─── PlannerTabs ──────────────────────────────────────────────────────────────
 function PlannerTabs({ tabs = [], activeTab, onTabChange }) {
@@ -193,7 +130,6 @@ function getHabitIcon(icon) {
   return map[icon] || Target;
 }
 
-// Habit category badge colours
 function getHabitBadgeClass(cat) {
   const map = {
     safety: "habit-safety", professional: "habit-professional",
@@ -204,7 +140,7 @@ function getHabitBadgeClass(cat) {
   return map[cat] || "";
 }
 
-// ─── Toast component ──────────────────────────────────────────────────────────
+// ─── Toast ────────────────────────────────────────────────────────────────────
 function HabitToast({ visible }) {
   return (
     <div className={`pd-toast ${visible ? "visible" : ""}`}>
@@ -222,7 +158,6 @@ function MaritimeHabitsTab() {
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimer = useRef(null);
 
-  // Load habits from API on mount
   useEffect(() => {
     getPerfectDayHabits().then(setHabits).catch(console.error);
   }, []);
@@ -232,13 +167,9 @@ function MaritimeHabitsTab() {
     setHabits((prev) => prev.map((h) => {
       if (h.id !== id) return h;
       nowCompleted = !h.completed;
-      const newDone = nowCompleted
-        ? h.doneCount + 1
-        : Math.max(0, h.doneCount - 1);
+      const newDone = nowCompleted ? h.doneCount + 1 : Math.max(0, h.doneCount - 1);
       return { ...h, completed: nowCompleted, doneCount: newDone };
     }));
-
-    // Read the toggled state directly from habits to decide toast
     const habit = habits.find((h) => h.id === id);
     const willBeCompleted = habit ? !habit.completed : false;
     if (willBeCompleted) {
@@ -246,7 +177,6 @@ function MaritimeHabitsTab() {
       if (toastTimer.current) clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToastVisible(false), 5000);
     } else {
-      // Unchecking — hide toast immediately if showing
       setToastVisible(false);
       if (toastTimer.current) clearTimeout(toastTimer.current);
     }
@@ -268,11 +198,8 @@ function MaritimeHabitsTab() {
 
   return (
     <>
-      {/* Toast — rendered outside card so it floats bottom-right */}
       <HabitToast visible={toastVisible} />
-
       <section className="pd-card">
-        {/* Header */}
         <div className="pd-card-header">
           <div className="pd-card-title-row">
             <Zap className="pd-card-title-icon" size={20} strokeWidth={2} />
@@ -280,9 +207,7 @@ function MaritimeHabitsTab() {
           </div>
           <p className="pd-card-subtitle">Build lasting habits for maritime wellness and professional excellence</p>
         </div>
-
         <div className="pd-card-body">
-          {/* Stats grid — 2 cols */}
           <div className="pd-habit-stats">
             <div className="pd-habit-stat green">
               <TrendingUp size={24} strokeWidth={2} className="pd-habit-stat-icon" />
@@ -295,17 +220,13 @@ function MaritimeHabitsTab() {
               <p className="pd-habit-stat-value blue">{successPct}%</p>
             </div>
           </div>
-
-          {/* Habit list */}
           <div className="pd-habit-list">
             {habits.map((habit) => {
               const Icon = getHabitIcon(habit.icon);
-              // Dynamic pct from doneCount / targetCount
               const pct = habit.targetCount > 0
                 ? Math.min(100, Math.round((habit.doneCount / habit.targetCount) * 100))
                 : 0;
               const daysLabel = `${habit.doneCount}/${habit.targetCount} days`;
-
               return (
                 <div key={habit.id} className={`pd-habit-row ${habit.completed ? "completed" : ""}`}>
                   <div className="pd-habit-top">
@@ -329,7 +250,6 @@ function MaritimeHabitsTab() {
                       <p className="pd-habit-pct-label">Target Progress</p>
                     </div>
                   </div>
-                  {/* Dynamic progress bar */}
                   <div className="pd-habit-bar">
                     <div className="pd-habit-bar-fill" style={{ transform: `translateX(${pct - 100}%)` }} />
                   </div>
@@ -337,8 +257,6 @@ function MaritimeHabitsTab() {
               );
             })}
           </div>
-
-          {/* Add custom habit */}
           <div className="pd-habit-add-section">
             <h4 className="pd-habit-add-title">Add Custom Maritime Habit</h4>
             <div className="pd-habit-add-row">
@@ -360,19 +278,19 @@ function MaritimeHabitsTab() {
   );
 }
 
-// ─── Templates Tab Data ───────────────────────────────────────────────────────
+// ─── Templates Tab ────────────────────────────────────────────────────────────
 const TEMPLATES = [
   {
     id: "port",
     name: "Perfect Port Day",
     description: "Optimized for days in port with shore activities",
     activities: [
-      { time: "07:00", title: "Port Morning Routine",         icon: "heart",    category: null     },
-      { time: "08:00", title: "Shore Breakfast",              icon: "utensils", category: null     },
-      { time: "09:00", title: "Port Exploration Walking Tour",icon: "dumbbell", category: "Fitness"},
-      { time: "12:00", title: "Local Cuisine Experience",     icon: "utensils", category: null     },
-      { time: "14:00", title: "Cultural Learning",            icon: "book",     category: null     },
-      { time: "16:00", title: "Port Shopping Walk",           icon: "dumbbell", category: "Fitness"},
+      { time: "07:00", title: "Port Morning Routine",          icon: "heart",    category: null      },
+      { time: "08:00", title: "Shore Breakfast",               icon: "utensils", category: null      },
+      { time: "09:00", title: "Port Exploration Walking Tour", icon: "dumbbell", category: "Fitness" },
+      { time: "12:00", title: "Local Cuisine Experience",      icon: "utensils", category: null      },
+      { time: "14:00", title: "Cultural Learning",             icon: "book",     category: null      },
+      { time: "16:00", title: "Port Shopping Walk",            icon: "dumbbell", category: "Fitness" },
     ],
     extraCount: 2,
   },
@@ -381,12 +299,12 @@ const TEMPLATES = [
     name: "Perfect Sea Day",
     description: "Ideal routine for days at sea with long voyages",
     activities: [
-      { time: "06:00", title: "Morning Watch Duties",         icon: "anchor",   category: null  },
-      { time: "06:30", title: "Ocean Sunrise Meditation",     icon: "heart",    category: null  },
-      { time: "07:30", title: "Maritime Breakfast",           icon: "utensils", category: null  },
-      { time: "08:30", title: "Navigation & Weather Check",   icon: "anchor",   category: null  },
-      { time: "10:00", title: "Equipment Maintenance",        icon: "anchor",   category: null  },
-      { time: "12:00", title: "Midday Meal",                  icon: "utensils", category: null  },
+      { time: "06:00", title: "Morning Watch Duties",        icon: "anchor",   category: null },
+      { time: "06:30", title: "Ocean Sunrise Meditation",    icon: "heart",    category: null },
+      { time: "07:30", title: "Maritime Breakfast",          icon: "utensils", category: null },
+      { time: "08:30", title: "Navigation & Weather Check",  icon: "anchor",   category: null },
+      { time: "10:00", title: "Equipment Maintenance",       icon: "anchor",   category: null },
+      { time: "12:00", title: "Midday Meal",                 icon: "utensils", category: null },
     ],
     extraCount: 6,
   },
@@ -395,12 +313,12 @@ const TEMPLATES = [
     name: "Perfect Wellness Day",
     description: "Focus on mental and physical health recovery",
     activities: [
-      { time: "07:00", title: "Gentle Morning Stretching",    icon: "dumbbell", category: "Fitness"},
-      { time: "07:30", title: "Nutritious Breakfast",         icon: "utensils", category: null    },
-      { time: "08:30", title: "Mindfulness & Breathing",      icon: "heart",    category: null    },
-      { time: "09:30", title: "Light Duty Work",              icon: "anchor",   category: null    },
-      { time: "12:30", title: "Healthy Lunch & Rest",         icon: "utensils", category: null    },
-      { time: "14:00", title: "Creative Activities",          icon: "heart",    category: null    },
+      { time: "07:00", title: "Gentle Morning Stretching", icon: "dumbbell", category: "Fitness" },
+      { time: "07:30", title: "Nutritious Breakfast",      icon: "utensils", category: null      },
+      { time: "08:30", title: "Mindfulness & Breathing",   icon: "heart",    category: null      },
+      { time: "09:30", title: "Light Duty Work",           icon: "anchor",   category: null      },
+      { time: "12:30", title: "Healthy Lunch & Rest",      icon: "utensils", category: null      },
+      { time: "14:00", title: "Creative Activities",       icon: "heart",    category: null      },
     ],
     extraCount: 6,
   },
@@ -409,18 +327,17 @@ const TEMPLATES = [
     name: "Perfect Fitness Day",
     description: "Maritime fitness and physical wellness focused routine",
     activities: [
-      { time: "06:00", title: "Morning Warm-up & Stretching", icon: "dumbbell", category: "Fitness"},
-      { time: "06:30", title: "Protein-Rich Breakfast",       icon: "utensils", category: null    },
-      { time: "07:30", title: "Deck Cardio Workout",          icon: "dumbbell", category: "Fitness"},
-      { time: "09:00", title: "Work Duties",                  icon: "anchor",   category: null    },
-      { time: "12:00", title: "Post-Workout Meal",            icon: "utensils", category: null    },
-      { time: "13:30", title: "Active Recovery Walk",         icon: "dumbbell", category: "Fitness"},
+      { time: "06:00", title: "Morning Warm-up & Stretching", icon: "dumbbell", category: "Fitness" },
+      { time: "06:30", title: "Protein-Rich Breakfast",       icon: "utensils", category: null      },
+      { time: "07:30", title: "Deck Cardio Workout",          icon: "dumbbell", category: "Fitness" },
+      { time: "09:00", title: "Work Duties",                  icon: "anchor",   category: null      },
+      { time: "12:00", title: "Post-Workout Meal",            icon: "utensils", category: null      },
+      { time: "13:30", title: "Active Recovery Walk",         icon: "dumbbell", category: "Fitness" },
     ],
     extraCount: 6,
   },
 ];
 
-// icon renderer for template activity rows
 function getTplIcon(icon) {
   const map = {
     heart: Heart, utensils: Utensils, dumbbell: Dumbbell,
@@ -430,11 +347,10 @@ function getTplIcon(icon) {
   return <Icon size={14} strokeWidth={2} className="tpl-act-icon" />;
 }
 
-// ─── Templates Tab ────────────────────────────────────────────────────────────
 function TemplatesTab() {
-  const [selected, setSelected] = useState("");
-  const [dropOpen, setDropOpen] = useState(false);
-  const [applied, setApplied] = useState(null);
+  const [selected, setSelected]   = useState("");
+  const [dropOpen, setDropOpen]   = useState(false);
+  const [applied, setApplied]     = useState(null);
 
   const dropOptions = [
     { value: "", label: "Select a perfect day template" },
@@ -446,17 +362,14 @@ function TemplatesTab() {
     setTimeout(() => setApplied(null), 3000);
   }
 
-  // Left/right split: first 3 go left col, next 3 go right col (2-col grid)
   function splitActivities(acts) {
-    const left = [];
-    const right = [];
+    const left = [], right = [];
     acts.forEach((a, i) => (i % 2 === 0 ? left : right).push(a));
     return { left, right };
   }
 
   return (
     <section className="pd-card">
-      {/* Header */}
       <div className="pd-card-header">
         <div className="pd-card-title-row">
           <WavesIcon className="pd-card-title-icon" size={20} strokeWidth={2} />
@@ -464,10 +377,7 @@ function TemplatesTab() {
         </div>
         <p className="pd-card-subtitle">Pre-designed routines for different maritime scenarios</p>
       </div>
-
       <div className="pd-card-body">
-
-        {/* ── Dropdown ── */}
         <div className="tpl-field-group">
           <label className="pd-label">Choose a Template</label>
           <div className="tpl-dropdown" onClick={() => setDropOpen((p) => !p)}>
@@ -489,28 +399,20 @@ function TemplatesTab() {
           </div>
         </div>
 
-        {/* ── Fitness Integration banner ── */}
         <div className="tpl-fitness-banner">
           <div className="tpl-fitness-banner-title">
             <Activity size={16} strokeWidth={2} className="tpl-fitness-banner-icon" />
             <span>Fitness Integration</span>
           </div>
           <div className="tpl-fitness-chips">
-            <span className="tpl-chip">
-              <Dumbbell size={13} strokeWidth={2} />
-              Physical Fitness
-            </span>
-            <span className="tpl-chip">
-              <Heart size={13} strokeWidth={2} />
-              Yoga &amp; Stretching
-            </span>
+            <span className="tpl-chip"><Dumbbell size={13} strokeWidth={2} /> Physical Fitness</span>
+            <span className="tpl-chip"><Heart size={13} strokeWidth={2} /> Yoga &amp; Stretching</span>
           </div>
           <p className="tpl-fitness-note">
             Use the "Perfect Fitness Day" template to integrate comprehensive maritime fitness routines.
           </p>
         </div>
 
-        {/* ── Template cards ── */}
         <div className="tpl-card-list">
           {TEMPLATES.map((tpl) => {
             const { left, right } = splitActivities(tpl.activities);
@@ -522,28 +424,19 @@ function TemplatesTab() {
                     <p className="tpl-card-name">{tpl.name}</p>
                     <p className="tpl-card-desc">{tpl.description}</p>
                   </div>
-                  <button
-                    type="button"
-                    className={`tpl-apply-btn ${isApplied ? "applied" : ""}`}
-                    onClick={() => handleApply(tpl.id)}
-                  >
+                  <button type="button" className={`tpl-apply-btn ${isApplied ? "applied" : ""}`}
+                    onClick={() => handleApply(tpl.id)}>
                     {isApplied ? "Applied!" : "Apply Template"}
                   </button>
                 </div>
-
-                {/* 2-col activity grid */}
                 <div className="tpl-act-grid">
                   <div className="tpl-act-col">
                     {left.map((act, i) => (
                       <div key={i} className="tpl-act-row">
                         {getTplIcon(act.icon)}
                         <span className="tpl-act-text">
-                          <span className="tpl-act-time">{act.time}</span>
-                          {" - "}
-                          {act.title}
-                          {act.category && (
-                            <span className="tpl-act-badge">{act.category}</span>
-                          )}
+                          <span className="tpl-act-time">{act.time}</span>{" - "}{act.title}
+                          {act.category && <span className="tpl-act-badge">{act.category}</span>}
                         </span>
                       </div>
                     ))}
@@ -553,33 +446,24 @@ function TemplatesTab() {
                       <div key={i} className="tpl-act-row">
                         {getTplIcon(act.icon)}
                         <span className="tpl-act-text">
-                          <span className="tpl-act-time">{act.time}</span>
-                          {" - "}
-                          {act.title}
-                          {act.category && (
-                            <span className="tpl-act-badge">{act.category}</span>
-                          )}
+                          <span className="tpl-act-time">{act.time}</span>{" - "}{act.title}
+                          {act.category && <span className="tpl-act-badge">{act.category}</span>}
                         </span>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                {tpl.extraCount > 0 && (
-                  <p className="tpl-more">+{tpl.extraCount} more activities...</p>
-                )}
+                {tpl.extraCount > 0 && <p className="tpl-more">+{tpl.extraCount} more activities...</p>}
               </div>
             );
           })}
         </div>
-
       </div>
     </section>
   );
 }
 
 // ─── Analytics Tab ────────────────────────────────────────────────────────────
-// Icon map for activity category cards
 function getCatIcon(icon) {
   const map = {
     heart: Heart, utensils: Utensils, dumbbell: Dumbbell,
@@ -590,42 +474,23 @@ function getCatIcon(icon) {
 }
 
 function AnalyticsTab() {
-  const [data, setData] = useState(null);
+  const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getPerfectDayAnalytics()
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    getPerfectDayAnalytics().then(setData).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="pd-card pd-tab-placeholder">
-        <p>Loading analytics...</p>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="pd-card pd-tab-placeholder">
-        <p>Unable to load analytics.</p>
-      </div>
-    );
-  }
+  if (loading) return <div className="pd-card pd-tab-placeholder"><p>Loading analytics...</p></div>;
+  if (!data)   return <div className="pd-card pd-tab-placeholder"><p>Unable to load analytics.</p></div>;
 
   const { dailyProgress, habitStreaks, activityCategories, fitnessIntegration, insight } = data;
-
-  // Progress bar transform for daily activities
   const dailyPct = dailyProgress.total > 0
     ? Math.round((dailyProgress.completed / dailyProgress.total) * 100)
     : 0;
 
   return (
     <section className="pd-card">
-      {/* ── Card header ── */}
       <div className="pd-card-header">
         <div className="pd-card-title-row">
           <TrendingUp className="pd-card-title-icon" size={20} strokeWidth={2} />
@@ -633,13 +498,8 @@ function AnalyticsTab() {
         </div>
         <p className="pd-card-subtitle">Track your progress toward maritime wellness excellence</p>
       </div>
-
       <div className="pd-card-body">
-
-        {/* ── Top 2-col panel row ── */}
         <div className="anl-top-panels">
-
-          {/* Daily Progress */}
           <div className="anl-panel blue">
             <div className="anl-panel-title-row">
               <Calendar size={16} strokeWidth={2} className="anl-panel-icon blue" />
@@ -657,7 +517,6 @@ function AnalyticsTab() {
             <p className="anl-panel-note">{dailyProgress.motivationText}</p>
           </div>
 
-          {/* Habit Streaks */}
           <div className="anl-panel green">
             <div className="anl-panel-title-row">
               <Zap size={16} strokeWidth={2} className="anl-panel-icon green" />
@@ -674,10 +533,8 @@ function AnalyticsTab() {
             </div>
             <p className="anl-panel-note">Average streak: {habitStreaks.averageStreakDays} days</p>
           </div>
-
         </div>
 
-        {/* ── Activity Categories ── */}
         <div className="anl-section">
           <h4 className="anl-section-title">Activity Categories</h4>
           <div className="anl-cat-grid">
@@ -691,7 +548,6 @@ function AnalyticsTab() {
           </div>
         </div>
 
-        {/* ── Fitness Integration panel ── */}
         <div className="anl-fitness-panel">
           <div className="anl-fitness-top">
             <div className="anl-fitness-title-row">
@@ -699,23 +555,19 @@ function AnalyticsTab() {
               <span className="anl-fitness-title">Fitness Integration</span>
             </div>
             <button type="button" className="anl-fitness-btn">
-              <Activity size={14} strokeWidth={2} />
-              Open Fitness Hub
+              <Activity size={14} strokeWidth={2} /> Open Fitness Hub
             </button>
           </div>
           <div className="anl-fitness-stats">
             <span className="anl-fitness-stat">
-              <span className="anl-dot green" />
-              Daily fitness activities: {fitnessIntegration.dailyFitnessActivities}
+              <span className="anl-dot green" /> Daily fitness activities: {fitnessIntegration.dailyFitnessActivities}
             </span>
             <span className="anl-fitness-stat">
-              <span className="anl-dot blue" />
-              Fitness habits: {fitnessIntegration.fitnessHabits}
+              <span className="anl-dot blue" /> Fitness habits: {fitnessIntegration.fitnessHabits}
             </span>
           </div>
         </div>
 
-        {/* ── Perfect Day Insights ── */}
         <div className="anl-insight-panel">
           <div className="anl-insight-title-row">
             <Star size={16} strokeWidth={2} className="anl-insight-icon" />
@@ -723,7 +575,6 @@ function AnalyticsTab() {
           </div>
           <p className="anl-insight-text">{insight.text}</p>
         </div>
-
       </div>
     </section>
   );
@@ -731,14 +582,18 @@ function AnalyticsTab() {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 function PerfectDaySchedulePage() {
-  const [pageData, setPageData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [items, setItems] = useState([]);
-  const [activeTab, setActiveTab] = useState("day-planner");
+  const [pageData,   setPageData]   = useState(null);
+  const [loading,    setLoading]    = useState(true);
+  const [items,      setItems]      = useState([]);
+  const [activeTab,  setActiveTab]  = useState("day-planner");
 
+  // Navigation – pass items so BottomNav knows all routes.
+  // Active highlight is derived from the URL inside BottomNav automatically.
   const navigation = useMemo(() => ({
     ...homePageMockData.navigation,
-    activeTab: "calendar",
+    // activeTab prop is ignored by the updated BottomNav (it uses useLocation),
+    // but we keep it here as a safe fallback value.
+    activeTab: "perfect-day",
   }), []);
 
   useEffect(() => {
@@ -783,9 +638,9 @@ function PerfectDaySchedulePage() {
     );
   }
 
-  const total = items.length;
+  const total          = items.length;
   const completedCount = items.filter((i) => i.completed).length;
-  const pct = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+  const pct            = total > 0 ? Math.round((completedCount / total) * 100) : 0;
 
   const liveSummaryCards = [
     { type: "total",     title: "Total Activities", value: String(total) },
@@ -799,8 +654,6 @@ function PerfectDaySchedulePage() {
 
       <main className="pd-page">
         <div className="pd-page-inner">
-
-          {/* Hero row */}
           <section className="pd-hero">
             <div className="pd-hero-head">
               <div>
@@ -819,7 +672,6 @@ function PerfectDaySchedulePage() {
             />
           </section>
 
-          {/* ── Day Planner tab ── */}
           {activeTab === "day-planner" && (
             <>
               <section className="pd-card">
@@ -838,7 +690,6 @@ function PerfectDaySchedulePage() {
                   <SummaryCards cards={liveSummaryCards} />
                 </div>
               </section>
-
               <ScheduleSection
                 scheduleSection={{ ...pageData.scheduleSection, items }}
                 onToggle={handleToggle}
@@ -846,15 +697,9 @@ function PerfectDaySchedulePage() {
             </>
           )}
 
-          {/* ── Maritime Habits tab ── */}
-          {activeTab === "habits" && <MaritimeHabitsTab />}
-
-          {/* ── Templates tab ── */}
+          {activeTab === "habits"    && <MaritimeHabitsTab />}
           {activeTab === "templates" && <TemplatesTab />}
-
-          {/* ── Analytics tab ── */}
           {activeTab === "analytics" && <AnalyticsTab />}
-
         </div>
       </main>
 
