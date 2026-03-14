@@ -39,6 +39,7 @@ export const homePageMockData = {
           icon: 'moon',
           accent: 'teal',
           bg: 'green-soft',
+          route: 'https://web.monkify.app/category?id=12&name=Sleep%20Tales',
         },
         {
           id: 'daily-wisdom',
