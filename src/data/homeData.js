@@ -29,6 +29,7 @@ export const homePageMockData = {
           icon: 'wind',
           accent: 'purple',
           bg: 'purple-soft',
+          route: 'https://web.monkify.app/playlists?id=NDI=',
         },
       ],
       [
@@ -48,6 +49,7 @@ export const homePageMockData = {
           icon: 'quote',
           accent: 'orange',
           bg: 'yellow-soft',
+          route: 'https://web.monkify.app/playlists?id=MzY=',
         },
       ],
       [
@@ -58,6 +60,7 @@ export const homePageMockData = {
           icon: 'heartShield',
           accent: 'green',
           bg: 'green-soft-2',
+          route: 'https://web.monkify.app/playlists?id=NDU=',
         },
         {
           id: 'masterclasses',
@@ -66,6 +69,7 @@ export const homePageMockData = {
           icon: 'graduation',
           accent: 'purple',
           bg: 'purple-soft',
+          route: 'https://web.monkify.app/playlists?id=NDY=',
         },
       ],
     ],
@@ -78,6 +82,7 @@ export const homePageMockData = {
         icon: 'shield',
         accent: 'blue',
         bg: 'blue-soft',
+        route: '/app/work-rest',
       },
       {
         id: 'emergency-support',
@@ -86,6 +91,8 @@ export const homePageMockData = {
         icon: 'alert',
         accent: 'red',
         bg: 'red-soft',
+        // Opens WhatsApp chat with Fathom Marine support number
+        route: 'https://wa.me/918452965467',
       },
     ],
 
@@ -97,6 +104,8 @@ export const homePageMockData = {
         icon: 'shieldAlert',
         accent: 'red',
         bg: 'red-soft',
+        // Opens phone dialer with Fathom Marine support number
+        route: 'tel:+918452965467',
       },
       {
         id: 'brain-training',
@@ -133,6 +142,7 @@ export const homePageMockData = {
         icon: 'wind',
         accent: 'sky',
         bg: 'cyan-soft',
+        route: 'https://web.monkify.app/playlists?id=NDI=',
       },
     ],
   },
@@ -265,12 +275,12 @@ export const homePageMockData = {
   navigation: {
     activeTab: 'home',
     items: [
-      { id: 'home', label: 'Home', icon: 'home', path: '/dashboard' },
-      { id: 'perfect-day', label: 'Perfect Day', icon: 'calendar', path: '/app/perfect-day' },
-      { id: 'mood', label: 'Mood', icon: 'heart', path: '/mood' },
-      { id: 'work-rest', label: 'Work/Rest', icon: 'clock' },
-      { id: 'fitness', label: 'Fitness', icon: 'activity' },
-      { id: 'emergency', label: 'Emergency', icon: 'alert-triangle' },
+      { id: 'home',        label: 'Home',        icon: 'home',           path: '/dashboard' },
+      { id: 'perfect-day', label: 'Perfect Day', icon: 'calendar',       path: '/app/perfect-day' },
+      { id: 'mood',        label: 'Mood',        icon: 'heart',          path: '/mood' },
+      { id: 'work-rest',   label: 'Work/Rest',   icon: 'clock',          path: '/app/work-rest' },
+      { id: 'fitness',     label: 'Fitness',     icon: 'activity',       path: '/app/fitness' },
+      { id: 'emergency',   label: 'Emergency',   icon: 'alert-triangle', path: '/app/emergency' },
     ],
   },
 
@@ -279,31 +289,4 @@ export const homePageMockData = {
     appSubtitle: 'Wellness for Seafarers',
     userInitials: 'NC',
   },
-
-  // ─────────────────────────────────────────────────────────────────────────────
-// PATCH: src/data/homeData.js
-// ─────────────────────────────────────────────────────────────────────────────
-// Find the `navigation` object in homeData.js / homePageMockData and replace
-// its `items` array with the one below (add the work-rest entry if missing).
-//
-// The navigation block should look exactly like this:
-// ─────────────────────────────────────────────────────────────────────────────
-
-navigation: {
-  activeTab: "home",   // <-- keep whatever the current activeTab value is
-  items: [
-    { id: "home",        label: "Home",        icon: "home",           path: "/dashboard" },
-    { id: "perfect-day", label: "Perfect Day", icon: "calendar",       path: "/app/perfect-day" },
-    { id: "mood",        label: "Mood",        icon: "heart",          path: "/mood" },
-    { id: "work-rest",   label: "Work/Rest",   icon: "clock",          path: "/app/work-rest" },
-    { id: "fitness",     label: "Fitness",     icon: "activity",       path: "/app/fitness" },
-    { id: "emergency",   label: "Emergency",   icon: "alert-triangle", path: "/app/emergency" },
-  ],
-},
-
-// ─────────────────────────────────────────────────────────────────────────────
-// WHY: BottomNav now derives the active highlight from the current URL
-// (via useLocation), so you never need to manually set activeTab per page —
-// it just works. But ALL items must be present so every page can be reached.
-// ─────────────────────────────────────────────────────────────────────────────
 };
