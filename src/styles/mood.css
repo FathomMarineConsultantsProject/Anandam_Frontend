@@ -1,3 +1,5 @@
+/* src/styles/mood.css */
+
 .mood-page-content {
   padding-bottom: 96px;
 }
@@ -92,6 +94,7 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  border: none;
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
@@ -139,6 +142,7 @@
   line-height: 1;
 }
 
+/* ── Clover Rain ── */
 .clover-rain {
   position: fixed;
   inset: 0;
@@ -154,6 +158,13 @@
   width: var(--size);
   height: var(--size);
   opacity: 0;
+  /* duration and delay come from inline CSS vars set by CloverRain.jsx.
+     Total life = duration + delay must stay <= 4200ms to match
+     the CLOVER_DURATION_MS constant in MoodPage.jsx.
+     Recommended ranges:
+       --duration : 2400ms – 3200ms
+       --delay    : 0ms    – 800ms
+       max total  : 3200 + 800 = 4000ms  (leaves 200ms buffer) */
   animation: clover-fall-smooth var(--duration) linear var(--delay) forwards;
   will-change: transform, opacity;
 }
@@ -171,15 +182,12 @@
     transform: translate3d(0, -8vh, 0);
     opacity: 0;
   }
-
   8% {
     opacity: 0.9;
   }
-
   75% {
     opacity: 0.9;
   }
-
   100% {
     transform: translate3d(var(--drift), 145vh, 0);
     opacity: 0;
