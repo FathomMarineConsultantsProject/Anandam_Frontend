@@ -10,12 +10,20 @@ import { homePageMockData } from '../data/homeData';
 import { completeMoodGate } from '../utils/storage';
 import '../styles/mood.css';
 
+// How long the clover rain plays before we navigate away.
+// Must be >= the longest animation in CloverRain (duration + delay).
+// CSS uses up to ~4200 ms total, so we wait the full duration.
+const CLOVER_DURATION_MS = 4200;
+
+// Non-clover mood: navigate almost immediately
+const DEFAULT_REDIRECT_MS = 250;
+
 function MoodPage() {
   const navigate = useNavigate();
 
-  const [pageData, setPageData] = useState(null);
+  const [pageData, setPageData]       = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory]         = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCloverRain, setShowCloverRain] = useState(false);
 
@@ -25,26 +33,20 @@ function MoodPage() {
       setPageData(data);
       setHistory(data.history);
     }
-
     loadMoodPage();
   }, []);
 
+  // Auto-hide clover rain after it finishes (safety net — navigate fires first)
   useEffect(() => {
     if (!showCloverRain) return;
-
-    const timer = setTimeout(() => {
-      setShowCloverRain(false);
-    }, 4200);
-
+    const timer = setTimeout(() => setShowCloverRain(false), CLOVER_DURATION_MS);
     return () => clearTimeout(timer);
   }, [showCloverRain]);
 
-  const moodNavigation = useMemo(() => {
-    return {
-      ...homePageMockData.navigation,
-      activeTab: 'mood',
-    };
-  }, []);
+  const moodNavigation = useMemo(() => ({
+    ...homePageMockData.navigation,
+    activeTab: 'mood',
+  }), []);
 
   async function handleSubmit() {
     if (!selectedMood || isSubmitting) return;
@@ -55,19 +57,22 @@ function MoodPage() {
       const response = await submitMoodCheck(selectedMood);
       setHistory(response.history);
 
-      if (selectedMood === 5) {
-        setShowCloverRain(false);
+      const isBestMood = selectedMood === 5;
 
-        requestAnimationFrame(() => {
-          setShowCloverRain(true);
-        });
+      if (isBestMood) {
+        // Reset then re-trigger so the animation always restarts cleanly
+        setShowCloverRain(false);
+        requestAnimationFrame(() => setShowCloverRain(true));
       }
 
       completeMoodGate();
 
+      // Wait the full clover animation before navigating so leaves
+      // have time to fall all the way down the screen.
       setTimeout(() => {
         navigate('/dashboard');
-      }, selectedMood === 5 ? 1200 : 250);
+      }, isBestMood ? CLOVER_DURATION_MS : DEFAULT_REDIRECT_MS);
+
     } finally {
       setIsSubmitting(false);
     }

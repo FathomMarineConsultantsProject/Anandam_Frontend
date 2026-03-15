@@ -284,9 +284,14 @@ export const homePageMockData = {
     ],
   },
 
+// ── Header ──────────────────────────────────────────────────────────────────
+  // userName is derived from hero.name so there is a single source of truth.
+  // When a real auth API is wired in, replace both hero.name and header.userName
+  // with values from the JWT/profile response.
   header: {
-    appName: 'Anandam by Fathom',
-    appSubtitle: 'Wellness for Seafarers',
+    appName:      'Anandam by Fathom',
+    appSubtitle:  'Wellness for Seafarers',
     userInitials: 'NC',
+    userName:     'Nipun Chatrath',   // full name shown in the profile dropdown
   },
 };
