@@ -1,4 +1,4 @@
-// App.jsx – updated with /app/work-rest route
+// App.jsx – updated with /app/fitness route
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -6,7 +6,8 @@ import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
 import MoodCheckinPage from "./pages/MoodCheckinPage";
 import PerfectDaySchedulePage from "./pages/PerfectDaySchedulePage";
-import WorkRestPage from "./pages/WorkRestPage";          // ← NEW
+import WorkRestPage from "./pages/WorkRestPage";
+import FitnessPage from "./pages/FitnessPage";            // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
 
@@ -71,12 +72,21 @@ function App() {
           }
         />
 
-        {/* ── NEW: Work/Rest page ── */}
         <Route
           path="/app/work-rest"
           element={
             <RequireAuth>
               <WorkRestPage />
+            </RequireAuth>
+          }
+        />
+
+        {/* ── NEW: Fitness page ── */}
+        <Route
+          path="/app/fitness"
+          element={
+            <RequireAuth>
+              <FitnessPage />
             </RequireAuth>
           }
         />
