@@ -53,7 +53,7 @@ export async function getPerfectDaySchedule() {
   //                       return res.json();
   return {
     header: {
-      appName: "Anandam by Fathom",
+      appName: "Anandüm by Fathom",
       appSubtitle: "Wellness for Seafarers",
       userInitials: "NC",
       progressBadge: "0% Complete",

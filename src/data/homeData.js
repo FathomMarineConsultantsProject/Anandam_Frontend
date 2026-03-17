@@ -172,7 +172,7 @@ export const homePageMockData = {
   },
 
   assistant: {
-    title: 'Anandam AI - Your Wellness Companion',
+    title: 'Anandüm AI - Your Wellness Companion',
     profileTitle: 'AI Companion - Marina',
     subtitle: 'Available 24/7 • Specialized in maritime wellness',
     introMessage:
@@ -289,7 +289,7 @@ export const homePageMockData = {
   // When a real auth API is wired in, replace both hero.name and header.userName
   // with values from the JWT/profile response.
   header: {
-    appName:      'Anandam by Fathom',
+    appName:      'Anandüm by Fathom',
     appSubtitle:  'Wellness for Seafarers',
     userInitials: 'NC',
     userName:     'Nipun Chatrath',   // full name shown in the profile dropdown
