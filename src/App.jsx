@@ -1,4 +1,4 @@
-// App.jsx – updated with /app/work-rest route
+// App.jsx – updated with /app/fitness route
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -6,7 +6,8 @@ import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
 import MoodCheckinPage from "./pages/MoodCheckinPage";
 import PerfectDaySchedulePage from "./pages/PerfectDaySchedulePage";
-import WorkRestPage from "./pages/WorkRestPage";          // ← NEW
+import WorkRestPage from "./pages/WorkRestPage";
+import FitnessPage from "./pages/FitnessPage";            // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
 import EmergencyPage from "./pages/EmergencyPage";
@@ -72,7 +73,6 @@ function App() {
           }
         />
 
-        {/* ── NEW: Work/Rest page ── */}
         <Route
           path="/app/work-rest"
           element={
@@ -82,18 +82,30 @@ function App() {
           }
         />
 
+<<<<<<< ks/dev
         <Route
           path="/emergency"
           element={
             <RequireAuth>
               <EmergencyPage />
+=======
+        {/* ── NEW: Fitness page ── */}
+        <Route
+          path="/app/fitness"
+          element={
+            <RequireAuth>
+              <FitnessPage />
+>>>>>>> dev
             </RequireAuth>
           }
         />
 
+<<<<<<< ks/dev
         {/* Back-compat for older nav links/bookmarks */}
         <Route path="/app/emergency" element={<Navigate to="/emergency" replace />} />
 
+=======
+>>>>>>> dev
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
