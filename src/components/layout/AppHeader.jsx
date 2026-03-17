@@ -54,7 +54,7 @@ function AppHeader({ header }) {
             <div className="pd-brand-logo-dot" />
           </div>
           <div className="pd-brand-text">
-            <h1>{header.appName}</h1>
+            <h1 style={{ color: "#295A8E" }}>{header.appName}</h1>
             <p>{header.appSubtitle}</p>
           </div>
         </div>
