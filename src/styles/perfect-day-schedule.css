@@ -1,0 +1,1530 @@
+/* src/styles/perfect-day-schedule.css
+   Pixel-faithful recreation of the live MHTML snapshot
+   ─────────────────────────────────────────────────── */
+
+:root {
+  --pd-bg: #f9fafb;
+  --pd-surface: #ffffff;
+  --pd-border: #e5e7eb;
+  --pd-border-2: #dbe2ea;
+  --pd-text: #111827;
+  --pd-muted: #6b7280;
+  --pd-muted-2: #4b5563;
+  --pd-blue: #2563eb;
+  --pd-blue-soft: #dbeafe;
+  --pd-green: #16a34a;
+  --pd-green-soft: #dcfce7;
+  --pd-purple: #9333ea;
+  --pd-purple-soft: #f3e8ff;
+  --pd-tab-bg: #f1f5f9;
+  --pd-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --pd-shadow-lg: 0 -4px 14px rgba(15, 23, 42, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--pd-bg);
+  color: var(--pd-text);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+/* ── Shell ── */
+.pd-shell {
+  min-height: 100vh;
+  background: var(--pd-bg);
+}
+
+/* ── App Header ── */
+.pd-app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #fff;
+  border-bottom: 1px solid var(--pd-border);
+  box-shadow: var(--pd-shadow-sm);
+}
+
+.pd-app-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+/* Brand / Logo */
+.pd-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-brand-logo {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+}
+
+.pd-brand-logo-outer {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fdba74 0%, #fb923c 55%, #f97316 100%);
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.22);
+}
+
+.pd-brand-logo-inner {
+  position: absolute;
+  inset: 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #a5f3fc 0%, #67e8f9 100%);
+  opacity: 0.70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-brand-logo-inner::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #1d4ed8;
+}
+
+.pd-brand-logo-person {
+  position: absolute;
+  inset: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-brand-logo-head {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #1e3a8a;
+  margin-bottom: 2px;
+}
+
+.pd-brand-logo-body {
+  position: relative;
+  width: 4px;
+  height: 12px;
+  border-radius: 4px;
+  background: #1e3a8a;
+}
+
+.pd-brand-logo-arm {
+  position: absolute;
+  top: 4px;
+  width: 12px;
+  height: 2.5px;
+  border-radius: 999px;
+  background: #1d4ed8;
+}
+
+.pd-brand-logo-arm-left {
+  left: -10px;
+  transform: rotate(-45deg);
+}
+
+.pd-brand-logo-arm-right {
+  right: -10px;
+  transform: rotate(45deg);
+}
+
+.pd-brand-logo-base {
+  width: 14px;
+  height: 4px;
+  border-radius: 999px;
+  background: #1e40af;
+  margin-top: 1px;
+}
+
+.pd-brand-logo-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);
+  opacity: 0.85;
+}
+
+.pd-brand-text h1 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pd-brand-text p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pd-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-header-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #111827;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pd-header-icon-btn:hover {
+  background: #f3f4f6;
+}
+
+.pd-user-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ── Page layout ── */
+.pd-page {
+  padding: 24px 16px 96px;
+  background: var(--pd-bg);
+}
+
+.pd-page-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Hero ── */
+.pd-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pd-hero-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pd-page-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.pd-page-subtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: #4b5563;
+  line-height: 1.45;
+}
+
+.pd-top-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── Tabs ── */
+.pd-tabs-shell {
+  width: 100%;
+}
+
+.pd-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 4px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: 1px solid #e5e7eb;
+}
+
+.pd-tab {
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-tab.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+/* ── Card ── */
+.pd-card {
+  border: 1px solid var(--pd-border);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--pd-shadow-sm);
+}
+
+.pd-card-header {
+  padding: 24px 24px 0;
+}
+
+.pd-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-card-title-icon {
+  color: #111827;
+  flex: 0 0 auto;
+}
+
+.pd-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1;
+}
+
+.pd-card-subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pd-card-body {
+  padding: 20px 24px 24px;
+}
+
+/* ── Form fields ── */
+.pd-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pd-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.pd-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.pd-input::placeholder {
+  color: #9ca3af;
+}
+
+.pd-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* ── Summary cards ── */
+.pd-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.pd-summary-card {
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-summary-card.total   { background: #eff6ff; }
+.pd-summary-card.completed { background: #f0fdf4; }
+.pd-summary-card.progress  { background: #faf5ff; }
+
+.pd-summary-icon {
+  margin-bottom: 4px;
+}
+
+.pd-summary-card.total     .pd-summary-icon,
+.pd-summary-card.total     .pd-summary-value { color: #2563eb; }
+.pd-summary-card.completed .pd-summary-icon,
+.pd-summary-card.completed .pd-summary-value { color: #16a34a; }
+.pd-summary-card.progress  .pd-summary-icon,
+.pd-summary-card.progress  .pd-summary-value { color: #9333ea; }
+
+.pd-summary-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.pd-summary-value {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── Schedule body ── */
+.pd-schedule-body {
+  padding-top: 16px;
+}
+
+/* Progress bar */
+.pd-progress-bar {
+  width: 100%;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5e7eb;
+  position: relative;
+}
+
+.pd-progress-bar-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+  transition: transform 0.3s ease;
+}
+
+.pd-progress-caption {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+/* ── Activity list ── */
+.pd-activity-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.pd-activity-list::-webkit-scrollbar {
+  width: 4px;
+}
+.pd-activity-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pd-activity-list::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+
+
+.pd-activity-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px 14px;
+  transition: border-color 0.15s, opacity 0.2s;
+}
+
+.pd-activity-row:hover {
+  border-color: #d1d5db;
+}
+
+.pd-activity-row.completed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.pd-activity-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Checkbox */
+.pd-check {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  border-radius: 4px;
+  border: 1.5px solid #2563eb;
+  background: #fff;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pd-check.checked {
+  background: #2563eb;
+}
+
+/* Activity meta */
+.pd-activity-meta-wrap {
+  min-width: 0;
+}
+
+.pd-activity-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pd-activity-icon {
+  color: #4b5563;
+  flex: 0 0 auto;
+}
+
+.pd-activity-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-activity-title.line-through {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+.pd-activity-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pd-meta-dot {
+  font-size: 12px;
+}
+
+/* ── Badges ── */
+.pd-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: lowercase;
+  white-space: nowrap;
+  border: none;
+}
+
+/* Exact colours from MHTML */
+.pd-badge.work      { background: #dbeafe; color: #1d4ed8; }
+.pd-badge.wellness  { background: #dcfce7; color: #166534; }
+.pd-badge.nutrition { background: #fef9c3; color: #92400e; }
+.pd-badge.learning  { background: #e0e7ff; color: #3730a3; }
+.pd-badge.social    { background: #f3e8ff; color: #6b21a8; }
+.pd-badge.fitness   { background: #fee2e2; color: #b91c1c; }
+
+/* ── Bottom Nav ── */
+.pd-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: var(--pd-shadow-lg);
+}
+
+.pd-bottom-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2px;
+  padding: 6px 4px;
+}
+
+.pd-bottom-nav-item {
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  padding: 8px 4px;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pd-bottom-nav-item span {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.pd-bottom-nav-item.active {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* ── Loading ── */
+.pd-loading {
+  padding: 80px 20px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .pd-page {
+    padding: 16px 12px 88px;
+  }
+
+  .pd-app-header-inner {
+    padding: 10px 12px;
+  }
+
+  .pd-page-title {
+    font-size: 19px;
+  }
+
+  .pd-card-header {
+    padding: 18px 18px 0;
+  }
+
+  .pd-card-body {
+    padding: 16px 18px 18px;
+  }
+
+  .pd-card-title {
+    font-size: 17px;
+  }
+
+  .pd-tab {
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+
+  .pd-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .pd-hero-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pd-activity-row {
+    flex-wrap: wrap;
+  }
+
+  .pd-badge {
+    margin-left: auto;
+  }
+
+  .pd-bottom-nav-item span {
+    font-size: 10px;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   MARITIME HABITS TAB
+   ══════════════════════════════════════════════ */
+
+/* ── Stats grid (2-col) ── */
+.pd-habit-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pd-habit-stat {
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.pd-habit-stat.green { background: #f0fdf4; }
+.pd-habit-stat.blue  { background: #eff6ff; }
+
+.pd-habit-stat-icon {
+  margin-bottom: 2px;
+}
+
+.pd-habit-stat.green .pd-habit-stat-icon { color: #16a34a; }
+.pd-habit-stat.blue  .pd-habit-stat-icon { color: #2563eb; }
+
+.pd-habit-stat-label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.pd-habit-stat-value {
+  margin: 4px 0 0;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.pd-habit-stat-value.green { color: #16a34a; }
+.pd-habit-stat-value.blue  { color: #2563eb; }
+
+/* ── Habit list ── */
+.pd-habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+/* Each habit row card */
+.pd-habit-row {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  padding: 14px 16px 10px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.pd-habit-row.completed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+/* Top row: left info + right percentage */
+.pd-habit-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.pd-habit-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pd-habit-icon {
+  color: #6b7280;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.pd-habit-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.pd-habit-title.green {
+  color: #15803d;
+}
+
+.pd-habit-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+/* Habit badge — same pill shape as activity badges */
+.pd-habit-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.pd-habit-badge.habit-safety       { background: #fed7aa; color: #9a3412; border-color: #fdba74; }
+.pd-habit-badge.habit-professional { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+.pd-habit-badge.habit-wellness     { background: #dcfce7; color: #166534; border-color: #86efac; }
+.pd-habit-badge.habit-social       { background: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; }
+.pd-habit-badge.habit-mindfulness  { background: #ccfbf1; color: #0f766e; border-color: #5eead4; }
+.pd-habit-badge.habit-skills       { background: #cffafe; color: #0e7490; border-color: #67e8f9; }
+.pd-habit-badge.habit-nutrition    { background: #fef9c3; color: #92400e; border-color: #fde047; }
+
+/* Right: percentage */
+.pd-habit-right {
+  text-align: right;
+  flex: 0 0 auto;
+}
+
+.pd-habit-pct {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.pd-habit-pct-label {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Progress bar inside habit row */
+.pd-habit-bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.pd-habit-bar-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+  transition: transform 0.3s ease;
+}
+
+/* ── Add custom habit ── */
+.pd-habit-add-section {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 20px;
+}
+
+.pd-habit-add-title {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.pd-habit-add-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pd-habit-add-input {
+  flex: 1;
+}
+
+.pd-habit-add-btn {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pd-habit-add-btn:hover {
+  background: #1d4ed8;
+}
+
+/* ── Tab placeholder ── */
+.pd-tab-placeholder {
+  padding: 48px 24px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* ══════════════════════════════════════════════
+   HABIT COMPLETED TOAST
+   ══════════════════════════════════════════════ */
+.pd-toast {
+  position: fixed;
+  bottom: 88px;       /* sit above bottom nav */
+  right: 20px;
+  z-index: 200;
+  width: 300px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  /* Hidden by default */
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.pd-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.pd-toast-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pd-toast-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.pd-toast-body {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════
+   TEMPLATES TAB
+   ══════════════════════════════════════════════ */
+
+/* ── Dropdown ── */
+.tpl-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tpl-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tpl-dropdown:hover {
+  border-color: #9ca3af;
+}
+
+.tpl-dropdown-value {
+  font-size: 14px;
+  color: #111827;
+}
+
+.tpl-dropdown-value.placeholder {
+  color: #9ca3af;
+}
+
+.tpl-dropdown-chevron {
+  color: #6b7280;
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.tpl-dropdown-chevron.open {
+  transform: rotate(180deg);
+}
+
+.tpl-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.tpl-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.tpl-dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.tpl-dropdown-item.active {
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* ── Fitness Integration banner ── */
+.tpl-fitness-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.tpl-fitness-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.tpl-fitness-banner-icon {
+  color: #2563eb;
+}
+
+.tpl-fitness-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.tpl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.tpl-fitness-note {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+/* ── Template card list ── */
+.tpl-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Each template card — separated by a border line like in screenshots */
+.tpl-card {
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tpl-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.tpl-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.tpl-card-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.tpl-card-desc {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Apply Template button */
+.tpl-apply-btn {
+  flex: 0 0 auto;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.tpl-apply-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.tpl-apply-btn.applied {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+/* ── 2-column activity grid ── */
+.tpl-act-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 24px;
+}
+
+.tpl-act-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tpl-act-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tpl-act-icon {
+  color: #6b7280;
+  flex: 0 0 auto;
+}
+
+.tpl-act-text {
+  font-size: 13px;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.tpl-act-time {
+  color: #374151;
+  font-weight: 400;
+}
+
+/* Inline fitness badge in template rows */
+.tpl-act-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  margin-left: 2px;
+}
+
+/* "+N more activities..." */
+.tpl-more {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .tpl-act-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tpl-card-top {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tpl-apply-btn {
+    align-self: flex-start;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   ANALYTICS TAB
+   ══════════════════════════════════════════════ */
+
+/* ── Top 2-col panels (Daily Progress + Habit Streaks) ── */
+.anl-top-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.anl-panel {
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.anl-panel.blue  { background: #eff6ff; border: 1px solid #bfdbfe; }
+.anl-panel.green { background: #f0fdf4; border: 1px solid #bbf7d0; }
+
+/* Panel title row */
+.anl-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.anl-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-panel-icon.blue  { color: #2563eb; }
+.anl-panel-icon.green { color: #16a34a; }
+
+/* "Activities  0/8" row */
+.anl-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.anl-panel-label {
+  font-size: 13px;
+  color: #374151;
+}
+
+.anl-panel-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Progress bar inside panel */
+.anl-bar-wrap {
+  width: 100%;
+}
+
+.anl-bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.anl-bar-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+  transition: transform 0.3s ease;
+}
+
+/* Motivational text / streak note */
+.anl-panel-note {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ── Section heading ── */
+.anl-section {
+  margin-bottom: 20px;
+}
+
+.anl-section-title {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ── Activity Categories grid ── */
+/* 3 columns first row, 2 columns second row — CSS grid auto-flows */
+.anl-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.anl-cat-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.anl-cat-icon {
+  color: #374151;
+}
+
+.anl-cat-label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-cat-count {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1;
+}
+
+/* ── Fitness Integration panel ── */
+.anl-fitness-panel {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.anl-fitness-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.anl-fitness-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.anl-fitness-icon {
+  color: #16a34a;
+}
+
+.anl-fitness-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-fitness-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.anl-fitness-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.anl-fitness-stats {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.anl-fitness-stat {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* Coloured dot */
+.anl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex: 0 0 8px;
+}
+
+.anl-dot.green { background: #16a34a; }
+.anl-dot.blue  { background: #2563eb; }
+
+/* ── Perfect Day Insights panel ── */
+.anl-insight-panel {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.anl-insight-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.anl-insight-icon {
+  color: #d97706;
+}
+
+.anl-insight-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.anl-insight-text {
+  margin: 0;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .anl-top-panels {
+    grid-template-columns: 1fr;
+  }
+
+  .anl-cat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .anl-fitness-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .anl-fitness-stats {
+    gap: 16px;
+  }
+}
