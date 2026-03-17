@@ -50,7 +50,7 @@ function SignupPage() {
     <div className="auth-page">
       <div className="auth-card">
         <h1>Create your account</h1>
-        <p>Begin your wellness journey with Anandam by Fathom.</p>
+        <p>Begin your wellness journey with Anandüm by Fathom.</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <input

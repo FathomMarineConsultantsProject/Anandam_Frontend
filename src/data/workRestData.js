@@ -181,7 +181,7 @@ export const workRestMockData = {
 
   // ── Shared shell ──────────────────────────────────────────────────────────
   header: {
-    appName: "Anandam by Fathom",
+    appName: "Anandüm by Fathom",
     appSubtitle: "Wellness for Seafarers",
     userInitials: "NC",
   },

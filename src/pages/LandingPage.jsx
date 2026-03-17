@@ -84,7 +84,7 @@ function LandingPage() {
             </div>
 
             <div className="landing-brand-text">
-              <h1>Anandam by Fathom</h1>
+              <h1 style={{ color: "#295A8E" }}>Anandüm by Fathom</h1>
               <p>Wellness for Seafarers</p>
             </div>
           </div>
@@ -106,7 +106,7 @@ function LandingPage() {
             <span className="landing-hero-logo-dot" />
           </div>
 
-          <h2 className="landing-hero-title">Anandam by Fathom</h2>
+          <h2 className="landing-hero-title">Anandüm by Fathom</h2>
           <p className="landing-hero-subtitle">Wellness for Seafarers</p>
 
           <h3 className="landing-hero-tagline">
