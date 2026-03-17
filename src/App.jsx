@@ -9,6 +9,7 @@ import PerfectDaySchedulePage from "./pages/PerfectDaySchedulePage";
 import WorkRestPage from "./pages/WorkRestPage";          // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
+import EmergencyPage from "./pages/EmergencyPage";
 
 function RequireAuth({ children }) {
   if (!isAuthenticated()) {
@@ -80,6 +81,18 @@ function App() {
             </RequireAuth>
           }
         />
+
+        <Route
+          path="/emergency"
+          element={
+            <RequireAuth>
+              <EmergencyPage />
+            </RequireAuth>
+          }
+        />
+
+        {/* Back-compat for older nav links/bookmarks */}
+        <Route path="/app/emergency" element={<Navigate to="/emergency" replace />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

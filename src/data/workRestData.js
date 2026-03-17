@@ -194,7 +194,7 @@ export const workRestMockData = {
       { id: "mood",        label: "Mood",        icon: "heart",          path: "/mood" },
       { id: "work-rest",   label: "Work/Rest",   icon: "clock",          path: "/app/work-rest" },
       { id: "fitness",     label: "Fitness",     icon: "activity",       path: "/app/fitness" },
-      { id: "emergency",   label: "Emergency",   icon: "alert-triangle", path: "/app/emergency" },
+      { id: "emergency",   label: "Emergency",   icon: "alert-triangle", path: "/emergency" },
     ],
   },
 };
