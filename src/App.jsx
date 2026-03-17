@@ -10,6 +10,7 @@ import WorkRestPage from "./pages/WorkRestPage";
 import FitnessPage from "./pages/FitnessPage";            // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
+import EmergencyPage from "./pages/EmergencyPage";
 
 function RequireAuth({ children }) {
   if (!isAuthenticated()) {
@@ -81,16 +82,30 @@ function App() {
           }
         />
 
+<<<<<<< ks/dev
+        <Route
+          path="/emergency"
+          element={
+            <RequireAuth>
+              <EmergencyPage />
+=======
         {/* ── NEW: Fitness page ── */}
         <Route
           path="/app/fitness"
           element={
             <RequireAuth>
               <FitnessPage />
+>>>>>>> dev
             </RequireAuth>
           }
         />
 
+<<<<<<< ks/dev
+        {/* Back-compat for older nav links/bookmarks */}
+        <Route path="/app/emergency" element={<Navigate to="/emergency" replace />} />
+
+=======
+>>>>>>> dev
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
