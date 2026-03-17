@@ -1,7 +1,16 @@
 import AppHeader from "../components/layout/AppHeader";
 import BottomNav from "../components/layout/BottomNav";
 import { emergencyPageData } from "../data/emergencyData";
-import { AlertTriangle, Zap, Radio, Bell, Anchor } from "lucide-react";
+import {
+  AlertTriangle,
+  Anchor,
+  Bell,
+  Heart,
+  Radio,
+  Shield,
+  Waves,
+  Zap,
+} from "lucide-react";
 import "../styles/global.css";
 import "../styles/emergency.css";
 
@@ -42,16 +51,28 @@ function EmergencyPage() {
 
             <div className="emergency-quick-grid">
               <button type="button" className="emergency-quick-btn">
-                Medical Emergency
+                <div className="emergency-quick-btn-inner">
+                  <Heart className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Medical Emergency</span>
+                </div>
               </button>
               <button type="button" className="emergency-quick-btn">
-                Mental Health Crisis
+                <div className="emergency-quick-btn-inner">
+                  <AlertTriangle className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Mental Health Crisis</span>
+                </div>
               </button>
               <button type="button" className="emergency-quick-btn">
-                Maritime Emergency
+                <div className="emergency-quick-btn-inner">
+                  <Waves className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Maritime Emergency</span>
+                </div>
               </button>
               <button type="button" className="emergency-quick-btn">
-                Security Alert
+                <div className="emergency-quick-btn-inner">
+                  <Shield className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Security Alert</span>
+                </div>
               </button>
             </div>
           </section>

@@ -105,6 +105,29 @@
   cursor: pointer;
 }
 
+.emergency-quick-btn-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.emergency-quick-btn-icon {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+  fill: none;
+  display: block;
+}
+
+.emergency-quick-btn-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+}
+
 .emergency-quick-btn:hover {
   background: #dc2626;
 }
