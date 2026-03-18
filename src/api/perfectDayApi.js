@@ -1,158 +1,234 @@
-// src/api/perfectDayApi.js
-// ─────────────────────────────────────────────────────────────────────────────
-// Single source of truth for the Perfect Day page.
-// Analytics are DERIVED from the schedule items and habits data —
-// no duplication. When a real backend exists, replace the return
-// value of getPerfectDaySchedule() with a fetch() call and keep
-// the same shape. getAnalytics() can also become a separate endpoint.
-// ─────────────────────────────────────────────────────────────────────────────
+import { apiRequest } from "./client";
 
-const SCHEDULE_ITEMS = [
-  { id: "1", icon: "heart",    title: "Port Morning Routine",          time: "07:00", duration: "60 minutes",  category: "wellness",  completed: false },
-  { id: "2", icon: "utensils", title: "Shore Breakfast",               time: "08:00", duration: "45 minutes",  category: "nutrition", completed: false },
-  { id: "3", icon: "dumbbell", title: "Port Exploration Walking Tour", time: "09:00", duration: "180 minutes", category: "fitness",   completed: false },
-  { id: "4", icon: "utensils", title: "Local Cuisine Experience",      time: "12:00", duration: "90 minutes",  category: "nutrition", completed: false },
-  { id: "5", icon: "book",     title: "Cultural Learning",             time: "14:00", duration: "120 minutes", category: "learning",  completed: false },
-  { id: "6", icon: "dumbbell", title: "Port Shopping Walk",            time: "16:00", duration: "60 minutes",  category: "fitness",   completed: false },
-  { id: "7", icon: "dumbbell", title: "Harbor Sunset Yoga",            time: "18:00", duration: "45 minutes",  category: "fitness",   completed: false },
-  { id: "8", icon: "phone",    title: "Social Dinner with Crew",       time: "20:00", duration: "90 minutes",  category: "social",    completed: false },
-];
+const DEFAULT_DATE = new Date().toISOString().slice(0, 10);
 
-const HABITS_DATA = [
-  { id: "h1", icon: "shield",       title: "Daily Sea Safety Check",           doneCount: 15, targetCount: 21, category: "safety",       completed: true  },
-  { id: "h2", icon: "target",       title: "Bridge Communication Log",         doneCount: 12, targetCount: 30, category: "professional", completed: true  },
-  { id: "h3", icon: "target",       title: "Weather Observation Notes",        doneCount:  8, targetCount: 14, category: "professional", completed: false },
-  { id: "h4", icon: "heart",        title: "Physical Fitness - Maritime Yoga", doneCount:  6, targetCount: 10, category: "wellness",     completed: false },
-  { id: "h5", icon: "phone",        title: "Family Video Call",                doneCount: 20, targetCount: 30, category: "social",       completed: true  },
-  { id: "h6", icon: "heart",        title: "Mindful Ocean Watching",           doneCount:  4, targetCount:  7, category: "mindfulness",  completed: false },
-  { id: "h7", icon: "trending-up",  title: "Navigation Skills Practice",       doneCount:  9, targetCount: 21, category: "skills",       completed: false },
-  { id: "h8", icon: "utensils",     title: "Healthy Maritime Meals",           doneCount: 11, targetCount: 14, category: "nutrition",    completed: true  },
-];
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/** Count items by category */
-function countByCategory(items) {
-  return items.reduce((acc, item) => {
-    acc[item.category] = (acc[item.category] || 0) + 1;
-    return acc;
-  }, {});
+function formatTimeFromISO(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }
 
-/** Average doneCount across all habits */
-function averageStreak(habits) {
-  if (!habits.length) return 0;
-  const total = habits.reduce((sum, h) => sum + h.doneCount, 0);
-  return Math.round(total / habits.length);
+function getIconFromCategory(category) {
+  const normalized = String(category || "").toLowerCase();
+
+  const map = {
+    work: "anchor",
+    wellness: "heart",
+    nutrition: "utensils",
+    learning: "book",
+    social: "phone",
+    fitness: "dumbbell",
+    safety: "shield",
+    professional: "target",
+    mindfulness: "heart",
+    skills: "trending-up",
+    training: "target",
+    health: "heart",
+  };
+
+  return map[normalized] || "target";
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
+function getHabitCategoryClass(category) {
+  const normalized = String(category || "").toLowerCase();
+  const known = [
+    "safety",
+    "professional",
+    "wellness",
+    "social",
+    "mindfulness",
+    "skills",
+    "nutrition",
+  ];
+  return known.includes(normalized) ? normalized : "professional";
+}
 
-export async function getPerfectDaySchedule() {
-  // TODO: replace with → const res = await fetch("/api/perfect-day/schedule");
-  //                       return res.json();
+function prettifyCategory(category) {
+  if (!category) return "Professional";
+  const normalized = String(category).toLowerCase();
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
+function mapPlanActivity(activity) {
+  return {
+    id: activity.id,
+    icon: getIconFromCategory(activity.category),
+    title: activity.title,
+    time: formatTimeFromISO(activity.startTime),
+    duration: `${activity.durationMinutes} minutes`,
+    category: String(activity.category || "").toLowerCase(),
+    completed: !!activity.isCompleted,
+  };
+}
+
+function mapTemplateActivity(activity, index) {
+  return {
+    id: `${activity.title}-${index}`,
+    time: activity.time,
+    title: activity.title,
+    icon: getIconFromCategory(activity.category),
+    category: activity.category
+      ? activity.category.charAt(0).toUpperCase() + activity.category.slice(1)
+      : null,
+  };
+}
+
+function buildPlannerPayload(items = []) {
+  const completedCount = items.filter((item) => item.completed).length;
+  const total = items.length;
+  const progressPercent =
+    total > 0 ? Math.round((completedCount / total) * 100) : 0;
+
   return {
     header: {
       appName: "Anandüm by Fathom",
       appSubtitle: "Wellness for Seafarers",
       userInitials: "NC",
-      progressBadge: "0% Complete",
+      progressBadge: `${progressPercent}% Complete`,
     },
-
     planner: {
       title: "Perfect Day Planner",
-      subtitle: "Design your ideal maritime day with balanced wellness and productivity",
+      subtitle:
+        "Design your ideal maritime day with balanced wellness and productivity",
       tabs: [
-        { id: "day-planner", label: "Day Planner"     },
-        { id: "habits",      label: "Maritime Habits" },
-        { id: "templates",   label: "Templates"       },
-        { id: "analytics",   label: "Analytics"       },
+        { id: "day-planner", label: "Day Planner" },
+        { id: "habits", label: "Maritime Habits" },
+        { id: "templates", label: "Templates" },
+        { id: "analytics", label: "Analytics" },
       ],
       activeTab: "day-planner",
-      focusTitle:          "Today's Focus",
-      focusSubtitle:       "Set your main intention for the day",
-      dailyGoalLabel:      "Daily Goal",
-      dailyGoalPlaceholder: "e.g., Maintain calm seas mindset during navigation",
-      summaryCards: [
-        { type: "total",     title: "Total Activities", value: String(SCHEDULE_ITEMS.length) },
-        { type: "completed", title: "Completed",         value: "0"  },
-        { type: "progress",  title: "Progress",          value: "0%" },
-      ],
+      focusTitle: "Today's Focus",
+      focusSubtitle: "Set your main intention for the day",
+      dailyGoalLabel: "Daily Goal",
+      dailyGoalPlaceholder:
+        "e.g., Maintain calm seas mindset during navigation",
     },
-
     scheduleSection: {
-      title:            "Daily Schedule",
-      subtitle:         "Your perfectly planned maritime day",
-      progressPercent:  0,
-      completedText:    `0 of ${SCHEDULE_ITEMS.length} activities completed`,
-      items:            SCHEDULE_ITEMS,
+      title: "Daily Schedule",
+      subtitle: "Your perfectly planned maritime day",
+      progressPercent,
+      completedText: `${completedCount} of ${total} activities completed`,
+      items,
     },
   };
 }
 
-export async function getPerfectDayHabits() {
-  // TODO: replace with → const res = await fetch("/api/perfect-day/habits");
-  //                       return res.json();
-  return HABITS_DATA;
+export async function getPerfectDayTemplates() {
+  const response = await apiRequest("/daily-plan/templates", {
+    method: "GET",
+  });
+
+  return (response?.data || []).map((template) => ({
+    id: template.id,
+    name: template.title,
+    description: template.description,
+    activities: (template.activities || []).map(mapTemplateActivity),
+    extraCount: 0,
+  }));
+}
+
+export async function applyPerfectDayTemplate(templateId, targetDate) {
+  return apiRequest("/daily-plan/apply", {
+    method: "POST",
+    body: JSON.stringify({ templateId, targetDate }),
+  });
+}
+
+export async function getPerfectDaySchedule(targetDate = DEFAULT_DATE) {
+  const response = await apiRequest(`/daily-plan/${targetDate}`, {
+    method: "GET",
+  });
+
+  const plan = response?.data;
+  const items = (plan?.activities || []).map(mapPlanActivity);
+
+  return {
+    ...buildPlannerPayload(items),
+    selectedDate: targetDate,
+    mainFocus: plan?.mainFocus || "",
+    dailyPlanId: plan?.id || null,
+  };
+}
+
+export async function togglePerfectDayActivity(activityId, isCompleted) {
+  const response = await apiRequest(`/daily-plan/activity/${activityId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ isCompleted }),
+  });
+
+  return response?.data;
+}
+
+export async function getPerfectDayHabits(targetDate = DEFAULT_DATE) {
+  const response = await apiRequest(`/habits/${targetDate}`, {
+    method: "GET",
+  });
+
+  const payload = response?.data || {};
+
+  return {
+    percentageCompleted: payload.percentageCompleted || 0,
+    totalHabits: payload.totalHabits || 0,
+    completedCount: payload.completedCount || 0,
+    habits: (payload.habits || []).map((habit) => ({
+      id: habit.id,
+      icon: "target",
+      title: habit.title,
+      doneCount: habit.isCompleted ? 1 : 0,
+      targetCount: 1,
+      category: getHabitCategoryClass(habit.category),
+      categoryLabel: prettifyCategory(habit.category),
+      completed: !!habit.isCompleted,
+    })),
+  };
+}
+
+export async function createPerfectDayHabit({ title, category }) {
+  const response = await apiRequest("/habits", {
+    method: "POST",
+    body: JSON.stringify({ title, category }),
+  });
+
+  return response?.data;
+}
+
+export async function togglePerfectDayHabit(habitId, targetDate = DEFAULT_DATE) {
+  return apiRequest(`/habits/${habitId}/toggle`, {
+    method: "POST",
+    body: JSON.stringify({ targetDate }),
+  });
+}
+
+export async function deletePerfectDayHabit(habitId) {
+  return apiRequest(`/habits/${habitId}`, {
+    method: "DELETE",
+  });
 }
 
 export async function getPerfectDayAnalytics() {
-  // TODO: replace with → const res = await fetch("/api/perfect-day/analytics");
-  //                       return res.json();
-  //
-  // For now we derive everything from local data so there is no duplication.
-  // The returned shape is the single contract the AnalyticsTab component reads.
-
-  const completedItems   = SCHEDULE_ITEMS.filter((i) => i.completed);
-  const completedHabits  = HABITS_DATA.filter((h) => h.completed);
-  const categoryCounts   = countByCategory(SCHEDULE_ITEMS);
-  const fitnessItems     = SCHEDULE_ITEMS.filter((i) => i.category === "fitness");
-  const fitnessHabitCount = HABITS_DATA.filter((h) =>
-    ["wellness", "mindfulness", "skills"].includes(h.category)
-  ).length;
-
-  // Category display order + icons
-  const CATEGORY_META = [
-    { id: "wellness",  icon: "heart",    label: "Wellness"  },
-    { id: "nutrition", icon: "utensils", label: "Nutrition" },
-    { id: "fitness",   icon: "dumbbell", label: "Fitness"   },
-    { id: "learning",  icon: "book",     label: "Learning"  },
-    { id: "social",    icon: "phone",    label: "Social"    },
-  ];
-
   return {
     dailyProgress: {
-      completed:       completedItems.length,
-      total:           SCHEDULE_ITEMS.length,
-      motivationText:  completedItems.length === 0
-        ? "Keep going!"
-        : completedItems.length === SCHEDULE_ITEMS.length
-          ? "Perfect day achieved! 🎉"
-          : `${SCHEDULE_ITEMS.length - completedItems.length} activities left — you've got this!`,
+      completed: 0,
+      total: 0,
+      motivationText: "Apply a template to start building your perfect day.",
     },
-
     habitStreaks: {
-      completed:        completedHabits.length,
-      total:            HABITS_DATA.length,
-      progressPct:      HABITS_DATA.length > 0
-        ? Math.round((completedHabits.length / HABITS_DATA.length) * 100)
-        : 0,
-      averageStreakDays: averageStreak(HABITS_DATA),
+      completed: 0,
+      total: 0,
+      progressPct: 0,
+      averageStreakDays: 0,
     },
-
-    activityCategories: CATEGORY_META
-      .filter((m) => categoryCounts[m.id] > 0)
-      .map((m) => ({ ...m, count: categoryCounts[m.id] })),
-
+    activityCategories: [],
     fitnessIntegration: {
-      dailyFitnessActivities: fitnessItems.length,
-      fitnessHabits:          fitnessHabitCount,
+      dailyFitnessActivities: 0,
+      fitnessHabits: 0,
     },
-
     insight: {
-      text: completedItems.length === 0
-        ? "Every perfect day starts with one completed activity. Focus on small wins and build momentum gradually."
-        : `Great work! You've completed ${completedItems.length} of ${SCHEDULE_ITEMS.length} activities today.`,
+      text: "Your analytics will appear after you apply a template and start completing activities.",
     },
   };
 }
