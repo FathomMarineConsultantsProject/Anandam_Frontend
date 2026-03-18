@@ -66,8 +66,8 @@ export async function submitMoodCheck(moodValue) {
     method: "POST",
     body: JSON.stringify({
       moodScore: moodValue,
-      energyLevel: Math.min(10, Math.max(1, moodValue * 2)),
-      stressLevel: Math.min(10, Math.max(1, 6 - moodValue)),
+      energyLevel: moodValue, // backend expects 0–5 style range
+      stressLevel: Math.max(0, 5 - moodValue),
       hoursOfSleep: 7,
       currentWorkload: "Moderate",
       journalEntry: `Quick mood check submitted with score ${moodValue}.`,
