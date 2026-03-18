@@ -172,7 +172,7 @@ export const homePageMockData = {
   },
 
   assistant: {
-    title: 'Anandüm AI - Your Wellness Companion',
+    title: 'Anandüm AI, your wellness companion',
     profileTitle: 'AI Companion - Marina',
     subtitle: 'Available 24/7 • Specialized in maritime wellness',
     introMessage:

@@ -7,7 +7,7 @@ function AssistantSection({ assistant }) {
     <section className="panel-section assistant-section">
       <div className="section-heading">
         <MessageCircle size={22} strokeWidth={2} />
-        <h2>{assistant.title}</h2>
+        <h2 style={{ color: "#295A8E" }}>{assistant.title}</h2>
       </div>
 
       <div className="assistant-card">
