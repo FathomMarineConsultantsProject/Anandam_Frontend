@@ -1,595 +1,97 @@
-/* ============================================================
-   fitness.css — Fitness page styles
-   Base font bumped ~3-4pt throughout vs previous version
-   ============================================================ */
+import { useState } from 'react';
+import '../styles/fitness.css';
+import AppHeader from '../components/layout/AppHeader';
+import BottomNav from '../components/layout/BottomNav';
+import FitnessDashboard from '../components/fitness/FitnessDashboard';
+import FitnessWorkouts from '../components/fitness/FitnessWorkouts';
+import FitnessVRGym from '../components/fitness/FitnessVRGym';
+import FitnessProgress from '../components/fitness/FitnessProgress';
+import FitnessChallenges from '../components/fitness/FitnessChallenges';
+import WorkoutToast from '../components/fitness/WorkoutToast';
+import WorkoutSession from '../components/fitness/WorkoutSession';
+import { fitnessPageMockData } from '../data/fitnessData';
+import { homePageMockData } from '../data/homeData';
 
-:root {
-  --ring-track: #e2e8f0;
+const TABS = [
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'workouts', label: 'Workouts' },
+  { id: 'vr-gym', label: 'VR Gym' },
+  { id: 'progress', label: 'Progress' },
+  { id: 'challenges', label: 'Challenges' },
+];
+
+function FitnessPage() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeWorkout, setActiveWorkout] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [showSession, setShowSession] = useState(false);
+
+  const data = fitnessPageMockData;
+
+  function handleStartWorkout(workout) {
+    setActiveWorkout(workout);
+    setShowSession(true);
+    setToast({ message: `${workout.name} session begun` });
+    setTimeout(() => setToast(null), 3000);
+  }
+
+  function handleStopWorkout() {
+    setShowSession(false);
+    setActiveWorkout(null);
+  }
+
+  return (
+    <div className="app-shell">
+      <AppHeader header={homePageMockData.header} />
+
+      <main className="page-content fitness-page">
+        <div className="fitness-tab-bar">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`fitness-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === 'dashboard' && (
+          <FitnessDashboard data={data.dashboard} onStartWorkout={handleStartWorkout} />
+        )}
+        {activeTab === 'workouts' && (
+          <FitnessWorkouts workouts={data.workouts} onStartWorkout={handleStartWorkout} />
+        )}
+        {activeTab === 'vr-gym' && (
+          <FitnessVRGym
+            vrGym={data.vrGym}
+            vrWorkouts={data.vrWorkouts}
+            onStartWorkout={handleStartWorkout}
+          />
+        )}
+        {activeTab === 'progress' && <FitnessProgress progress={data.progress} />}
+        {activeTab === 'challenges' && (
+          <FitnessChallenges challenges={data.challenges} />
+        )}
+      </main>
+
+      {showSession && activeWorkout && (
+        <WorkoutSession workout={activeWorkout} onStop={handleStopWorkout} />
+      )}
+
+      {toast && (
+        <WorkoutToast
+          title="Workout Started"
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <BottomNav navigation={homePageMockData.navigation} />
+    </div>
+  );
 }
 
-/* ── Tab bar ───────────────────────────────────────────────── */
-.fitness-tab-bar {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 2px;
-  background: #f1f5f9;
-  border-radius: 10px;
-  padding: 4px;
-  margin: 14px 16px 0;
-}
-
-.fitness-tab-btn {
-  padding: 8px 4px;
-  font-size: 13px;       /* was 12 */
-  font-weight: 500;
-  color: #64748b;
-  background: transparent;
-  border: none;
-  border-radius: 7px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.fitness-tab-btn.active {
-  background: #fff;
-  color: #0f172a;
-  font-weight: 600;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-/* ── Page shell ───────────────────────────────────────────── */
-.fitness-page { padding-top: 0 !important; }
-
-.fitness-section {
-  padding: 16px 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ── Card ─────────────────────────────────────────────────── */
-.fitness-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 20px;           /* was 18 */
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.05);
-}
-
-.fitness-card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-  color: #0f172a;
-}
-
-.fitness-card-header h2 {
-  font-size: 17px;         /* was 16 */
-  font-weight: 700;
-  margin: 0;
-}
-
-.fitness-card-subtitle {
-  font-size: 13px;         /* was 12 */
-  color: #64748b;
-  margin: 0 0 16px;
-}
-
-.section-title {
-  font-size: 16px;         /* was 15 */
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 14px;
-}
-
-/* ── Activity rings ───────────────────────────────────────── */
-.rings-row {
-  display: flex;
-  justify-content: center;
-  gap: 36px;
-  margin-bottom: 28px;
-  margin-top: 12px;
-}
-
-.ring-gauge {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ring-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-}
-
-.ring-value {
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.ring-unit {
-  font-size: 10px;
-  font-weight: 600;
-  color: #64748b;
-  margin-top: 1px;
-  letter-spacing: 0.3px;
-}
-
-/* ── Activity stats ───────────────────────────────────────── */
-.activity-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  text-align: center;
-}
-
-.activity-stat-value {
-  font-size: 24px;
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-.activity-stat-label {
-  font-size: 13px;         /* was 12 */
-  color: #64748b;
-  margin-top: 3px;
-}
-
-.activity-stat-goal {
-  font-size: 12px;         /* was 11 */
-  color: #94a3b8;
-  margin-top: 2px;
-}
-
-/* ── Vitals row ───────────────────────────────────────────── */
-.vitals-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.vital-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 14px 8px;       /* was 12 */
-  text-align: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.05);
-}
-
-.vital-icon {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 5px;
-}
-
-.vital-value {
-  font-size: 17px;         /* was 16 */
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-.vital-label {
-  font-size: 11px;         /* was 10 */
-  color: #64748b;
-  margin-top: 2px;
-}
-
-/* ── Recent workouts ──────────────────────────────────────── */
-.recent-workouts-list { display: flex; flex-direction: column; gap: 0; }
-
-.recent-workout-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.recent-workout-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-.rw-icon {
-  width: 34px; height: 34px;
-  border-radius: 8px;
-  background: #f1f5f9;
-  display: flex; align-items: center; justify-content: center;
-  color: #64748b;
-  flex-shrink: 0;
-}
-
-.rw-info { flex: 1; min-width: 0; }
-
-.rw-name {
-  font-size: 16px;
-  font-weight: 600; color: #0f172a;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-.rw-meta { font-size: 12px; color: #64748b; margin-top: 2px; }
-
-/* ── Intensity badges ─────────────────────────────────────── */
-.intensity-badge {
-  font-size: 11px;         /* was 10 */
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 100px;
-  text-transform: lowercase;
-  flex-shrink: 0;
-}
-
-.badge-low    { background: #dcfce7; color: #15803d; }
-.badge-medium { background: #fef9c3; color: #92400e; }
-.badge-high   { background: #fee2e2; color: #b91c1c; }
-
-/* ── Workout grid ─────────────────────────────────────────── */
-.workout-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-@media (max-width: 600px) {
-  .workout-grid { grid-template-columns: 1fr; }
-}
-
-/* ── Workout card ─────────────────────────────────────────── */
-.workout-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.workout-card-header {
-  display: flex; align-items: flex-start;
-  justify-content: space-between; gap: 8px;
-}
-
-.workout-card-title-row {
-  display: flex; align-items: center; gap: 7px; flex: 1;
-}
-
-.workout-card-icon { color: #64748b; flex-shrink: 0; }
-
-.workout-card-title {
-  font-size: 15px;         /* was 14 */
-  font-weight: 700; color: #0f172a; margin: 0; line-height: 1.3;
-}
-
-.workout-card-desc {
-  font-size: 13px;         /* was 12 */
-  color: #64748b; margin: 0; line-height: 1.4;
-}
-
-.workout-card-stats { display: flex; gap: 12px; }
-
-.workout-stat {
-  display: flex; align-items: center; gap: 4px;
-  font-size: 13px;         /* was 12 */
-  color: #64748b;
-}
-
-.workout-exercises { flex: 1; }
-
-.exercises-label {
-  font-size: 12px;         /* was 11 */
-  font-weight: 600; color: #0f172a; margin: 0 0 5px;
-}
-
-.exercise-item { font-size: 12px; color: #475569; margin: 2px 0; }
-.exercise-more { font-size: 12px; color: #94a3b8; margin-top: 3px; }
-
-.start-workout-btn {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  width: 100%; padding: 11px;
-  background: #3b82f6; color: #fff;
-  font-size: 16px;
-  font-weight: 600; border: none; border-radius: 9px;
-  cursor: pointer; transition: background 0.15s; margin-top: auto;
-}
-
-.start-workout-btn:hover { background: #2563eb; }
-
-/* ── VR styles ────────────────────────────────────────────── */
-.vr-icon { color: #6366f1 !important; }
-
-.vr-workout-card { background: linear-gradient(to bottom right, #f8f7ff, #fff); }
-
-.vr-start-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-.vr-start-btn:hover { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
-
-.vr-card-actions { display: flex; gap: 8px; margin-top: auto; }
-.vr-card-actions .start-workout-btn { flex: 1; }
-
-.vr-headset-btn {
-  width: 40px; height: 40px; border-radius: 9px;
-  background: #f1f5f9; border: 1px solid #e2e8f0;
-  display: flex; align-items: center; justify-content: center;
-  color: #6366f1; cursor: pointer; flex-shrink: 0;
-  transition: background 0.15s;
-}
-.vr-headset-btn:hover { background: #eef2ff; }
-
-.vr-field { margin: 2px 0; }
-.vr-field-label { font-size: 12px; font-weight: 600; color: #0f172a; display: block; margin-bottom: 2px; }
-.vr-field-value { font-size: 13px; color: #6366f1; font-weight: 500; }
-.vr-field-detail { font-size: 12px; color: #64748b; }
-
-.vr-exercise-item {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 12px; color: #475569; margin: 3px 0;
-}
-.vr-ex-icon { color: #6366f1; flex-shrink: 0; }
-
-/* VR Featured banner */
-.vr-featured-banner {
-  position: relative;
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4c1d95 100%);
-  border-radius: 16px; padding: 24px 20px; overflow: hidden; color: #fff;
-}
-.vr-banner-glow {
-  position: absolute; top: -40px; right: -40px; width: 180px; height: 180px;
-  background: radial-gradient(circle, rgba(139,92,246,0.5) 0%, transparent 70%);
-  pointer-events: none;
-}
-.vr-banner-content { position: relative; z-index: 1; }
-.vr-banner-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 100px; padding: 4px 10px;
-  font-size: 12px; font-weight: 600; color: #c4b5fd; margin-bottom: 10px;
-}
-.vr-banner-title { font-size: 24px; font-weight: 800; margin: 0 0 4px; color: #fff; }
-.vr-banner-tagline { font-size: 14px; color: #c4b5fd; margin: 0 0 14px; }
-.vr-banner-stats { display: flex; gap: 16px; font-size: 13px; color: #e0e7ff; }
-.vr-banner-stats span { display: flex; align-items: center; gap: 4px; }
-
-/* VR Equipment */
-.vr-eq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-.vr-eq-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; }
-.vr-eq-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.vr-eq-title { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: #0f172a; }
-.vr-eq-status { font-size: 11px; font-weight: 700; background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 100px; }
-.vr-eq-detail { font-size: 12px; color: #64748b; margin-bottom: 6px; }
-.vr-eq-bar-track { height: 6px; background: #e2e8f0; border-radius: 100px; overflow: hidden; }
-.vr-eq-bar-fill { height: 100%; background: #3b82f6; border-radius: 100px; }
-
-.vr-eq-actions { display: flex; gap: 10px; }
-.vr-action-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 14px; background: #fff; border: 1px solid #e2e8f0;
-  border-radius: 8px; font-size: 13px; font-weight: 500; color: #475569;
-  cursor: pointer; transition: background 0.15s;
-}
-.vr-action-btn:hover { background: #f8fafc; }
-
-/* VR Stats */
-.vr-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.vr-stat-card {
-  border-radius: 12px; padding: 16px 10px; text-align: center;
-}
-.vr-stat-value { font-size: 20px; font-weight: 800; margin: 6px 0 2px; }
-.vr-stat-label { font-size: 11px; color: #64748b; }
-
-/* VR Achievements */
-.vr-ach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.vr-ach-card { border-radius: 12px; padding: 18px; text-align: center; }
-.vr-ach-name { font-size: 14px; font-weight: 700; color: #0f172a; margin: 8px 0 3px; }
-.vr-ach-desc { font-size: 12px; color: #64748b; }
-
-/* ── Progress tab ─────────────────────────────────────────── */
-
-/* Original daily goal bars */
-.orig-goals-list { display: flex; flex-direction: column; gap: 14px; }
-.orig-goal-row { }
-.orig-goal-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
-.orig-goal-label { font-size: 14px; font-weight: 500; color: #0f172a; }
-.orig-goal-val { font-size: 13px; color: #64748b; }
-.orig-goal-track { height: 8px; background: #e2e8f0; border-radius: 100px; overflow: hidden; }
-.orig-goal-fill { height: 100%; border-radius: 100px; }
-
-/* Original achievements */
-.ach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.ach-card { border-radius: 12px; padding: 20px; text-align: center; }
-.ach-name { font-size: 15px; font-weight: 700; color: #0f172a; margin: 10px 0 3px; }
-.ach-desc { font-size: 12px; color: #64748b; }
-
-/* Our weekly summary */
-.weekly-summary-card { /* wrapper */ }
-.ws-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.ws-change { display: flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 700; color: #22c55e; }
-.ws-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; text-align: center; }
-.ws-val { display: block; font-size: 19px; font-weight: 800; color: #0f172a; }
-.ws-lbl { display: block; font-size: 11px; color: #64748b; margin-top: 2px; }
-
-/* Bar chart */
-.weekly-chart { display: flex; align-items: flex-end; gap: 6px; height: 90px; padding: 0 4px; }
-.weekly-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
-.weekly-bar-track { flex: 1; width: 100%; background: #f1f5f9; border-radius: 4px; overflow: hidden; display: flex; align-items: flex-end; }
-.weekly-bar-fill { width: 100%; background: #3b82f6; border-radius: 4px 4px 0 0; transition: height 0.4s ease; min-height: 2px; }
-.weekly-bar-label { font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600; }
-.weekly-bar-value { font-size: 9px; color: #64748b; margin-top: 1px; }
-
-/* Monthly goals */
-.goals-list { display: flex; flex-direction: column; gap: 16px; }
-.goal-row { /* goal row */ }
-.goal-row-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
-.goal-label { font-size: 14px; font-weight: 600; color: #0f172a; }
-.goal-pct { font-size: 14px; font-weight: 700; }
-.goal-track { height: 8px; background: #f1f5f9; border-radius: 100px; overflow: hidden; margin-bottom: 4px; }
-.goal-fill { height: 100%; border-radius: 100px; transition: width 0.4s ease; }
-.goal-row-bottom { display: flex; justify-content: space-between; }
-.goal-current { font-size: 12px; font-weight: 600; }
-.goal-target { font-size: 12px; color: #94a3b8; }
-
-/* Personal bests */
-.pb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.pb-card { background: #f8fafc; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #e2e8f0; }
-.pb-icon { color: #3b82f6; margin: 0 auto 6px; display: block; }
-.pb-value { font-size: 17px; font-weight: 800; color: #0f172a; }
-.pb-label { font-size: 11px; color: #64748b; margin-top: 3px; }
-
-/* ── Challenges tab ───────────────────────────────────────── */
-
-/* Original monthly challenges */
-.monthly-ch-list { display: flex; flex-direction: column; gap: 0; }
-.monthly-ch-row { padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
-.monthly-ch-row:last-child { border-bottom: none; padding-bottom: 0; }
-.monthly-ch-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 12px; }
-.monthly-ch-name { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 2px; }
-.monthly-ch-desc { font-size: 13px; color: #64748b; }
-.monthly-ch-right { text-align: right; flex-shrink: 0; }
-.monthly-ch-val { display: block; font-size: 16px; font-weight: 800; }
-.monthly-ch-days { display: block; font-size: 12px; color: #94a3b8; margin-top: 1px; }
-.monthly-ch-track { height: 8px; background: #e2e8f0; border-radius: 100px; overflow: hidden; }
-.monthly-ch-fill { height: 100%; border-radius: 100px; }
-
-/* Active challenges with badges */
-.active-challenges-list { display: flex; flex-direction: column; gap: 12px; }
-.active-challenge { border-radius: 12px; padding: 16px; }
-.ac-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
-.ac-badge { font-size: 26px; line-height: 1; flex-shrink: 0; }
-.ac-info { flex: 1; }
-.ac-name { font-size: 15px; font-weight: 700; color: #0f172a; margin: 0 0 3px; }
-.ac-desc { font-size: 13px; color: #64748b; margin: 0; }
-.ac-reward { font-size: 13px; font-weight: 700; color: #3b82f6; flex-shrink: 0; }
-.ac-progress { /* progress */ }
-.ac-track { height: 8px; background: rgba(0,0,0,0.08); border-radius: 100px; overflow: hidden; margin-bottom: 5px; }
-.ac-fill { height: 100%; border-radius: 100px; transition: width 0.4s ease; }
-.ac-progress-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
-.ac-days { color: #64748b; }
-
-/* Available challenges */
-.avail-challenges-list { display: flex; flex-direction: column; gap: 0; }
-.avail-challenge { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
-.avail-challenge:last-child { border-bottom: none; }
-.avail-badge { font-size: 26px; line-height: 1; flex-shrink: 0; width: 42px; text-align: center; }
-.avail-info { flex: 1; min-width: 0; }
-.avail-title-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
-.avail-name { font-size: 14px; font-weight: 700; color: #0f172a; margin: 0; }
-.avail-desc { font-size: 12px; color: #64748b; margin: 0 0 4px; }
-.avail-meta { display: flex; gap: 6px; font-size: 12px; color: #94a3b8; }
-.avail-reward { color: #3b82f6; font-weight: 600; }
-
-.diff-chip { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0; }
-.diff-easy   { background: #dcfce7; color: #15803d; }
-.diff-medium { background: #fef9c3; color: #92400e; }
-.diff-hard   { background: #fee2e2; color: #b91c1c; }
-
-.join-btn {
-  display: flex; align-items: center; gap: 4px;
-  padding: 8px 14px; background: #eff6ff; color: #2563eb;
-  font-size: 13px; font-weight: 600; border: 1px solid #bfdbfe;
-  border-radius: 8px; cursor: pointer; flex-shrink: 0; transition: background 0.15s;
-}
-.join-btn:hover { background: #dbeafe; }
-
-/* Leaderboard */
-.lb-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-.lb-trophy { color: #f59e0b; }
-.lb-list { display: flex; flex-direction: column; gap: 0; }
-.lb-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid #f1f5f9; }
-.lb-row:last-child { border-bottom: none; }
-.lb-row-user { background: #eff6ff; border-radius: 10px; padding: 11px 10px; margin: 4px -10px; }
-.lb-rank { width: 26px; text-align: center; font-size: 14px; font-weight: 700; color: #94a3b8; flex-shrink: 0; }
-.rank-1 { color: #f59e0b; }
-.rank-2 { color: #94a3b8; }
-.rank-3 { color: #b45309; }
-.lb-avatar { width: 34px; height: 34px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
-.lb-info { flex: 1; min-width: 0; }
-.lb-name { display: block; font-size: 14px; font-weight: 600; color: #0f172a; }
-.lb-ship { display: block; font-size: 11px; color: #94a3b8; }
-.lb-points { font-size: 14px; font-weight: 700; color: #3b82f6; flex-shrink: 0; }
-
-/* ── Toast ────────────────────────────────────────────────── */
-.workout-toast {
-  position: fixed; bottom: 80px; right: 16px;
-  background: #fff; border-radius: 12px; padding: 14px 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.14); border: 1px solid #e2e8f0;
-  display: flex; align-items: center; gap: 10px;
-  z-index: 300; max-width: 290px;
-  animation: toastSlideIn 0.25s ease;
-}
-
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0);    }
-}
-
-.toast-icon { color: #22c55e; flex-shrink: 0; }
-.toast-body { flex: 1; }
-.toast-title { font-size: 14px; font-weight: 700; color: #0f172a; margin: 0 0 2px; }
-.toast-message { font-size: 12px; color: #64748b; margin: 0; }
-.toast-close {
-  width: 22px; height: 22px; border-radius: 50%; background: #f1f5f9;
-  border: none; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; color: #64748b; flex-shrink: 0; padding: 0;
-  transition: background 0.15s;
-}
-.toast-close:hover { background: #e2e8f0; }
-
-/* ── Workout Session Overlay ──────────────────────────────── */
-.workout-session-overlay { position: fixed; inset: 0; z-index: 400; display: flex; align-items: flex-end; }
-.session-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
-.session-panel {
-  position: relative; z-index: 1; width: 100%;
-  background: #fff; border-radius: 24px 24px 0 0;
-  padding: 24px 20px 32px;
-  box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
-  max-height: 80vh; overflow-y: auto;
-}
-
-.session-close {
-  position: absolute; top: 16px; right: 16px;
-  width: 30px; height: 30px; border-radius: 50%;
-  background: #f1f5f9; border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #475569; transition: background 0.15s;
-}
-.session-close:hover { background: #e2e8f0; }
-
-.session-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-.session-status-dot { width: 8px; height: 8px; border-radius: 50%; }
-.session-status-dot.active  { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); animation: pulse 1.5s infinite; }
-.session-status-dot.paused  { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
-}
-
-.session-status-text { font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-.session-name { font-size: 21px; font-weight: 800; color: #0f172a; margin: 0 0 4px; }
-.session-desc { font-size: 14px; color: #64748b; margin: 0 0 20px; }
-.session-timer { display: flex; align-items: center; justify-content: center; gap: 10px; background: #f8fafc; border-radius: 14px; padding: 16px; margin-bottom: 16px; }
-.session-timer-icon { color: #3b82f6; }
-.session-timer-value { font-size: 38px; font-weight: 800; color: #0f172a; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
-.session-stats { display: flex; gap: 12px; margin-bottom: 16px; }
-.session-stat { flex: 1; display: flex; align-items: center; gap: 6px; background: #f8fafc; border-radius: 10px; padding: 10px 12px; color: #64748b; }
-.ss-value { font-size: 17px; font-weight: 800; color: #0f172a; }
-.ss-label { font-size: 12px; color: #64748b; }
-.session-exercises { margin-bottom: 20px; }
-.session-controls { display: flex; gap: 10px; }
-.session-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 13px; font-size: 15px; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
-.session-btn:active { transform: scale(0.97); }
-.pause-btn { background: #eff6ff; color: #2563eb; }
-.pause-btn:hover { background: #dbeafe; }
-.stop-btn { background: #fee2e2; color: #b91c1c; }
-.stop-btn:hover { background: #fecaca; }
+export default FitnessPage;

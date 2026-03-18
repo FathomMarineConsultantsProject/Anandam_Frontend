@@ -1,4 +1,3 @@
-// src/pages/FitnessPage.jsx
 import { useState } from 'react';
 import '../styles/fitness.css';
 import AppHeader from '../components/layout/AppHeader';
@@ -14,18 +13,18 @@ import { fitnessPageMockData } from '../data/fitnessData';
 import { homePageMockData } from '../data/homeData';
 
 const TABS = [
-  { id: 'dashboard',  label: 'Dashboard'  },
-  { id: 'workouts',   label: 'Workouts'   },
-  { id: 'vr-gym',     label: 'VR Gym'     },
-  { id: 'progress',   label: 'Progress'   },
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'workouts', label: 'Workouts' },
+  { id: 'vr-gym', label: 'VR Gym' },
+  { id: 'progress', label: 'Progress' },
   { id: 'challenges', label: 'Challenges' },
 ];
 
 function FitnessPage() {
-  const [activeTab, setActiveTab]         = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [activeWorkout, setActiveWorkout] = useState(null);
-  const [toast, setToast]                 = useState(null);
-  const [showSession, setShowSession]     = useState(false);
+  const [toast, setToast] = useState(null);
+  const [showSession, setShowSession] = useState(false);
 
   const data = fitnessPageMockData;
 
@@ -59,18 +58,35 @@ function FitnessPage() {
           ))}
         </div>
 
-        {activeTab === 'dashboard'  && <FitnessDashboard data={data.dashboard} onStartWorkout={handleStartWorkout} />}
-        {activeTab === 'workouts'   && <FitnessWorkouts  workouts={data.workouts} onStartWorkout={handleStartWorkout} />}
-        {activeTab === 'vr-gym'     && <FitnessVRGym     vrGym={data.vrGym} vrWorkouts={data.vrWorkouts} onStartWorkout={handleStartWorkout} />}
-        {activeTab === 'progress'   && <FitnessProgress  progress={data.progress} />}
-        {activeTab === 'challenges' && <FitnessChallenges challenges={data.challenges} />}
+        {activeTab === 'dashboard' && (
+          <FitnessDashboard data={data.dashboard} onStartWorkout={handleStartWorkout} />
+        )}
+        {activeTab === 'workouts' && (
+          <FitnessWorkouts workouts={data.workouts} onStartWorkout={handleStartWorkout} />
+        )}
+        {activeTab === 'vr-gym' && (
+          <FitnessVRGym
+            vrGym={data.vrGym}
+            vrWorkouts={data.vrWorkouts}
+            onStartWorkout={handleStartWorkout}
+          />
+        )}
+        {activeTab === 'progress' && <FitnessProgress progress={data.progress} />}
+        {activeTab === 'challenges' && (
+          <FitnessChallenges challenges={data.challenges} />
+        )}
       </main>
 
       {showSession && activeWorkout && (
         <WorkoutSession workout={activeWorkout} onStop={handleStopWorkout} />
       )}
+
       {toast && (
-        <WorkoutToast title="Workout Started" message={toast.message} onClose={() => setToast(null)} />
+        <WorkoutToast
+          title="Workout Started"
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
       )}
 
       <BottomNav navigation={homePageMockData.navigation} />
