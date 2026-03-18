@@ -31,10 +31,6 @@ function mapHistoryItem(item) {
 
 export async function getMoodPageData() {
   const user = getCurrentUser();
-<<<<<<< HEAD
-=======
-
->>>>>>> 7342ba4f61b5cd40cd8a1009d012a1103e7000ba
   let history = [];
 
   if (user?.id) {
@@ -69,28 +65,17 @@ export async function submitMoodCheck(moodValue) {
     method: "POST",
     body: JSON.stringify({
       moodScore: moodValue,
-<<<<<<< HEAD
       energyLevel: moodValue,
       stressLevel: Math.max(0, 5 - moodValue),
       hoursOfSleep: 7.5,
-=======
-      energyLevel: Math.min(10, Math.max(1, moodValue * 2)),
-      stressLevel: Math.min(10, Math.max(1, 6 - moodValue)),
-      hoursOfSleep: 7,
->>>>>>> 7342ba4f61b5cd40cd8a1009d012a1103e7000ba
       currentWorkload: "Moderate",
       journalEntry: `Quick mood check submitted with score ${moodValue}.`,
     }),
   });
 
   const user = getCurrentUser();
-<<<<<<< HEAD
   let history = [];
 
-=======
-
-  let history = [];
->>>>>>> 7342ba4f61b5cd40cd8a1009d012a1103e7000ba
   if (user?.id) {
     const historyResponse = await apiRequest(`/mood/history/${user.id}`, {
       method: "GET",
