@@ -1,6 +1,6 @@
 import AppHeader from "../components/layout/AppHeader";
 import BottomNav from "../components/layout/BottomNav";
-import { emergencyPageData } from "../data/emergencyData";
+// import { emergencyPageData } from "../data/emergencyData";
 import {
   AlertTriangle,
   Anchor,
