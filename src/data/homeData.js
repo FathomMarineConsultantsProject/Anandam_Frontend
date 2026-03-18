@@ -172,7 +172,7 @@ export const homePageMockData = {
   },
 
   assistant: {
-    title: 'Anandüm AI - Your Wellness Companion',
+    title: 'Anandüm AI, your wellness companion',
     profileTitle: 'AI Companion - Marina',
     subtitle: 'Available 24/7 • Specialized in maritime wellness',
     introMessage:
@@ -280,7 +280,7 @@ export const homePageMockData = {
       { id: 'mood',        label: 'Mood',        icon: 'heart',          path: '/mood' },
       { id: 'work-rest',   label: 'Work/Rest',   icon: 'clock',          path: '/app/work-rest' },
       { id: 'fitness',     label: 'Fitness',     icon: 'activity',       path: '/app/fitness' },
-      { id: 'emergency',   label: 'Emergency',   icon: 'alert-triangle', path: '/app/emergency' },
+      { id: 'emergency',   label: 'Emergency',   icon: 'alert-triangle', path: '/emergency' },
     ],
   },
 

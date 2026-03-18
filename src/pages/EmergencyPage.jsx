@@ -1,130 +1,130 @@
-import { useMemo } from "react";
-import {
-  Heart,
-  AlertTriangle,
-  Waves,
-  Shield,
-  Radio,
-  Bell,
-  Anchor,
-} from "lucide-react";
 import AppHeader from "../components/layout/AppHeader";
 import BottomNav from "../components/layout/BottomNav";
-import { homePageMockData } from "../data/homeData";
+import { emergencyPageData } from "../data/emergencyData";
+import {
+  AlertTriangle,
+  Anchor,
+  Bell,
+  Heart,
+  Radio,
+  Shield,
+  Waves,
+  Zap,
+} from "lucide-react";
+import "../styles/global.css";
 import "../styles/emergency.css";
 
 function EmergencyPage() {
-  const navigation = useMemo(() => {
-    return {
-      ...homePageMockData.navigation,
-      activeTab: "emergency",
-    };
-  }, []);
+  const pageData = emergencyPageData;
 
   return (
     <div className="app-shell">
-      <AppHeader header={homePageMockData.header} />
+      <AppHeader header={pageData.header} />
 
-      <main className="page-content emergency-page">
-        {/* A. Emergency Response Hub */}
-        <section className="panel-section">
-          <div className="section-heading-block">
-            <h2 className="section-title-with-icon">
-              <span>Emergency Response Hub</span>
-            </h2>
-            <p className="section-subtitle">
-              Comprehensive crisis management and emergency communication system
-            </p>
-          </div>
-        </section>
+      <main className="page-content">
+        <div className="emergency-page">
+          <section className="emergency-card">
+            <div className="emergency-card-head">
+              <div>
+                <div className="emergency-card-title">
+                  <span className="emergency-card-title-icon" aria-hidden="true">
+                    <AlertTriangle className="emergency-icon" strokeWidth={1.6} />
+                  </span>
+                  <span className="emergency-card-title-text">Emergency Response Hub</span>
+                </div>
+                <p className="emergency-card-subtitle">
+                  Comprehensive crisis management and emergency communication system
+                </p>
+              </div>
+            </div>
+          </section>
 
-        {/* B. Emergency Quick Response */}
-        <section className="panel-section">
-          <div className="section-heading-block">
-            <h2 className="section-title-with-icon">
-              <span>Emergency Quick Response</span>
-            </h2>
-          </div>
+          <section className="emergency-card">
+            <div className="emergency-card-head">
+              <div className="emergency-card-title">
+                <span className="emergency-card-title-icon" aria-hidden="true">
+                  <Zap className="emergency-icon" strokeWidth={1.6} />
+                </span>
+                <span className="emergency-card-title-text">Emergency Quick Response</span>
+              </div>
+            </div>
 
-          <div className="emergency-quick-grid">
-            <button className="emergency-quick-btn" type="button">
-              <div className="flex flex-col items-center justify-center gap-1">
-                <Heart className="w-5 h-5 text-white" strokeWidth={1.8} />
-                <span className="text-sm font-medium">Medical Emergency</span>
-              </div>
-            </button>
-            <button className="emergency-quick-btn" type="button">
-              <div className="flex flex-col items-center justify-center gap-1">
-                <AlertTriangle className="w-5 h-5 text-white" strokeWidth={1.8} />
-                <span className="text-sm font-medium">Mental Health Crisis</span>
-              </div>
-            </button>
-            <button className="emergency-quick-btn" type="button">
-              <div className="flex flex-col items-center justify-center gap-1">
-                <Waves className="w-5 h-5 text-white" strokeWidth={1.8} />
-                <span className="text-sm font-medium">Maritime Emergency</span>
-              </div>
-            </button>
-            <button className="emergency-quick-btn" type="button">
-              <div className="flex flex-col items-center justify-center gap-1">
-                <Shield className="w-5 h-5 text-white" strokeWidth={1.8} />
-                <span className="text-sm font-medium">Security Alert</span>
-              </div>
-            </button>
-          </div>
-        </section>
+            <div className="emergency-quick-grid">
+              <button type="button" className="emergency-quick-btn">
+                <div className="emergency-quick-btn-inner">
+                  <Heart className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Medical Emergency</span>
+                </div>
+              </button>
+              <button type="button" className="emergency-quick-btn">
+                <div className="emergency-quick-btn-inner">
+                  <AlertTriangle className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Mental Health Crisis</span>
+                </div>
+              </button>
+              <button type="button" className="emergency-quick-btn">
+                <div className="emergency-quick-btn-inner">
+                  <Waves className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Maritime Emergency</span>
+                </div>
+              </button>
+              <button type="button" className="emergency-quick-btn">
+                <div className="emergency-quick-btn-inner">
+                  <Shield className="emergency-quick-btn-icon" strokeWidth={1.8} />
+                  <span className="emergency-quick-btn-label">Security Alert</span>
+                </div>
+              </button>
+            </div>
+          </section>
 
-        {/* C. Satellite Emergency Communication */}
-        <section className="panel-section">
-          <div className="section-heading-block">
-            <h2 className="section-title-with-icon">
-              <span className="emergency-section-icon">
-                <Radio className="w-4 h-4 text-gray-700" strokeWidth={1.5} />
+          <section className="emergency-card">
+            <div className="emergency-card-head">
+              <div className="emergency-card-title">
+                <span className="emergency-card-title-icon" aria-hidden="true">
+                  <Radio className="emergency-icon" strokeWidth={1.6} />
+                </span>
+                <span className="emergency-card-title-text">
+                  Satellite Emergency Communication
+                </span>
+              </div>
+            </div>
+
+            <div className="emergency-status-row" aria-label="Connection status">
+              <span className="emergency-status-left">Connection Status</span>
+              <span className="emergency-status">
+                <span className="emergency-status-dot" />
+                <span>Checking...</span>
               </span>
-              <span>Satellite Emergency Communication</span>
-            </h2>
-          </div>
+            </div>
+          </section>
 
-          <div className="emergency-status-row flex justify-between items-center">
-            <span className="emergency-status-label">Connection Status</span>
-            <span className="emergency-status-right">
-              <span className="emergency-red-dot" aria-hidden="true" />
-              <span>Checking...</span>
-            </span>
-          </div>
-        </section>
+          <section className="emergency-card">
+            <div className="emergency-card-head">
+              <div className="emergency-card-title">
+                <span className="emergency-card-title-icon" aria-hidden="true">
+                  <Bell className="emergency-icon" strokeWidth={1.6} />
+                </span>
+                <span className="emergency-card-title-text">Active Emergency Alerts</span>
+              </div>
+            </div>
 
-        {/* D. Active Emergency Alerts */}
-        <section className="panel-section">
-          <div className="section-heading-block">
-            <h2 className="section-title-with-icon">
-              <span className="emergency-section-icon">
-                <Bell className="w-4 h-4 text-gray-700" strokeWidth={1.5} />
-              </span>
-              <span>Active Emergency Alerts</span>
-            </h2>
-          </div>
+            <div className="emergency-empty-state">No active emergency alerts</div>
+          </section>
 
-          <div className="emergency-empty">
-            <span>No active emergency alerts</span>
-          </div>
-        </section>
-
-        {/* E. Marine Emergency Services */}
-        <section className="panel-section">
-          <div className="section-heading-block">
-            <h2 className="section-title-with-icon">
-              <span className="emergency-section-icon">
-                <Anchor className="w-4 h-4 text-gray-700" strokeWidth={1.5} />
-              </span>
-              <span>Marine Emergency Services</span>
-            </h2>
-          </div>
-          <div className="emergency-placeholder" />
-        </section>
+          <section className="emergency-card">
+            <div className="emergency-card-head">
+              <div className="emergency-card-title">
+                <span className="emergency-card-title-icon" aria-hidden="true">
+                  <Anchor className="emergency-icon" strokeWidth={1.6} />
+                </span>
+                <span className="emergency-card-title-text">Marine Emergency Services</span>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
 
-      <BottomNav navigation={navigation} />
+      <BottomNav navigation={pageData.navigation} />
     </div>
   );
 }
