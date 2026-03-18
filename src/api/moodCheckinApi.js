@@ -1,44 +1,53 @@
-const STORAGE_KEY = 'anandam_full_mood_checkins';
+import { apiRequest } from "./client";
 
-function readStoredCheckins() {
-  const raw = localStorage.getItem(STORAGE_KEY);
+function mapWorkload(value) {
+  const map = {
+    light: "Light",
+    normal: "Moderate",
+    heavy: "Heavy",
+    overwhelming: "Overwhelming",
+  };
 
-  if (!raw) return [];
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
+  return map[value] || "Moderate";
 }
 
-function writeStoredCheckins(items) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+function toFiveScale(value) {
+  const numeric = Number(value) || 0;
+  return Math.max(0, Math.min(5, Math.round(numeric / 2)));
 }
 
 export async function submitMoodCheckin(payload) {
-  const newEntry = {
-    id: String(Date.now()),
-    createdAt: new Date().toISOString(),
-    ...payload,
-  };
+  const emotionsText =
+    Array.isArray(payload.emotions) && payload.emotions.length > 0
+      ? `Emotions: ${payload.emotions.join(", ")}`
+      : "";
 
-  const existing = readStoredCheckins();
-  const updated = [newEntry, ...existing];
+  const notesText = payload.notes?.trim()
+    ? `Notes: ${payload.notes.trim()}`
+    : "";
 
-  writeStoredCheckins(updated);
+  const journalText = payload.journalEntry?.trim()
+    ? payload.journalEntry.trim()
+    : "";
+
+  const combinedJournal = [journalText, notesText, emotionsText]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const response = await apiRequest("/mood/log", {
+    method: "POST",
+    body: JSON.stringify({
+      moodScore: toFiveScale(payload.mood),
+      energyLevel: toFiveScale(payload.energy),
+      stressLevel: toFiveScale(payload.stress),
+      hoursOfSleep: payload.sleepHours,
+      currentWorkload: mapWorkload(payload.workload),
+      journalEntry: combinedJournal || "Mood check-in submitted.",
+    }),
+  });
 
   return {
     success: true,
-    entry: newEntry,
+    entry: response?.data,
   };
 }
-
-/*
-Later replace with real API, for example:
-
-export async function submitMoodCheckin(payload) {
-  const response = await client.post('/mood-checkins', payload);
-  return response.data;
-}
-*/

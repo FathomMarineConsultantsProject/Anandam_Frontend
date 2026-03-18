@@ -1,35 +1,50 @@
-import { moodPageMockData } from '../data/moodData';
+import { apiRequest } from "./client";
+import { moodPageMockData } from "../data/moodData";
 
-const STORAGE_KEY = 'anandam_mood_history';
-
-function readMoodHistory() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-
-  if (!stored) {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(moodPageMockData.historySeed)
-    );
-    return moodPageMockData.historySeed;
-  }
+function getCurrentUser() {
+  const raw = localStorage.getItem("user");
+  if (!raw) return null;
 
   try {
-    return JSON.parse(stored);
+    return JSON.parse(raw);
   } catch {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(moodPageMockData.historySeed)
-    );
-    return moodPageMockData.historySeed;
+    return null;
   }
 }
 
-function writeMoodHistory(history) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+function mapMoodScoreToEmoji(score) {
+  if (score <= 1) return "😧";
+  if (score <= 2) return "😟";
+  if (score <= 3) return "😐";
+  if (score <= 4) return "😊";
+  return "😄";
+}
+
+function mapHistoryItem(item) {
+  return {
+    id: item.id,
+    createdAt: item.loggedAt,
+    moodValue: item.moodScore,
+    emoji: mapMoodScoreToEmoji(item.moodScore),
+  };
 }
 
 export async function getMoodPageData() {
-  const history = readMoodHistory();
+  const user = getCurrentUser();
+  let history = [];
+
+  if (user?.id) {
+    try {
+      const response = await apiRequest(`/mood/history/${user.id}`, {
+        method: "GET",
+      });
+
+      history = (response?.data || []).map(mapHistoryItem);
+    } catch (error) {
+      console.error("Failed to load mood history", error);
+      history = [];
+    }
+  }
 
   return {
     ...moodPageMockData,
@@ -43,21 +58,39 @@ export async function submitMoodCheck(moodValue) {
   );
 
   if (!selectedMood) {
-    throw new Error('Invalid mood value');
+    throw new Error("Invalid mood value");
   }
 
-  const newEntry = {
-    id: String(Date.now()),
-    createdAt: new Date().toISOString(),
-    moodValue: selectedMood.value,
-    emoji: selectedMood.emoji,
-  };
+  await apiRequest("/mood/log", {
+    method: "POST",
+    body: JSON.stringify({
+      moodScore: moodValue,
+      energyLevel: moodValue,
+      stressLevel: Math.max(0, 5 - moodValue),
+      hoursOfSleep: 7.5,
+      currentWorkload: "Moderate",
+      journalEntry: `Quick mood check submitted with score ${moodValue}.`,
+    }),
+  });
 
-  const updatedHistory = [newEntry, ...readMoodHistory()];
-  writeMoodHistory(updatedHistory);
+  const user = getCurrentUser();
+  let history = [];
+
+  if (user?.id) {
+    const historyResponse = await apiRequest(`/mood/history/${user.id}`, {
+      method: "GET",
+    });
+
+    history = (historyResponse?.data || []).map(mapHistoryItem);
+  }
 
   return {
-    entry: newEntry,
-    history: updatedHistory,
+    entry: {
+      id: String(Date.now()),
+      createdAt: new Date().toISOString(),
+      moodValue: selectedMood.value,
+      emoji: selectedMood.emoji,
+    },
+    history,
   };
 }
