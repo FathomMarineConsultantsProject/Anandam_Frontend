@@ -1,4 +1,4 @@
-// App.jsx – updated with /app/fitness route
+// App.jsx – updated with /app/work-rest route
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -6,10 +6,10 @@ import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
 import MoodCheckinPage from "./pages/MoodCheckinPage";
 import PerfectDaySchedulePage from "./pages/PerfectDaySchedulePage";
-import WorkRestPage from "./pages/WorkRestPage";
-import FitnessPage from "./pages/FitnessPage";            // ← NEW
+import WorkRestPage from "./pages/WorkRestPage";          // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
+import EmergencyPage from "./pages/EmergencyPage";
 
 function RequireAuth({ children }) {
   if (!isAuthenticated()) {
@@ -72,6 +72,7 @@ function App() {
           }
         />
 
+        {/* ── NEW: Work/Rest page ── */}
         <Route
           path="/app/work-rest"
           element={
@@ -81,12 +82,20 @@ function App() {
           }
         />
 
-        {/* ── NEW: Fitness page ── */}
+        {/* ── Emergency page (tab + direct route) ── */}
         <Route
-          path="/app/fitness"
+          path="/app/emergency"
           element={
             <RequireAuth>
-              <FitnessPage />
+              <EmergencyPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/emergency"
+          element={
+            <RequireAuth>
+              <EmergencyPage />
             </RequireAuth>
           }
         />

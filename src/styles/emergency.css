@@ -1,0 +1,142 @@
+.emergency-page .panel-section:first-child {
+  margin-top: 0;
+}
+
+.emergency-section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Emergency Quick Response grid */
+.emergency-quick-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.emergency-quick-btn {
+  width: 100%;
+  min-height: 74px;
+  border-radius: 8px;
+  background: #ef4444;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.emergency-quick-btn:active {
+  transform: translateY(0.5px);
+}
+
+@media (max-width: 520px) {
+  .emergency-quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Connection status row */
+.emergency-status-row {
+  margin-top: 14px;
+  padding: 12px 12px;
+  border-radius: 8px;
+  border: 1px solid #d8dee8;
+  background: #ffffff;
+}
+
+.emergency-status-label {
+  font-size: 13px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.emergency-status-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #111827;
+}
+
+.emergency-red-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ef4444;
+  display: inline-block;
+}
+
+/* Empty state (Active Emergency Alerts) */
+.emergency-empty {
+  margin-top: 16px;
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.emergency-placeholder {
+  min-height: 20px;
+}
+
+/* Minimal utility classes (used per spec) */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-1 {
+  gap: 4px;
+}
+
+.w-4 {
+  width: 16px;
+}
+
+.h-4 {
+  height: 16px;
+}
+
+.w-5 {
+  width: 20px;
+}
+
+.h-5 {
+  height: 20px;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+.text-sm {
+  font-size: 14px;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
