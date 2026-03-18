@@ -37,24 +37,6 @@ function getStressColor(value) {
     return 'var(--mood-red)';
 }
 
-function getEmotionIcon(emotionId) {
-    const iconMap = {
-        adventurous: Ship,
-        homesick: Home,
-        proud: Anchor,
-        lonely: Moon,
-        excited: Ship,
-        calm: Sunrise,
-        anxious: CloudRain,
-        grateful: HandHeart,
-        determined: Dumbbell,
-        peaceful: Bird,
-        frustrated: Brain,
-        hopeful: Sun,
-    };
-
-    return iconMap[emotionId] || Heart;
-}
 
 function getEmotionColorClass(emotionId) {
     const colorMap = {

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/authApi";
-import { saveAuthSession, resetMoodGate } from "../utils/storage";
+import { resetMoodGate } from "../utils/storage";
+import { setAuthSession } from "../api/client";
 import "../styles/auth.css";
 
 function SignupPage() {
@@ -11,8 +12,6 @@ function SignupPage() {
     fullName: "",
     email: "",
     password: "",
-    rank: "",
-    vessel: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -29,16 +28,20 @@ function SignupPage() {
     setLoading(true);
 
     try {
-      const data = await registerUser(form);
+      const data = await registerUser({
+        fullName: form.fullName.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      });
 
-      saveAuthSession({
+      setAuthSession({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
         user: data.user,
       });
 
       resetMoodGate();
-      navigate("/mood-quick");
+      navigate("/mood-quick", { replace: true });
     } catch (err) {
       setError(err.message || "Signup failed");
     } finally {
@@ -58,6 +61,7 @@ function SignupPage() {
             placeholder="Full Name"
             value={form.fullName}
             onChange={handleChange}
+            autoComplete="name"
           />
 
           <input
@@ -66,6 +70,7 @@ function SignupPage() {
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
+            autoComplete="email"
           />
 
           <input
@@ -74,20 +79,7 @@ function SignupPage() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
-          />
-
-          <input
-            name="rank"
-            placeholder="Rank"
-            value={form.rank}
-            onChange={handleChange}
-          />
-
-          <input
-            name="vessel"
-            placeholder="Vessel"
-            value={form.vessel}
-            onChange={handleChange}
+            autoComplete="new-password"
           />
 
           {error ? <p className="auth-error">{error}</p> : null}
@@ -100,19 +92,6 @@ function SignupPage() {
         <p className="auth-footer-text">
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
-
-        <div className="auth-dev-actions">
-          <button
-            type="button"
-            className="auth-dev-link"
-            onClick={() => {
-              resetMoodGate();
-              navigate("/mood-quick");
-            }}
-          >
-            Continue to quick mood check
-          </button>
-        </div>
       </div>
     </div>
   );
