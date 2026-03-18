@@ -61,16 +61,20 @@ export async function submitMoodCheck(moodValue) {
     throw new Error("Invalid mood value");
   }
 
+  const payload = {
+    moodScore: moodValue,
+    energyLevel: moodValue,
+    stressLevel: Math.max(0, 5 - moodValue),
+    hoursOfSleep: 7.5,
+    currentWorkload: "Moderate",
+    journalEntry: `Quick mood check submitted with score ${moodValue}.`,
+  };
+
+  console.log("Submitting quick mood payload:", payload);
+
   await apiRequest("/mood/log", {
     method: "POST",
-    body: JSON.stringify({
-      moodScore: moodValue,
-      energyLevel: moodValue,
-      stressLevel: Math.max(0, 5 - moodValue),
-      hoursOfSleep: 7.5,
-      currentWorkload: "Moderate",
-      journalEntry: `Quick mood check submitted with score ${moodValue}.`,
-    }),
+    body: JSON.stringify(payload),
   });
 
   const user = getCurrentUser();
