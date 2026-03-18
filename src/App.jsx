@@ -10,6 +10,7 @@ import WorkRestPage from "./pages/WorkRestPage";
 import FitnessPage from "./pages/FitnessPage";            // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
+import EmergencyPage from "./pages/EmergencyPage";    // ← NEW 
 
 function RequireAuth({ children }) {
   if (!isAuthenticated()) {
@@ -87,6 +88,16 @@ function App() {
           element={
             <RequireAuth>
               <FitnessPage />
+            </RequireAuth>
+          }
+        />
+
+        {/* ── Emergency page (direct route) ── */}
+        <Route
+          path="/app/emergency"
+          element={
+            <RequireAuth>
+              <EmergencyPage />
             </RequireAuth>
           }
         />
