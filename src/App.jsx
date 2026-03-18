@@ -92,6 +92,16 @@ function App() {
           }
         />
 
+        {/* ── Emergency page (direct route) ── */}
+        <Route
+          path="/app/emergency"
+          element={
+            <RequireAuth>
+              <EmergencyPage />
+            </RequireAuth>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
