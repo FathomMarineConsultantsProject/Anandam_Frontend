@@ -82,20 +82,12 @@ function App() {
           }
         />
 
-        {/* ── Emergency page (tab + direct route) ── */}
+        {/* ── NEW: Fitness page ── */}
         <Route
           path="/app/emergency"
           element={
             <RequireAuth>
-              <EmergencyPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/emergency"
-          element={
-            <RequireAuth>
-              <EmergencyPage />
+              <FitnessPage />
             </RequireAuth>
           }
         />
