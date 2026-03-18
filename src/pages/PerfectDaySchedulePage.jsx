@@ -7,7 +7,17 @@ import {
   Shield, Plus, Waves as WavesIcon, ChevronDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getPerfectDaySchedule, getPerfectDayAnalytics, getPerfectDayHabits } from "../api/perfectDayApi";
+import {
+  getPerfectDaySchedule,
+  getPerfectDayAnalytics,
+  getPerfectDayHabits,
+  getPerfectDayTemplates,
+  applyPerfectDayTemplate,
+  togglePerfectDayActivity,
+  createPerfectDayHabit,
+  togglePerfectDayHabit,
+  deletePerfectDayHabit,
+} from "../api/perfectDayApi";
 import { homePageMockData } from "../data/homeData";
 // ── Use the shared BottomNav (auto-highlights from URL via useLocation) ──
 import BottomNav from "../components/layout/BottomNav";
@@ -156,49 +166,137 @@ function MaritimeHabitsTab() {
   const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
   const toastTimer = useRef(null);
 
-  useEffect(() => {
-    getPerfectDayHabits().then(setHabits).catch(console.error);
-  }, []);
+  const targetDate = new Date().toISOString().slice(0, 10);
 
-  function toggleHabit(id) {
-    let nowCompleted = false;
-    setHabits((prev) => prev.map((h) => {
-      if (h.id !== id) return h;
-      nowCompleted = !h.completed;
-      const newDone = nowCompleted ? h.doneCount + 1 : Math.max(0, h.doneCount - 1);
-      return { ...h, completed: nowCompleted, doneCount: newDone };
-    }));
-    const habit = habits.find((h) => h.id === id);
-    const willBeCompleted = habit ? !habit.completed : false;
-    if (willBeCompleted) {
-      setToastVisible(true);
-      if (toastTimer.current) clearTimeout(toastTimer.current);
-      toastTimer.current = setTimeout(() => setToastVisible(false), 5000);
-    } else {
-      setToastVisible(false);
-      if (toastTimer.current) clearTimeout(toastTimer.current);
+  async function loadHabits() {
+    try {
+      setLoading(true);
+      const response = await getPerfectDayHabits(targetDate);
+      setHabits(response.habits || []);
+    } catch (error) {
+      console.error("Failed to load habits", error);
+      setHabits([]);
+    } finally {
+      setLoading(false);
     }
   }
 
-  function addHabit() {
+  useEffect(() => {
+    loadHabits();
+
+    return () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+    };
+  }, []);
+
+  async function toggleHabit(id) {
+    const currentHabit = habits.find((h) => h.id === id);
+    if (!currentHabit) return;
+
+    const nextCompleted = !currentHabit.completed;
+
+    setHabits((prev) =>
+      prev.map((h) =>
+        h.id === id
+          ? {
+              ...h,
+              completed: nextCompleted,
+              doneCount: nextCompleted ? 1 : 0,
+            }
+          : h
+      )
+    );
+
+    try {
+      const response = await togglePerfectDayHabit(id, targetDate);
+      const isCompleted = !!response?.isCompleted;
+
+      setHabits((prev) =>
+        prev.map((h) =>
+          h.id === id
+            ? {
+                ...h,
+                completed: isCompleted,
+                doneCount: isCompleted ? 1 : 0,
+              }
+            : h
+        )
+      );
+
+      if (isCompleted) {
+        setToastVisible(true);
+        if (toastTimer.current) clearTimeout(toastTimer.current);
+        toastTimer.current = setTimeout(() => setToastVisible(false), 5000);
+      } else {
+        setToastVisible(false);
+        if (toastTimer.current) clearTimeout(toastTimer.current);
+      }
+    } catch (error) {
+      console.error("Failed to toggle habit", error);
+
+      setHabits((prev) =>
+        prev.map((h) =>
+          h.id === id
+            ? {
+                ...h,
+                completed: currentHabit.completed,
+                doneCount: currentHabit.completed ? 1 : 0,
+              }
+            : h
+        )
+      );
+
+      alert(error.message || "Failed to update habit");
+    }
+  }
+
+  async function addHabit() {
     const trimmed = newHabit.trim();
     if (!trimmed) return;
-    setHabits((prev) => [...prev, {
-      id: `h${Date.now()}`, icon: "target", title: trimmed,
-      doneCount: 0, targetCount: 30, category: "professional", completed: false,
-    }]);
-    setNewHabit("");
+
+    try {
+      await createPerfectDayHabit({
+        title: trimmed,
+        category: "Training",
+      });
+
+      setNewHabit("");
+      await loadHabits();
+    } catch (error) {
+      console.error("Failed to create habit", error);
+      alert(error.message || "Failed to create habit");
+    }
+  }
+
+  async function removeHabit(id) {
+    try {
+      await deletePerfectDayHabit(id);
+      setHabits((prev) => prev.filter((h) => h.id !== id));
+    } catch (error) {
+      console.error("Failed to delete habit", error);
+      alert(error.message || "Failed to delete habit");
+    }
   }
 
   const activeCount = habits.length;
   const completedToday = habits.filter((h) => h.completed).length;
   const successPct = activeCount > 0 ? Math.round((completedToday / activeCount) * 100) : 0;
 
+  if (loading) {
+    return (
+      <div className="pd-card pd-tab-placeholder">
+        <p>Loading habits...</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <HabitToast visible={toastVisible} />
+
       <section className="pd-card">
         <div className="pd-card-header">
           <div className="pd-card-title-row">
@@ -207,6 +305,7 @@ function MaritimeHabitsTab() {
           </div>
           <p className="pd-card-subtitle">Build lasting habits for maritime wellness and professional excellence</p>
         </div>
+
         <div className="pd-card-body">
           <div className="pd-habit-stats">
             <div className="pd-habit-stat green">
@@ -214,12 +313,14 @@ function MaritimeHabitsTab() {
               <p className="pd-habit-stat-label">Active Habits</p>
               <p className="pd-habit-stat-value green">{activeCount}</p>
             </div>
+
             <div className="pd-habit-stat blue">
               <Star size={24} strokeWidth={2} className="pd-habit-stat-icon" />
               <p className="pd-habit-stat-label">Today's Success</p>
               <p className="pd-habit-stat-value blue">{successPct}%</p>
             </div>
           </div>
+
           <div className="pd-habit-list">
             {habits.map((habit) => {
               const Icon = getHabitIcon(habit.icon);
@@ -227,36 +328,70 @@ function MaritimeHabitsTab() {
                 ? Math.min(100, Math.round((habit.doneCount / habit.targetCount) * 100))
                 : 0;
               const daysLabel = `${habit.doneCount}/${habit.targetCount} days`;
+
               return (
                 <div key={habit.id} className={`pd-habit-row ${habit.completed ? "completed" : ""}`}>
                   <div className="pd-habit-top">
                     <div className="pd-habit-left">
-                      <button type="button" role="checkbox" aria-checked={habit.completed}
+                      <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={habit.completed}
                         className={`pd-check ${habit.completed ? "checked" : ""}`}
-                        onClick={() => toggleHabit(habit.id)} />
+                        onClick={() => toggleHabit(habit.id)}
+                      />
                       <Icon className="pd-habit-icon" size={20} strokeWidth={2} />
                       <div>
-                        <p className={`pd-habit-title${habit.completed ? " green" : ""}`}>{habit.title}</p>
+                        <p className={`pd-habit-title${habit.completed ? " green" : ""}`}>
+                          {habit.title}
+                        </p>
                         <div className="pd-habit-meta">
                           <span>{daysLabel}</span>
                           <span className={`pd-habit-badge ${getHabitBadgeClass(habit.category)}`}>
-                            {habit.category}
+                            {habit.categoryLabel || habit.category}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="pd-habit-right">
-                      <p className="pd-habit-pct">{pct}%</p>
-                      <p className="pd-habit-pct-label">Target Progress</p>
+
+                    <div
+                      className="pd-habit-right"
+                      style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                    >
+                      <div>
+                        <p className="pd-habit-pct">{pct}%</p>
+                        <p className="pd-habit-pct-label">Target Progress</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => removeHabit(habit.id)}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          cursor: "pointer",
+                          fontSize: "18px",
+                          lineHeight: 1,
+                        }}
+                        aria-label="Delete habit"
+                        title="Delete habit"
+                      >
+                        ×
+                      </button>
                     </div>
                   </div>
+
                   <div className="pd-habit-bar">
-                    <div className="pd-habit-bar-fill" style={{ transform: `translateX(${pct - 100}%)` }} />
+                    <div
+                      className="pd-habit-bar-fill"
+                      style={{ transform: `translateX(${pct - 100}%)` }}
+                    />
                   </div>
                 </div>
               );
             })}
           </div>
+
           <div className="pd-habit-add-section">
             <h4 className="pd-habit-add-title">Add Custom Maritime Habit</h4>
             <div className="pd-habit-add-row">
@@ -267,7 +402,12 @@ function MaritimeHabitsTab() {
                 onChange={(e) => setNewHabit(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addHabit()}
               />
-              <button type="button" className="pd-habit-add-btn" onClick={addHabit} aria-label="Add habit">
+              <button
+                type="button"
+                className="pd-habit-add-btn"
+                onClick={addHabit}
+                aria-label="Add habit"
+              >
                 <Plus size={18} strokeWidth={2.5} />
               </button>
             </div>
@@ -278,65 +418,6 @@ function MaritimeHabitsTab() {
   );
 }
 
-// ─── Templates Tab ────────────────────────────────────────────────────────────
-const TEMPLATES = [
-  {
-    id: "port",
-    name: "Perfect Port Day",
-    description: "Optimized for days in port with shore activities",
-    activities: [
-      { time: "07:00", title: "Port Morning Routine",          icon: "heart",    category: null      },
-      { time: "08:00", title: "Shore Breakfast",               icon: "utensils", category: null      },
-      { time: "09:00", title: "Port Exploration Walking Tour", icon: "dumbbell", category: "Fitness" },
-      { time: "12:00", title: "Local Cuisine Experience",      icon: "utensils", category: null      },
-      { time: "14:00", title: "Cultural Learning",             icon: "book",     category: null      },
-      { time: "16:00", title: "Port Shopping Walk",            icon: "dumbbell", category: "Fitness" },
-    ],
-    extraCount: 2,
-  },
-  {
-    id: "sea",
-    name: "Perfect Sea Day",
-    description: "Ideal routine for days at sea with long voyages",
-    activities: [
-      { time: "06:00", title: "Morning Watch Duties",        icon: "anchor",   category: null },
-      { time: "06:30", title: "Ocean Sunrise Meditation",    icon: "heart",    category: null },
-      { time: "07:30", title: "Maritime Breakfast",          icon: "utensils", category: null },
-      { time: "08:30", title: "Navigation & Weather Check",  icon: "anchor",   category: null },
-      { time: "10:00", title: "Equipment Maintenance",       icon: "anchor",   category: null },
-      { time: "12:00", title: "Midday Meal",                 icon: "utensils", category: null },
-    ],
-    extraCount: 6,
-  },
-  {
-    id: "wellness",
-    name: "Perfect Wellness Day",
-    description: "Focus on mental and physical health recovery",
-    activities: [
-      { time: "07:00", title: "Gentle Morning Stretching", icon: "dumbbell", category: "Fitness" },
-      { time: "07:30", title: "Nutritious Breakfast",      icon: "utensils", category: null      },
-      { time: "08:30", title: "Mindfulness & Breathing",   icon: "heart",    category: null      },
-      { time: "09:30", title: "Light Duty Work",           icon: "anchor",   category: null      },
-      { time: "12:30", title: "Healthy Lunch & Rest",      icon: "utensils", category: null      },
-      { time: "14:00", title: "Creative Activities",       icon: "heart",    category: null      },
-    ],
-    extraCount: 6,
-  },
-  {
-    id: "fitness",
-    name: "Perfect Fitness Day",
-    description: "Maritime fitness and physical wellness focused routine",
-    activities: [
-      { time: "06:00", title: "Morning Warm-up & Stretching", icon: "dumbbell", category: "Fitness" },
-      { time: "06:30", title: "Protein-Rich Breakfast",       icon: "utensils", category: null      },
-      { time: "07:30", title: "Deck Cardio Workout",          icon: "dumbbell", category: "Fitness" },
-      { time: "09:00", title: "Work Duties",                  icon: "anchor",   category: null      },
-      { time: "12:00", title: "Post-Workout Meal",            icon: "utensils", category: null      },
-      { time: "13:30", title: "Active Recovery Walk",         icon: "dumbbell", category: "Fitness" },
-    ],
-    extraCount: 6,
-  },
-];
 
 function getTplIcon(icon) {
   const map = {
@@ -347,25 +428,61 @@ function getTplIcon(icon) {
   return <Icon size={14} strokeWidth={2} className="tpl-act-icon" />;
 }
 
-function TemplatesTab() {
-  const [selected, setSelected]   = useState("");
-  const [dropOpen, setDropOpen]   = useState(false);
-  const [applied, setApplied]     = useState(null);
+function TemplatesTab({ onTemplateApplied }) {
+  const [templates, setTemplates] = useState([]);
+  const [selected, setSelected] = useState("");
+  const [dropOpen, setDropOpen] = useState(false);
+  const [applied, setApplied] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadTemplates() {
+      try {
+        const data = await getPerfectDayTemplates();
+        setTemplates(data);
+      } catch (error) {
+        console.error("Failed to load templates", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadTemplates();
+  }, []);
 
   const dropOptions = [
     { value: "", label: "Select a perfect day template" },
-    ...TEMPLATES.map((t) => ({ value: t.id, label: t.name })),
+    ...templates.map((t) => ({ value: t.id, label: t.name })),
   ];
 
-  function handleApply(templateId) {
-    setApplied(templateId);
-    setTimeout(() => setApplied(null), 3000);
+  async function handleApply(templateId) {
+    try {
+      const targetDate = new Date().toISOString().slice(0, 10);
+      await applyPerfectDayTemplate(templateId, targetDate);
+      setApplied(templateId);
+      if (onTemplateApplied) {
+        await onTemplateApplied(targetDate);
+      }
+      setTimeout(() => setApplied(null), 3000);
+    } catch (error) {
+      console.error("Failed to apply template", error);
+      alert(error.message || "Failed to apply template");
+    }
   }
 
   function splitActivities(acts) {
-    const left = [], right = [];
+    const left = [];
+    const right = [];
     acts.forEach((a, i) => (i % 2 === 0 ? left : right).push(a));
     return { left, right };
+  }
+
+  if (loading) {
+    return (
+      <div className="pd-card pd-tab-placeholder">
+        <p>Loading templates...</p>
+      </div>
+    );
   }
 
   return (
@@ -377,20 +494,28 @@ function TemplatesTab() {
         </div>
         <p className="pd-card-subtitle">Pre-designed routines for different maritime scenarios</p>
       </div>
+
       <div className="pd-card-body">
         <div className="tpl-field-group">
           <label className="pd-label">Choose a Template</label>
           <div className="tpl-dropdown" onClick={() => setDropOpen((p) => !p)}>
             <span className={`tpl-dropdown-value ${!selected ? "placeholder" : ""}`}>
-              {selected ? TEMPLATES.find((t) => t.id === selected)?.name : "Select a perfect day template"}
+              {selected ? templates.find((t) => t.id === selected)?.name : "Select a perfect day template"}
             </span>
             <ChevronDown size={16} strokeWidth={2} className={`tpl-dropdown-chevron ${dropOpen ? "open" : ""}`} />
             {dropOpen && (
               <div className="tpl-dropdown-menu">
                 {dropOptions.map((o) => (
-                  <button key={o.value} type="button"
+                  <button
+                    key={o.value}
+                    type="button"
                     className={`tpl-dropdown-item ${selected === o.value ? "active" : ""}`}
-                    onClick={(e) => { e.stopPropagation(); setSelected(o.value); setDropOpen(false); }}>
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelected(o.value);
+                      setDropOpen(false);
+                    }}
+                  >
                     {o.label}
                   </button>
                 ))}
@@ -409,20 +534,27 @@ function TemplatesTab() {
             <span
               className="tpl-chip"
               style={{ cursor: "pointer" }}
-              onClick={() => window.open("https://web.monkify.app/category?id=10&name=Meditations", "_blank", "noopener,noreferrer")}
+              onClick={() =>
+                window.open(
+                  "https://web.monkify.app/category?id=10&name=Meditations",
+                  "_blank",
+                  "noopener,noreferrer"
+                )
+              }
             >
               <Heart size={13} strokeWidth={2} /> Yoga &amp; Stretching
             </span>
           </div>
           <p className="tpl-fitness-note">
-            Use the "Perfect Fitness Day" template to integrate comprehensive maritime fitness routines.
+            Use the template that best matches your maritime schedule for the day.
           </p>
         </div>
 
         <div className="tpl-card-list">
-          {TEMPLATES.map((tpl) => {
-            const { left, right } = splitActivities(tpl.activities);
+          {templates.map((tpl) => {
+            const { left, right } = splitActivities(tpl.activities || []);
             const isApplied = applied === tpl.id;
+
             return (
               <div key={tpl.id} className="tpl-card">
                 <div className="tpl-card-top">
@@ -430,11 +562,15 @@ function TemplatesTab() {
                     <p className="tpl-card-name">{tpl.name}</p>
                     <p className="tpl-card-desc">{tpl.description}</p>
                   </div>
-                  <button type="button" className={`tpl-apply-btn ${isApplied ? "applied" : ""}`}
-                    onClick={() => handleApply(tpl.id)}>
+                  <button
+                    type="button"
+                    className={`tpl-apply-btn ${isApplied ? "applied" : ""}`}
+                    onClick={() => handleApply(tpl.id)}
+                  >
                     {isApplied ? "Applied!" : "Apply Template"}
                   </button>
                 </div>
+
                 <div className="tpl-act-grid">
                   <div className="tpl-act-col">
                     {left.map((act, i) => (
@@ -447,6 +583,7 @@ function TemplatesTab() {
                       </div>
                     ))}
                   </div>
+
                   <div className="tpl-act-col">
                     {right.map((act, i) => (
                       <div key={i} className="tpl-act-row">
@@ -459,6 +596,7 @@ function TemplatesTab() {
                     ))}
                   </div>
                 </div>
+
                 {tpl.extraCount > 0 && <p className="tpl-more">+{tpl.extraCount} more activities...</p>}
               </div>
             );
@@ -480,7 +618,7 @@ function getCatIcon(icon) {
 }
 
 function AnalyticsTab() {
-  const [data, setData]       = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -488,7 +626,7 @@ function AnalyticsTab() {
   }, []);
 
   if (loading) return <div className="pd-card pd-tab-placeholder"><p>Loading analytics...</p></div>;
-  if (!data)   return <div className="pd-card pd-tab-placeholder"><p>Unable to load analytics.</p></div>;
+  if (!data) return <div className="pd-card pd-tab-placeholder"><p>Unable to load analytics.</p></div>;
 
   const { dailyProgress, habitStreaks, activityCategories, fitnessIntegration, insight } = data;
   const dailyPct = dailyProgress.total > 0
@@ -588,10 +726,10 @@ function AnalyticsTab() {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 function PerfectDaySchedulePage() {
-  const [pageData,   setPageData]   = useState(null);
-  const [loading,    setLoading]    = useState(true);
-  const [items,      setItems]      = useState([]);
-  const [activeTab,  setActiveTab]  = useState("day-planner");
+  const [pageData, setPageData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState([]);
+  const [activeTab, setActiveTab] = useState("day-planner");
 
   // Navigation – pass items so BottomNav knows all routes.
   // Active highlight is derived from the URL inside BottomNav automatically.
@@ -605,10 +743,7 @@ function PerfectDaySchedulePage() {
   useEffect(() => {
     async function loadPage() {
       try {
-        const data = await getPerfectDaySchedule();
-        setPageData(data);
-        setItems(data.scheduleSection.items);
-        setActiveTab(data.planner.activeTab);
+        await reloadSchedule();
       } catch (err) {
         console.error("Failed to load perfect day schedule", err);
       } finally {
@@ -618,8 +753,44 @@ function PerfectDaySchedulePage() {
     loadPage();
   }, []);
 
-  function handleToggle(id) {
-    setItems((prev) => prev.map((it) => it.id === id ? { ...it, completed: !it.completed } : it));
+  async function reloadSchedule(targetDate = new Date().toISOString().slice(0, 10)) {
+    try {
+      const data = await getPerfectDaySchedule(targetDate);
+      setPageData(data);
+      setItems(data.scheduleSection.items || []);
+      setActiveTab("day-planner");
+    } catch (error) {
+      console.error("Failed to reload schedule", error);
+    }
+  }
+
+  async function handleToggle(id) {
+    const currentItem = items.find((it) => it.id === id);
+    if (!currentItem) return;
+
+    const nextCompleted = !currentItem.completed;
+
+    // optimistic UI
+    setItems((prev) =>
+      prev.map((it) =>
+        it.id === id ? { ...it, completed: nextCompleted } : it
+      )
+    );
+
+    try {
+      await togglePerfectDayActivity(id, nextCompleted);
+    } catch (error) {
+      console.error("Failed to update activity", error);
+
+      // rollback
+      setItems((prev) =>
+        prev.map((it) =>
+          it.id === id ? { ...it, completed: currentItem.completed } : it
+        )
+      );
+
+      alert(error.message || "Failed to update activity");
+    }
   }
 
   const headerData = pageData?.header || homePageMockData?.header;
@@ -644,14 +815,14 @@ function PerfectDaySchedulePage() {
     );
   }
 
-  const total          = items.length;
+  const total = items.length;
   const completedCount = items.filter((i) => i.completed).length;
-  const pct            = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+  const pct = total > 0 ? Math.round((completedCount / total) * 100) : 0;
 
   const liveSummaryCards = [
-    { type: "total",     title: "Total Activities", value: String(total) },
-    { type: "completed", title: "Completed",         value: String(completedCount) },
-    { type: "progress",  title: "Progress",          value: `${pct}%` },
+    { type: "total", title: "Total Activities", value: String(total) },
+    { type: "completed", title: "Completed", value: String(completedCount) },
+    { type: "progress", title: "Progress", value: `${pct}%` },
   ];
 
   return (
@@ -703,8 +874,8 @@ function PerfectDaySchedulePage() {
             </>
           )}
 
-          {activeTab === "habits"    && <MaritimeHabitsTab />}
-          {activeTab === "templates" && <TemplatesTab />}
+          {activeTab === "habits" && <MaritimeHabitsTab />}
+          {activeTab === "templates" && <TemplatesTab onTemplateApplied={reloadSchedule} />}
           {activeTab === "analytics" && <AnalyticsTab />}
         </div>
       </main>

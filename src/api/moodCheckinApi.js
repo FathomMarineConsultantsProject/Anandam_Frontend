@@ -1,44 +1,45 @@
-const STORAGE_KEY = 'anandam_full_mood_checkins';
+import { apiRequest } from "./client";
 
-function readStoredCheckins() {
-  const raw = localStorage.getItem(STORAGE_KEY);
+function mapWorkload(value) {
+  const map = {
+    light: "Light",
+    normal: "Moderate",
+    heavy: "Heavy",
+    overwhelming: "Overwhelming",
+  };
 
-  if (!raw) return [];
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-}
-
-function writeStoredCheckins(items) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  return map[value] || "Moderate";
 }
 
 export async function submitMoodCheckin(payload) {
-  const newEntry = {
-    id: String(Date.now()),
-    createdAt: new Date().toISOString(),
-    ...payload,
-  };
+  const emotionsText =
+    Array.isArray(payload.emotions) && payload.emotions.length > 0
+      ? `Emotions: ${payload.emotions.join(", ")}`
+      : "";
 
-  const existing = readStoredCheckins();
-  const updated = [newEntry, ...existing];
+  const notesText = payload.notes?.trim() ? `Notes: ${payload.notes.trim()}` : "";
+  const journalText = payload.journalEntry?.trim()
+    ? payload.journalEntry.trim()
+    : "";
 
-  writeStoredCheckins(updated);
+  const combinedJournal = [journalText, notesText, emotionsText]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const response = await apiRequest("/mood/log", {
+    method: "POST",
+    body: JSON.stringify({
+      moodScore: payload.mood,
+      energyLevel: payload.energy,
+      stressLevel: payload.stress,
+      hoursOfSleep: payload.sleepHours,
+      currentWorkload: mapWorkload(payload.workload),
+      journalEntry: combinedJournal || "Mood check-in submitted.",
+    }),
+  });
 
   return {
     success: true,
-    entry: newEntry,
+    entry: response?.data,
   };
 }
-
-/*
-Later replace with real API, for example:
-
-export async function submitMoodCheckin(payload) {
-  const response = await client.post('/mood-checkins', payload);
-  return response.data;
-}
-*/
