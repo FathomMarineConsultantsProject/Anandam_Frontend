@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../api/authApi";
-import { saveAuthSession, resetMoodGate } from "../utils/storage";
+import { resetMoodGate } from "../utils/storage";
+import { setAuthSession } from "../api/client";
 import "../styles/auth.css";
 
 function LoginPage() {
@@ -26,16 +27,19 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const data = await loginUser(form);
+      const data = await loginUser({
+        email: form.email.trim(),
+        password: form.password,
+      });
 
-      saveAuthSession({
+      setAuthSession({
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
         user: data.user,
       });
 
       resetMoodGate();
-      navigate("/mood-quick");
+      navigate("/mood-quick", { replace: true });
     } catch (err) {
       setError(err.message || "Login failed");
     } finally {
@@ -56,6 +60,7 @@ function LoginPage() {
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
+            autoComplete="email"
           />
 
           <input
@@ -64,6 +69,7 @@ function LoginPage() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            autoComplete="current-password"
           />
 
           {error ? <p className="auth-error">{error}</p> : null}
@@ -76,19 +82,6 @@ function LoginPage() {
         <p className="auth-footer-text">
           Don’t have an account? <Link to="/signup">Create one</Link>
         </p>
-
-        <div className="auth-dev-actions">
-          <button
-            type="button"
-            className="auth-dev-link"
-            onClick={() => {
-              resetMoodGate();
-              navigate("/mood-quick");
-            }}
-          >
-            Continue to quick mood check
-          </button>
-        </div>
       </div>
     </div>
   );

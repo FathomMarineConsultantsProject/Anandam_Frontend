@@ -1,30 +1,57 @@
-const AUTH_KEY = "anandam_auth_session";
+const TOKEN_KEY = "token";
+const REFRESH_TOKEN_KEY = "refreshToken";
+const USER_KEY = "user";
 const MOOD_GATE_KEY = "anandam_post_login_mood_done";
 
 export function saveAuthSession(session) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-}
+  if (session?.accessToken) {
+    localStorage.setItem(TOKEN_KEY, session.accessToken);
+  }
 
-export function getAuthSession() {
-  const raw = localStorage.getItem(AUTH_KEY);
+  if (session?.refreshToken) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, session.refreshToken);
+  }
 
-  if (!raw) return null;
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
+  if (session?.user) {
+    localStorage.setItem(USER_KEY, JSON.stringify(session.user));
   }
 }
 
+export function getAuthSession() {
+  const accessToken = localStorage.getItem(TOKEN_KEY);
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  const userRaw = localStorage.getItem(USER_KEY);
+
+  let user = null;
+
+  if (userRaw) {
+    try {
+      user = JSON.parse(userRaw);
+    } catch {
+      user = null;
+    }
+  }
+
+  if (!accessToken && !refreshToken && !user) {
+    return null;
+  }
+
+  return {
+    accessToken,
+    refreshToken,
+    user,
+  };
+}
+
 export function clearAuthSession() {
-  localStorage.removeItem(AUTH_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
   sessionStorage.removeItem(MOOD_GATE_KEY);
 }
 
 export function isAuthenticated() {
-  const session = getAuthSession();
-  return Boolean(session?.accessToken);
+  return !!localStorage.getItem(TOKEN_KEY);
 }
 
 export function resetMoodGate() {
