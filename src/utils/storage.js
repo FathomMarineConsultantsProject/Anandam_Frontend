@@ -43,6 +43,10 @@ export function getAuthSession() {
   };
 }
 
+export function getStoredUser() {
+  return getAuthSession()?.user || null;
+}
+
 export function clearAuthSession() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);

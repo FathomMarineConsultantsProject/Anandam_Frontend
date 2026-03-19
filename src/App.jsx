@@ -11,6 +11,7 @@ import FitnessPage from "./pages/FitnessPage";            // ← NEW
 import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
 import EmergencyPage from "./pages/EmergencyPage";    // ← NEW
+import ProfilePage from "./pages/ProfilePage";
 
 function RequireAuth({ children }) {
   if (!isAuthenticated()) {
@@ -98,6 +99,15 @@ function App() {
           element={
             <RequireAuth>
               <EmergencyPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/profile"
+          element={
+            <RequireAuth>
+              <ProfilePage />
             </RequireAuth>
           }
         />
