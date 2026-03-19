@@ -1,44 +1,77 @@
-// src/components/layout/AppHeader.jsx
-import { useState, useRef, useEffect } from "react";
-import { Bell, LogOut } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Bell, LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { clearAuthSession, getAuthSession } from "../../utils/storage";
 import "../../styles/global.css";
 
-function AppHeader({ header }) {
-  const navigate   = useNavigate();
-  const dropRef    = useRef(null);
-  const [open, setOpen] = useState(false);
+function getInitials(fullName = "") {
+  return fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "U";
+}
 
-  // ── Close on outside click ──────────────────────────────────────────────
+function AppHeader({ header }) {
+  const navigate = useNavigate();
+  const dropRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [storedUser, setStoredUser] = useState(() => getAuthSession()?.user || null);
+
+  useEffect(() => {
+    function syncUser() {
+      setStoredUser(getAuthSession()?.user || null);
+    }
+
+    window.addEventListener("storage", syncUser);
+    window.addEventListener("focus", syncUser);
+
+    return () => {
+      window.removeEventListener("storage", syncUser);
+      window.removeEventListener("focus", syncUser);
+    };
+  }, []);
+
   useEffect(() => {
     if (!open) return;
+
     function onOutside(e) {
       if (dropRef.current && !dropRef.current.contains(e.target)) {
         setOpen(false);
       }
     }
+
     document.addEventListener("mousedown", onOutside);
     return () => document.removeEventListener("mousedown", onOutside);
   }, [open]);
 
-  // ── Sign out ────────────────────────────────────────────────────────────
   function handleSignOut() {
     setOpen(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("moodGateCompleted");
-    sessionStorage.clear();
-    navigate("/");
+    clearAuthSession();
+    navigate("/", { replace: true });
+  }
+
+  function handleOpenProfile() {
+    setOpen(false);
+    navigate("/app/profile");
   }
 
   if (!header) return null;
 
-  const fullName = header.userName || header.userInitials || "User";
+  const fullName =
+    header.fullName ||
+    header.userName ||
+    storedUser?.fullName ||
+    "User";
+
+  const userInitials =
+    header.userInitials ||
+    getInitials(fullName);
 
   return (
     <header className="pd-app-header">
       <div className="pd-app-header-inner">
-
-        {/* ── Brand / Logo ── */}
         <div className="pd-brand">
           <div className="pd-brand-logo">
             <div className="pd-brand-logo-outer" />
@@ -53,20 +86,22 @@ function AppHeader({ header }) {
             </div>
             <div className="pd-brand-logo-dot" />
           </div>
+
           <div className="pd-brand-text">
             <h1 style={{ color: "#295A8E" }}>{header.appName}</h1>
             <p>{header.appSubtitle}</p>
           </div>
         </div>
 
-        {/* ── Right actions ── */}
         <div className="pd-header-actions">
-
-          <button className="pd-header-icon-btn" type="button" aria-label="Notifications">
+          <button
+            className="pd-header-icon-btn"
+            type="button"
+            aria-label="Notifications"
+          >
             <Bell size={18} strokeWidth={2} />
           </button>
 
-          {/* Profile badge + dropdown */}
           <div className="pd-profile-wrap" ref={dropRef}>
             <button
               type="button"
@@ -76,19 +111,31 @@ function AppHeader({ header }) {
               aria-expanded={open}
               aria-label="Profile menu"
             >
-              {header.userInitials}
+              {userInitials}
             </button>
 
             {open && (
               <div className="pd-profile-dropdown" role="menu">
                 <div className="pd-profile-welcome">
-                  <div className="pd-profile-avatar">{header.userInitials}</div>
+                  <div className="pd-profile-avatar">{userInitials}</div>
                   <div className="pd-profile-info">
                     <p className="pd-profile-greeting">Welcome back</p>
                     <p className="pd-profile-name">{fullName}</p>
                   </div>
                 </div>
+
                 <div className="pd-profile-divider" />
+
+                <button
+                  type="button"
+                  className="pd-profile-menu-item"
+                  role="menuitem"
+                  onClick={handleOpenProfile}
+                >
+                  <User size={15} strokeWidth={2} />
+                  My Profile
+                </button>
+
                 <button
                   type="button"
                   className="pd-profile-menu-item signout"
@@ -101,7 +148,6 @@ function AppHeader({ header }) {
               </div>
             )}
           </div>
-
         </div>
       </div>
     </header>

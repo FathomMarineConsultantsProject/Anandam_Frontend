@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/layout/AppHeader';
 import BottomNav from '../components/layout/BottomNav';
@@ -7,27 +8,68 @@ import StatsSection from '../components/home/StatsSection';
 import AssistantSection from '../components/home/AssistantSection';
 import CardGridSection from '../components/home/CardGridSection';
 import { homePageMockData } from '../data/homeData';
+import { getProfile } from '../api/profileApi';
+
+function getInitials(fullName = '') {
+  return fullName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('') || 'U';
+}
 
 function DashboardPage() {
   const navigate = useNavigate();
-  const pageData = homePageMockData;
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const data = await getProfile();
+        setProfile(data);
+      } catch (error) {
+        console.error('Failed to load profile', error);
+      }
+    }
+
+    loadProfile();
+  }, []);
+
+  const pageData = useMemo(() => {
+    const base = homePageMockData;
+
+    if (!profile) return base;
+
+    return {
+      ...base,
+      header: {
+        ...base.header,
+        userInitials: getInitials(profile.fullName),
+        fullName: profile.fullName,
+      },
+      hero: {
+        ...base.hero,
+        name: profile.fullName || base.hero.name,
+        role: profile.rank || base.hero.role,
+        ship: profile.vessel || base.hero.ship,
+      },
+    };
+  }, [profile]);
 
   function handleFeatureSelect(card) {
     if (!card?.route) return;
 
-    // External URLs (https, http, WhatsApp deep links) → new tab
     if (card.route.startsWith('http')) {
       window.open(card.route, '_blank', 'noopener,noreferrer');
       return;
     }
 
-    // Phone dialer (tel:) → same window so device handles it natively
     if (card.route.startsWith('tel:')) {
       window.location.href = card.route;
       return;
     }
 
-    // Internal routes → navigate
     navigate(card.route);
   }
 
