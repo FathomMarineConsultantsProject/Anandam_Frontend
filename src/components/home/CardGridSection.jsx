@@ -1,10 +1,17 @@
+import { useNavigate } from 'react-router-dom';
 import { iconMap } from '../IconMap';
 
 function CardGridSection({ section, variant = 'default' }) {
   if (!section) return null;
 
+  const navigate = useNavigate();
   const isEmergency = variant === 'emergency';
   const isCommunication = variant === 'communication';
+  const handleEmergencyNavigation = () => {
+    if (isEmergency) {
+      navigate("/app/emergency");
+    }
+  };
 
   return (
     <section
@@ -48,6 +55,7 @@ function CardGridSection({ section, variant = 'default' }) {
           className={`section-cta-button ${
             isEmergency ? 'section-cta-button-danger' : ''
           }`}
+          onClick={isEmergency ? handleEmergencyNavigation : undefined}
         >
           {section.ctaLabel}
         </button>
