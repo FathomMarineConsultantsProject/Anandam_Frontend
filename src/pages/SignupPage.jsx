@@ -41,7 +41,7 @@ function SignupPage() {
       });
 
       resetMoodGate();
-      navigate("/mood-quick", { replace: true });
+      navigate("/mood-check", { replace: true });
     } catch (err) {
       setError(err.message || "Signup failed");
     } finally {

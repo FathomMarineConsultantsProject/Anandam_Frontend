@@ -39,7 +39,7 @@ function LoginPage() {
       });
 
       resetMoodGate();
-      navigate("/mood-quick", { replace: true });
+      navigate("/mood-check", { replace: true });
     } catch (err) {
       setError(err.message || "Login failed");
     } finally {

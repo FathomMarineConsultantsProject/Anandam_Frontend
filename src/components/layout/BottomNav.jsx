@@ -14,13 +14,14 @@ import {
   Activity,
   TriangleAlert,
 } from "lucide-react";
+import { hasCompletedMoodGate } from "../../utils/storage";
 
 const navIconMap = {
-  home:            House,
-  calendar:        Calendar,
-  heart:           Heart,
-  clock:           Clock,
-  activity:        Activity,
+  home: House,
+  calendar: Calendar,
+  heart: Heart,
+  clock: Clock,
+  activity: Activity,
   "alert-triangle": TriangleAlert,
 };
 
@@ -37,26 +38,40 @@ function BottomNav({ navigation }) {
   function getActiveId() {
     const currentPath = location.pathname;
 
-    // Exact or prefix match — longest match wins
     let matched = null;
     let matchLen = 0;
+
     for (const item of items) {
       if (!item.path) continue;
+
       if (
-        (currentPath === item.path || currentPath.startsWith(item.path + "/")) &&
+        (currentPath === item.path ||
+          currentPath.startsWith(item.path + "/")) &&
         item.path.length > matchLen
       ) {
         matched = item.id;
         matchLen = item.path.length;
       }
     }
+
     return matched ?? activeTab;
   }
 
   const activeId = getActiveId();
 
+  // ✅ FIXED navigation handler
   function handleNavClick(item) {
     if (!item.path) return;
+
+    // Prevent navigating to the same route
+    if (location.pathname === item.path) return;
+
+    // Enforce mood check globally
+    if (!hasCompletedMoodGate()) {
+      navigate("/mood-check");
+      return;
+    }
+
     navigate(item.path);
   }
 
@@ -64,7 +79,7 @@ function BottomNav({ navigation }) {
     <nav className="pd-bottom-nav">
       <div className="pd-bottom-nav-grid">
         {items.map((item) => {
-          const Icon    = navIconMap[item.icon];
+          const Icon = navIconMap[item.icon];
           const isActive = activeId === item.id;
 
           return (
