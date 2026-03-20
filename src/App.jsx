@@ -24,7 +24,7 @@ function RequireMoodBeforeDashboard({ children }) {
     return <Navigate to="/login" replace />;
   }
   if (!hasCompletedMoodGate()) {
-    return <Navigate to="/mood-quick" replace />;
+    return <Navigate to="/mood-check" replace />;
   }
   return children;
 }
@@ -38,6 +38,15 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
 
         <Route
+          path="/mood-check"
+          element={
+            <RequireAuth>
+              <MoodPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
           path="/mood-quick"
           element={
             <RequireAuth>
@@ -49,9 +58,11 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <RequireMoodBeforeDashboard>
-              <DashboardPage />
-            </RequireMoodBeforeDashboard>
+            <RequireAuth>
+              <RequireMoodBeforeDashboard>
+                <DashboardPage />
+              </RequireMoodBeforeDashboard>
+            </RequireAuth>
           }
         />
 
@@ -59,7 +70,20 @@ function App() {
           path="/mood"
           element={
             <RequireAuth>
-              <MoodCheckinPage />
+              <RequireMoodBeforeDashboard>
+                <MoodCheckinPage />
+              </RequireMoodBeforeDashboard>
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/dashboard"
+          element={
+            <RequireAuth>
+              <RequireMoodBeforeDashboard>
+                <DashboardPage />
+              </RequireMoodBeforeDashboard>
             </RequireAuth>
           }
         />
@@ -68,7 +92,9 @@ function App() {
           path="/app/perfect-day"
           element={
             <RequireAuth>
-              <PerfectDaySchedulePage />
+              <RequireMoodBeforeDashboard>
+                <PerfectDaySchedulePage />
+              </RequireMoodBeforeDashboard>
             </RequireAuth>
           }
         />
@@ -77,7 +103,9 @@ function App() {
           path="/app/work-rest"
           element={
             <RequireAuth>
-              <WorkRestPage />
+              <RequireMoodBeforeDashboard>
+                <WorkRestPage />
+              </RequireMoodBeforeDashboard>
             </RequireAuth>
           }
         />
@@ -87,7 +115,9 @@ function App() {
           path="/app/fitness"
           element={
             <RequireAuth>
-              <FitnessPage />
+              <RequireMoodBeforeDashboard>
+                <FitnessPage />
+              </RequireMoodBeforeDashboard>
             </RequireAuth>
           }
         />
@@ -97,13 +127,18 @@ function App() {
           path="/app/emergency"
           element={
             <RequireAuth>
-              <EmergencyPage />
+              <RequireMoodBeforeDashboard>
+                <EmergencyPage />
+              </RequireMoodBeforeDashboard>
             </RequireAuth>
           }
         />
 
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="*"
+          element={<Navigate to="/app/dashboard" replace />}
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -189,7 +189,7 @@ export const workRestMockData = {
   navigation: {
     activeTab: "work-rest",
     items: [
-      { id: "home",        label: "Home",        icon: "home",           path: "/dashboard" },
+      { id: "home",        label: "Home",        icon: "home",           path: "/app/dashboard" },
       { id: "perfect-day", label: "Perfect Day", icon: "calendar",       path: "/app/perfect-day" },
       { id: "mood",        label: "Mood",        icon: "heart",          path: "/mood" },
       { id: "work-rest",   label: "Work/Rest",   icon: "clock",          path: "/app/work-rest" },

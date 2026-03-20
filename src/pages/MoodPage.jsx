@@ -70,7 +70,7 @@ function MoodPage() {
       // Wait the full clover animation before navigating so leaves
       // have time to fall all the way down the screen.
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/app/dashboard');
       }, isBestMood ? CLOVER_DURATION_MS : DEFAULT_REDIRECT_MS);
 
     } finally {
