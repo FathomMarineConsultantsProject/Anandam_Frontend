@@ -36,18 +36,20 @@ export async function getMyProfile() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /api/work-hours/me/:date  →  this specific user's work blocks for the day
-// Response shape (from image 3):
-//   { status, data: { id, userId, date, workBlocks: boolean[48] } }
+// GET /api/work-hours/me/history  →  array of all this user's work block records
+// Response shape: { status, data: [ { id, userId, date, workBlocks: boolean[48] }, ... ] }
+// We find the record matching targetDate and return its workBlocks.
+// If no record exists for that date yet, we return all-false.
 // ─────────────────────────────────────────────────────────────────────────────
 export async function fetchMyWorkGrid(targetDate) {
   const date = targetDate ?? new Date().toISOString().slice(0, 10);
-  const res = await fetch(`${BASE_URL}/work-hours/me/${date}`, {
+
+  const res = await fetch(`${BASE_URL}/work-hours/me/history`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
 
-  // 404 just means no record yet for today — treat as all-false
+  // 404 = no history at all yet — treat as all-false
   if (res.status === 404) {
     return Array(48).fill(false);
   }
@@ -55,7 +57,15 @@ export async function fetchMyWorkGrid(targetDate) {
   if (!res.ok) throw new Error(`Work grid fetch failed: ${res.status}`);
 
   const json = await res.json();
-  return normalizeWorkBlocks(json?.data?.workBlocks);
+  const records = json?.data ?? [];
+
+  // Find the record whose date matches targetDate (date portion only)
+  const match = records.find((r) => {
+    const recordDate = (r.date ?? "").slice(0, 10); // "2026-03-24T00:00:00.000Z" → "2026-03-24"
+    return recordDate === date;
+  });
+
+  return normalizeWorkBlocks(match?.workBlocks);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
