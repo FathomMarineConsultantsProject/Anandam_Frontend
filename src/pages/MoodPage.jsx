@@ -1,52 +1,76 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AppHeader from '../components/layout/AppHeader';
-import BottomNav from '../components/layout/BottomNav';
-import MoodScale from '../components/mood/MoodScale';
-import MoodHistoryTable from '../components/mood/MoodHistoryTable';
-import CloverRain from '../components/mood/CloverRain';
-import { getMoodPageData, submitMoodCheck } from '../api/moodApi';
-import { homePageMockData } from '../data/homeData';
-import { completeMoodGate } from '../utils/storage';
-import '../styles/mood.css';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AppHeader from "../components/layout/AppHeader";
+import BottomNav from "../components/layout/BottomNav";
+import MoodScale from "../components/mood/MoodScale";
+import MoodHistoryTable from "../components/mood/MoodHistoryTable";
+import CloverRain from "../components/mood/CloverRain";
+import { getMoodPageData, submitMoodCheck } from "../api/moodApi";
+import { homePageMockData } from "../data/homeData";
+import { completeMoodGate } from "../utils/storage";
+import "../styles/mood.css";
 
-// How long the clover rain plays before we navigate away.
-// Must be >= the longest animation in CloverRain (duration + delay).
-// CSS uses up to ~4200 ms total, so we wait the full duration.
 const CLOVER_DURATION_MS = 4200;
-
-// Non-clover mood: navigate almost immediately
 const DEFAULT_REDIRECT_MS = 250;
 
 function MoodPage() {
   const navigate = useNavigate();
 
-  const [pageData, setPageData]       = useState(null);
+  const [pageData, setPageData] = useState(null);
   const [selectedMood, setSelectedMood] = useState(null);
-  const [history, setHistory]         = useState([]);
+  const [history, setHistory] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCloverRain, setShowCloverRain] = useState(false);
 
   useEffect(() => {
     async function loadMoodPage() {
-      const data = await getMoodPageData();
-      setPageData(data);
-      setHistory(data.history);
+      try {
+        const data = await getMoodPageData();
+        setPageData(data);
+        setHistory(data.history || []);
+      } catch (error) {
+        console.error("Failed to load mood page:", error);
+        setPageData({
+          pageTitle: "Mood Check-in",
+          cardTitle: "How are you feeling today?",
+          cardSubtitle: "Your daily mood tracking helps us provide better support",
+          submitLabel: "Submit Mood Check",
+          tableHeaders: {
+            date: "Date",
+            mood: "Mood",
+          },
+          scale: [
+            { value: 1, emoji: "😧" },
+            { value: 2, emoji: "😟" },
+            { value: 3, emoji: "😐" },
+            { value: 4, emoji: "😊" },
+            { value: 5, emoji: "😄" },
+          ],
+          history: [],
+        });
+      }
     }
+
     loadMoodPage();
   }, []);
 
-  // Auto-hide clover rain after it finishes (safety net — navigate fires first)
   useEffect(() => {
     if (!showCloverRain) return;
-    const timer = setTimeout(() => setShowCloverRain(false), CLOVER_DURATION_MS);
+
+    const timer = setTimeout(() => {
+      setShowCloverRain(false);
+    }, CLOVER_DURATION_MS);
+
     return () => clearTimeout(timer);
   }, [showCloverRain]);
 
-  const moodNavigation = useMemo(() => ({
-    ...homePageMockData.navigation,
-    activeTab: 'mood',
-  }), []);
+  const moodNavigation = useMemo(
+    () => ({
+      ...homePageMockData.navigation,
+      activeTab: "mood",
+    }),
+    []
+  );
 
   async function handleSubmit() {
     if (!selectedMood || isSubmitting) return;
@@ -55,24 +79,23 @@ function MoodPage() {
       setIsSubmitting(true);
 
       const response = await submitMoodCheck(selectedMood);
-      setHistory(response.history);
+      setHistory(response.history || []);
 
       const isBestMood = selectedMood === 5;
 
       if (isBestMood) {
-        // Reset then re-trigger so the animation always restarts cleanly
         setShowCloverRain(false);
         requestAnimationFrame(() => setShowCloverRain(true));
       }
 
       completeMoodGate();
 
-      // Wait the full clover animation before navigating so leaves
-      // have time to fall all the way down the screen.
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate("/dashboard");
       }, isBestMood ? CLOVER_DURATION_MS : DEFAULT_REDIRECT_MS);
-
+    } catch (error) {
+      console.error("Mood submit failed:", error);
+      alert(error.message || "Failed to submit mood check.");
     } finally {
       setIsSubmitting(false);
     }
@@ -116,7 +139,7 @@ function MoodPage() {
               onClick={handleSubmit}
               disabled={!selectedMood || isSubmitting}
             >
-              {isSubmitting ? 'Submitting...' : pageData.submitLabel}
+              {isSubmitting ? "Submitting..." : pageData.submitLabel}
             </button>
 
             <MoodHistoryTable

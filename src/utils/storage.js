@@ -4,8 +4,10 @@ const USER_KEY = "user";
 const MOOD_GATE_KEY = "anandam_post_login_mood_done";
 
 export function saveAuthSession(session) {
-  if (session?.accessToken) {
-    localStorage.setItem(TOKEN_KEY, session.accessToken);
+  const token = session?.token ?? session?.accessToken ?? null;
+
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
   }
 
   if (session?.refreshToken) {
@@ -17,36 +19,6 @@ export function saveAuthSession(session) {
   }
 }
 
-export function getAuthSession() {
-  const accessToken = localStorage.getItem(TOKEN_KEY);
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-  const userRaw = localStorage.getItem(USER_KEY);
-
-  let user = null;
-
-  if (userRaw) {
-    try {
-      user = JSON.parse(userRaw);
-    } catch {
-      user = null;
-    }
-  }
-
-  if (!accessToken && !refreshToken && !user) {
-    return null;
-  }
-
-  return {
-    accessToken,
-    refreshToken,
-    user,
-  };
-}
-
-export function getStoredUser() {
-  return getAuthSession()?.user || null;
-}
-
 export function clearAuthSession() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -54,8 +26,25 @@ export function clearAuthSession() {
   sessionStorage.removeItem(MOOD_GATE_KEY);
 }
 
+export function getStoredToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredRefreshToken() {
+  return localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
+export function getStoredUser() {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function isAuthenticated() {
-  return !!localStorage.getItem(TOKEN_KEY);
+  return Boolean(getStoredToken());
 }
 
 export function resetMoodGate() {

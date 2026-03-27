@@ -39,7 +39,7 @@ export async function getMoodPageData() {
         method: "GET",
       });
 
-      history = (response?.data || []).map(mapHistoryItem);
+      history = Array.isArray(response) ? response.map(mapHistoryItem) : [];
     } catch (error) {
       console.error("Failed to load mood history", error);
       history = [];
@@ -64,7 +64,7 @@ export async function submitMoodCheck(moodValue) {
   const payload = {
     moodScore: moodValue,
     energyLevel: moodValue,
-    stressLevel: Math.max(0, 5 - moodValue),
+    stressLevel: Math.max(1, 6 - moodValue),
     hoursOfSleep: 7.5,
     currentWorkload: "Moderate",
     journalEntry: `Quick mood check submitted with score ${moodValue}.`,
@@ -85,7 +85,9 @@ export async function submitMoodCheck(moodValue) {
       method: "GET",
     });
 
-    history = (historyResponse?.data || []).map(mapHistoryItem);
+    history = Array.isArray(historyResponse)
+      ? historyResponse.map(mapHistoryItem)
+      : [];
   }
 
   return {
