@@ -1,45 +1,22 @@
-const RAW_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://anandam-backend.vercel.app/api";
+import {
+  getStoredToken,
+  getStoredRefreshToken,
+  saveAuthSession,
+  clearAuthSession,
+} from "../utils/storage";
 
-const BASE_URL = RAW_BASE_URL.replace(/\/+$/, "");
+const BASE_URL = "https://anandam-backend.vercel.app/api";
 
-function getAccessToken() {
-  return localStorage.getItem("token") || "";
-}
+let refreshPromise = null;
 
-function getRefreshToken() {
-  return localStorage.getItem("refreshToken") || "";
-}
-
-export function setAuthSession({ accessToken, refreshToken, user }) {
-  if (accessToken) {
-    localStorage.setItem("token", accessToken);
-  }
-
-  if (refreshToken) {
-    localStorage.setItem("refreshToken", refreshToken);
-  }
-
-  if (user) {
-    localStorage.setItem("user", JSON.stringify(user));
-  }
-}
-
-export function clearAuthSession() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
-}
-
-async function requestNewAccessToken() {
-  const refreshToken = getRefreshToken();
+async function doRefresh() {
+  const refreshToken = getStoredRefreshToken();
 
   if (!refreshToken) {
-    clearAuthSession();
-    throw new Error("No refresh token found");
+    throw new Error("No refresh token.");
   }
 
-  const response = await fetch(`${BASE_URL}/auth/refresh`, {
+  const res = await fetch(`${BASE_URL}/auth/refresh`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -47,92 +24,74 @@ async function requestNewAccessToken() {
     body: JSON.stringify({ refreshToken }),
   });
 
-  let data = null;
+  let json = null;
   try {
-    data = await response.json();
+    json = await res.json();
   } catch {
-    data = null;
+    json = null;
   }
 
-  if (!response.ok) {
+  if (!res.ok) {
     clearAuthSession();
-    throw new Error(data?.message || "Session expired. Please login again.");
+    throw new Error(json?.message || "Session expired.");
   }
 
-  const newAccessToken = data?.accessToken || data?.data?.accessToken;
+  const newToken = json?.data?.accessToken;
 
-  if (!newAccessToken) {
+  if (!newToken) {
     clearAuthSession();
-    throw new Error("Refresh token response missing access token");
+    throw new Error("Refresh missing token.");
   }
 
-  setAuthSession({ accessToken: newAccessToken });
-  return newAccessToken;
+  saveAuthSession({ token: newToken });
+
+  return newToken;
 }
 
-export async function apiRequest(path, options = {}) {
-  const {
-    skipAuthRefresh = false,
-    headers: customHeaders = {},
-    ...restOptions
-  } = options;
+export async function apiRequest(path, options = {}, _retry = false) {
+  const { skipAuthRefresh = false, headers = {}, ...rest } = options;
 
-  const headers = {
-    ...customHeaders,
-  };
+  const token = skipAuthRefresh ? null : getStoredToken();
 
-  if (!(restOptions.body instanceof FormData)) {
-    headers["Content-Type"] = headers["Content-Type"] || "application/json";
-  }
-
-  const token = getAccessToken();
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  let response = await fetch(`${BASE_URL}${path}`, {
-    ...restOptions,
-    headers,
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...rest,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...headers,
+    },
   });
 
-  if ((response.status === 401 || response.status === 403) && !skipAuthRefresh) {
+  if (res.status === 401 && !skipAuthRefresh && !_retry) {
     try {
-      const newToken = await requestNewAccessToken();
+      if (!refreshPromise) {
+        refreshPromise = doRefresh().finally(() => {
+          refreshPromise = null;
+        });
+      }
 
-      const retryHeaders = {
-        ...headers,
-        Authorization: `Bearer ${newToken}`,
-      };
-
-      response = await fetch(`${BASE_URL}${path}`, {
-        ...restOptions,
-        headers: retryHeaders,
-      });
-    } catch (refreshError) {
+      await refreshPromise;
+      return apiRequest(path, options, true);
+    } catch (error) {
       clearAuthSession();
-      throw refreshError;
+      window.location.href = "/login";
+      throw error;
     }
   }
 
-  let data = null;
+  let json = null;
   try {
-    data = await response.json();
+    json = await res.json();
   } catch {
-    data = null;
+    if (!res.ok) {
+      throw new Error(`Request failed: ${res.status}`);
+    }
+    return null;
   }
 
-  if (!response.ok) {
-    const error = new Error(
-      data?.message ||
-      data?.error ||
-      `Request failed with status ${response.status}`
-    );
-    error.status = response.status;
-    error.data = data;
-    throw error;
+  if (!res.ok) {
+    throw new Error(json?.message || `Request failed: ${res.status}`);
   }
 
-  return data;
+  return json?.data ?? json;
 }
-
-export { getAccessToken, getRefreshToken };

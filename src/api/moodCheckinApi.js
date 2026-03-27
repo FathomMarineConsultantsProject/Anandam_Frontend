@@ -48,6 +48,6 @@ export async function submitMoodCheckin(payload) {
 
   return {
     success: true,
-    entry: response?.data,
+    entry: response,
   };
 }

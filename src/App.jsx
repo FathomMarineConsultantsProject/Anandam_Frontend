@@ -12,11 +12,17 @@ import { hasCompletedMoodGate, isAuthenticated } from "./utils/storage";
 import MoodPage from "./pages/MoodPage";
 import EmergencyPage from "./pages/EmergencyPage";    // ← NEW
 import ProfilePage from "./pages/ProfilePage";
+import { getStoredToken } from "./utils/storage";
+
 
 function RequireAuth({ children }) {
-  if (!isAuthenticated()) {
+  const token = getStoredToken();
+  console.log("🔐 RequireAuth token:", token);
+
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 }
 

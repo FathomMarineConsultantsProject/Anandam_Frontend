@@ -1,8 +1,8 @@
 export const homePageMockData = {
   hero: {
-    name: 'Nipun Chatrath',
-    role: 'Chief Officer',
-    ship: 'MV Ocean Pioneer',
+    // name: 'Nipun Chatrath',
+    // role: 'Chief Officer',
+    // ship: 'MV Ocean Pioneer',
     nextPort: 'Singapore',
     eta: '2025-07-05',
     daysAtSea: 45,

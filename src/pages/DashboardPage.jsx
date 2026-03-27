@@ -1,22 +1,22 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AppHeader from '../components/layout/AppHeader';
-import BottomNav from '../components/layout/BottomNav';
-import HeroCard from '../components/home/HeroCard';
-import FeatureGrid from '../components/home/FeatureGrid';
-import StatsSection from '../components/home/StatsSection';
-import AssistantSection from '../components/home/AssistantSection';
-import CardGridSection from '../components/home/CardGridSection';
-import { homePageMockData } from '../data/homeData';
-import { getProfile } from '../api/profileApi';
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AppHeader from "../components/layout/AppHeader";
+import BottomNav from "../components/layout/BottomNav";
+import HeroCard from "../components/home/HeroCard";
+import FeatureGrid from "../components/home/FeatureGrid";
+import StatsSection from "../components/home/StatsSection";
+import AssistantSection from "../components/home/AssistantSection";
+import CardGridSection from "../components/home/CardGridSection";
+import { homePageMockData } from "../data/homeData";
+import { getMyProfile } from "../api/profileApi";
 
-function getInitials(fullName = '') {
+function getInitials(fullName = "") {
   return fullName
-    .split(' ')
+    .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() || '')
-    .join('') || 'U';
+    .map((part) => part[0]?.toUpperCase() || "")
+    .join("") || "U";
 }
 
 function DashboardPage() {
@@ -26,10 +26,16 @@ function DashboardPage() {
   useEffect(() => {
     async function loadProfile() {
       try {
-        const data = await getProfile();
+        const data = await getMyProfile();
         setProfile(data);
+
+        localStorage.setItem("user", JSON.stringify({
+          id: data.id,
+          email: data.email,
+          fullName: data.fullName,
+        }));
       } catch (error) {
-        console.error('Failed to load profile', error);
+        console.error("Failed to load profile", error);
       }
     }
 
@@ -60,12 +66,12 @@ function DashboardPage() {
   function handleFeatureSelect(card) {
     if (!card?.route) return;
 
-    if (card.route.startsWith('http')) {
-      window.open(card.route, '_blank', 'noopener,noreferrer');
+    if (card.route.startsWith("http")) {
+      window.open(card.route, "_blank", "noopener,noreferrer");
       return;
     }
 
-    if (card.route.startsWith('tel:')) {
+    if (card.route.startsWith("tel:")) {
       window.location.href = card.route;
       return;
     }
