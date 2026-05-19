@@ -63,10 +63,10 @@ function LoginPage() {
       console.log("LOGIN RESPONSE:", loginData);
 
       saveAuthSession({
-  token: loginData.token,
-  refreshToken: loginData.refreshToken,
-  user: loginData.user,
-});
+        token: loginData.token,
+        refreshToken: loginData.refreshToken,
+        user: loginData.user,
+      });
 
       console.log("STORED TOKEN:", localStorage.getItem("token"));
       console.log("STORED USER:", localStorage.getItem("user"));
