@@ -73,10 +73,10 @@ function SignupPage() {
       });
 
       saveAuthSession({
-  token: loginData.token,
-  refreshToken: loginData.refreshToken,
-  user: loginData.user,
-});
+        token: loginData.token,
+        refreshToken: loginData.refreshToken,
+        user: loginData.user,
+      });
 
       resetMoodGate();
       navigate("/mood-quick", { replace: true });
