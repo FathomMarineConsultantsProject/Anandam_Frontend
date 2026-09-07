@@ -1,205 +1,1257 @@
-/* src/styles/mood.css */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap");
 
-.mood-page-content {
-  padding-bottom: 96px;
+/* =========================================================
+   ANANDAM MOOD DASHBOARD
+   Figma desktop target: 1440 x 993
+   ========================================================= */
+
+.anandam-mood-page,
+.anandam-mood-page *,
+.anandam-mood-page *::before,
+.anandam-mood-page *::after {
+  box-sizing: border-box;
 }
 
-.mood-page-loading {
-  font-size: 16px;
-  color: #64748b;
-}
-
-.mood-page-section {
+.anandam-mood-page {
+  position: relative;
+  isolation: isolate;
   width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow-x: hidden;
+  background: #fcfaf7;
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-synthesis: none;
 }
 
-.mood-page-title {
-  font-size: 26px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 18px;
+.anandam-mood-page h1,
+.anandam-mood-page h2,
+.anandam-mood-page h3,
+.anandam-mood-page p {
+  margin: 0;
 }
 
-.mood-page-card {
+.anandam-mood-page button {
+  margin: 0;
+  border: 0;
+  font: inherit;
+}
+
+.anandam-mood-page__background-wave {
+  position: fixed;
+  z-index: -1;
+  top: -463px;
+  right: -1760px;
+  display: block;
+  width: 2115.54px;
+  height: 1508.89px;
+  max-width: none;
+  object-fit: contain;
+  opacity: 0.38;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================================================
+   TOP HEADER — 1440 x 64, 100px horizontal padding
+   ========================================================= */
+
+.anandam-mood-header {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 64px;
+  padding: 0 100px;
   background: #ffffff;
-  border: 1px solid #d8dee8;
-  border-radius: 10px;
-  padding: 24px 22px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  border-bottom: 1px solid #d9d9d9;
 }
 
-.mood-card-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111827;
-}
-
-.mood-card-subtitle {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #64748b;
-}
-
-.mood-scale-grid {
-  margin-top: 22px;
+.anandam-mood-header__logo-button {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-}
-
-.mood-option-card {
-  height: 76px;
-  border: 1px solid #d9e0ea;
-  background: #ffffff;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 36.24px;
+  height: 42.62px;
+  padding: 0;
+  background: transparent;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.anandam-mood-header__logo {
+  display: block;
+  width: 36.24px;
+  height: 42.62px;
+  object-fit: contain;
+}
+
+.anandam-mood-header__logo-button:focus-visible,
+.anandam-mood-header__bell:focus-visible,
+.anandam-mood-header__profile:focus-visible {
+  outline: 2px solid rgba(184, 138, 50, 0.58);
+  outline-offset: 3px;
+}
+
+.anandam-mood-header__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 237px;
+  height: 34px;
+  gap: 24px;
+}
+
+.anandam-mood-header__bell {
+  display: grid;
+  flex: 0 0 24px;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #000000;
+  background: transparent;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.anandam-mood-header__bell:hover {
+  background: #f9f0ea;
+}
+
+.anandam-mood-header__profile {
+  display: flex;
+  align-items: center;
+  width: 189px;
+  height: 34px;
+  padding: 0;
+  gap: 12px;
+  color: #333333;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.anandam-mood-header__avatar {
+  display: grid;
+  flex: 0 0 32px;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  color: #712e1e;
+  background: #eee3c9;
+  border-radius: 33px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.anandam-mood-header__avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.anandam-mood-header__identity {
+  display: flex;
+  flex: 0 0 145px;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 145px;
+  height: 34px;
+  min-width: 0;
+}
+
+.anandam-mood-header__name,
+.anandam-mood-header__email {
+  display: block;
+  width: 145px;
+  overflow: hidden;
+  color: #333333;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anandam-mood-header__name {
+  height: 18px;
+  line-height: 18px;
+}
+
+.anandam-mood-header__email {
+  height: 16px;
+  line-height: 16px;
+}
+
+/* =========================================================
+   DESKTOP FLOATING LEFT NAVIGATION — 72 x 452
+   ========================================================= */
+
+.anandam-mood-navigation {
+  position: fixed;
+  z-index: 35;
+  top: calc(50% - 226px + 23.5px);
+  left: 10px;
+  display: flex;
+  align-items: center;
+  width: 72px;
+  height: 452px;
+  padding: 32px 10px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 4px rgba(32, 40, 58, 0.08),
+    inset 0 4px 4px rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.anandam-mood-navigation__items {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  width: 50px;
+  height: 386px;
 }
 
-.mood-option-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+.anandam-mood-navigation__entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50px;
+  gap: 14px;
 }
 
-.mood-option-card.active {
-  border-color: #60a5fa;
-  background: #eff6ff;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.08);
-}
-
-.mood-option-emoji {
-  font-size: 30px;
-  line-height: 1;
-}
-
-.mood-option-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.mood-submit-button {
-  margin-top: 16px;
-  min-width: 155px;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 8px;
-  background: #2f8ee5;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
+.anandam-mood-navigation__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 36px;
+  padding: 0;
+  color: #667085;
+  background: transparent;
+  border-radius: 10px;
   cursor: pointer;
-  border: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
 }
 
-.mood-submit-button:hover:not(:disabled) {
+.anandam-mood-navigation__item:hover {
+  color: #8e6c2e;
+  background: rgba(238, 227, 201, 0.5);
+}
+
+.anandam-mood-navigation__item:active {
+  transform: scale(0.97);
+}
+
+.anandam-mood-navigation__item:focus-visible {
+  outline: 2px solid rgba(184, 138, 50, 0.55);
+  outline-offset: 2px;
+}
+
+.anandam-mood-navigation__item.is-active {
+  height: 64px;
+  color: #c9a662;
+}
+
+.anandam-mood-navigation__icon {
+  display: grid;
+  flex: 0 0 24px;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 1000px;
+}
+
+.anandam-mood-navigation__item.is-active .anandam-mood-navigation__icon {
+  flex-basis: 44px;
+  width: 44px;
+  height: 44px;
+  background: rgba(238, 227, 201, 0.52);
+}
+
+.anandam-mood-navigation__label {
+  display: block;
+  width: 50px;
+  height: 12px;
+  overflow: hidden;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.anandam-mood-navigation__item:first-child .anandam-mood-navigation__label {
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.anandam-mood-navigation__separator {
+  display: block;
+  flex: 0 0 1px;
+  width: 24.5px;
+  height: 1px;
+  margin-bottom: 14px;
+  background: rgba(168, 168, 168, 0.22);
+}
+
+/* =========================================================
+   MAIN CONTENT — x: 92, y: 87, width: 1316
+   ========================================================= */
+
+.anandam-mood-main {
+  position: relative;
+  z-index: 2;
+  width: calc(100% - 124px);
+  max-width: 1316px;
+  min-height: calc(100svh - 87px);
+  margin: 0 32px 0 92px;
+  padding-top: 87px;
+  padding-bottom: 40px;
+}
+
+.anandam-mood-greeting {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 50px;
+  gap: 4px;
+}
+
+.anandam-mood-greeting h1 {
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.anandam-mood-greeting p {
+  color: #313957;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.anandam-mood-notice {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 14px;
+  color: #75551e;
+  background: rgba(238, 227, 201, 0.58);
+  border: 1px solid rgba(184, 138, 50, 0.26);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.anandam-mood-content-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 23px;
+  gap: 14px;
+}
+
+/* =========================================================
+   DAILY CHECK-IN CARD — 1316 x 304.48
+   ========================================================= */
+
+.anandam-mood-checkin-card,
+.anandam-mood-history-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+.anandam-mood-checkin-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 304.48px;
+  padding: 32px;
+  gap: 24px;
+}
+
+.anandam-mood-checkin-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 32px;
+}
+
+.anandam-mood-checkin-card__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 45px;
+  gap: 8px;
+}
+
+.anandam-mood-checkin-card__heading > span {
+  height: 14px;
+  color: #9ca3af;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 14px;
+  text-transform: capitalize;
+}
+
+.anandam-mood-checkin-card__heading h2 {
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 23px;
+  text-transform: capitalize;
+}
+
+.anandam-mood-options {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  width: 100%;
+  height: 87.48px;
+  gap: 14px;
+}
+
+.anandam-mood-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  height: 87.48px;
+  padding: 10px;
+  gap: 7px;
+  color: #313957;
+  background: #ffffff;
+  border: 1px solid #d9d9d9 !important;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease,
+    background-color 150ms ease;
+}
+
+.anandam-mood-option img {
+  display: block;
+  width: 42.48px;
+  height: 42.48px;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.anandam-mood-option span {
+  height: 16px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.anandam-mood-option:hover:not(:disabled) {
+  border-color: rgba(184, 138, 50, 0.55) !important;
+  background: rgba(254, 249, 239, 0.52);
   transform: translateY(-1px);
 }
 
-.mood-submit-button:disabled {
-  opacity: 0.55;
+.anandam-mood-option.is-selected {
+  background: #ffffff;
+  border-color: #b88a32 !important;
+  box-shadow: 0 0 0 2px rgba(184, 138, 50, 0.08);
+}
+
+.anandam-mood-option:focus-visible {
+  outline: 2px solid rgba(184, 138, 50, 0.55);
+  outline-offset: 3px;
+}
+
+.anandam-mood-option:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.anandam-mood-checkin-card__footer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 52px;
+  gap: 18px;
+}
+
+.anandam-mood-submit {
+  display: flex;
+  flex: 0 0 213px;
+  align-items: center;
+  justify-content: center;
+  width: 213px;
+  height: 52px;
+  padding: 16px 24px;
+  gap: 10px;
+  color: #ffffff;
+  background: #712e1e;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.01em;
+  text-align: center;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.anandam-mood-submit:hover:not(:disabled) {
+  background: #602619;
+  box-shadow: 0 8px 20px rgba(113, 46, 30, 0.18);
+  transform: translateY(-1px);
+}
+
+.anandam-mood-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.anandam-mood-submit:focus-visible {
+  outline: 3px solid rgba(113, 46, 30, 0.25);
+  outline-offset: 3px;
+}
+
+.anandam-mood-submit:disabled {
   cursor: not-allowed;
+  background: #c9aaa2;
+  box-shadow: none;
 }
 
-.mood-history-wrap {
-  margin-top: 22px;
-  overflow-x: auto;
+.anandam-mood-submit__spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(255, 255, 255, 0.42);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: anandam-mood-spin 750ms linear infinite;
 }
 
-.mood-history-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #ffffff;
+@keyframes anandam-mood-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.mood-history-table th,
-.mood-history-table td {
-  border: 1px solid #d9e0ea;
-  padding: 12px 10px;
-  text-align: left;
-}
-
-.mood-history-table th {
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
-  background: #ffffff;
-}
-
-.mood-history-table td {
+.anandam-mood-submit-error {
+  color: #a61b15;
   font-size: 13px;
-  color: #111827;
+  line-height: 18px;
 }
 
-.mood-history-emoji-cell {
-  font-size: 28px;
-  line-height: 1;
+/* =========================================================
+   COMPLETED CHECK-IN STATE — 1316 x 244
+   ========================================================= */
+
+.anandam-mood-checkin-card.is-complete {
+  min-height: 244px;
+  gap: 0;
 }
 
-/* ── Clover Rain ── */
-.clover-rain {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 200;
-}
-
-.clover-rain-item {
-  position: absolute;
-  left: var(--left);
-  top: -18vh;
-  width: var(--size);
-  height: var(--size);
-  opacity: 0;
-  /* duration and delay come from inline CSS vars set by CloverRain.jsx.
-     Total life = duration + delay must stay <= 4200ms to match
-     the CLOVER_DURATION_MS constant in MoodPage.jsx.
-     Recommended ranges:
-       --duration : 2400ms – 3200ms
-       --delay    : 0ms    – 800ms
-       max total  : 3200 + 800 = 4000ms  (leaves 200ms buffer) */
-  animation: clover-fall-smooth var(--duration) linear var(--delay) forwards;
-  will-change: transform, opacity;
-}
-
-.clover-rain-item img {
+.anandam-mood-complete-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transform: rotate(var(--rotate));
-  filter: drop-shadow(0 6px 10px rgba(15, 23, 42, 0.10));
+  min-height: 180px;
 }
 
-@keyframes clover-fall-smooth {
+.anandam-mood-complete-state__message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.anandam-mood-complete-state__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: #278960;
+}
+
+.anandam-mood-complete-state__message h3 {
+  margin-top: 9px;
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 26px;
+  text-transform: capitalize;
+}
+
+.anandam-mood-complete-state__message p {
+  margin-top: 6px;
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  text-transform: capitalize;
+}
+
+/* =========================================================
+   MOOD HISTORY — 1316 x 474.06
+   ========================================================= */
+
+.anandam-mood-history-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 474.06px;
+  padding: 32px;
+  gap: 32px;
+}
+
+.anandam-mood-history-card__title {
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 23px;
+  text-transform: capitalize;
+}
+
+.anandam-mood-history-table-wrap {
+  width: 100%;
+  max-height: 355.06px;
+  overflow: auto;
+  border-radius: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #d4c7b8 transparent;
+}
+
+.anandam-mood-history-table {
+  width: 100%;
+  min-width: 620px;
+}
+
+.anandam-mood-history-table__header,
+.anandam-mood-history-table__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  width: 100%;
+}
+
+.anandam-mood-history-table__header {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  height: 40px;
+  background: #f9f0ea;
+  border: 1px solid #f9f0ea;
+  border-radius: 12px 12px 0 0;
+}
+
+.anandam-mood-history-table__header > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 12px 24px;
+  color: #667085;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 14px;
+  text-transform: capitalize;
+}
+
+.anandam-mood-history-table__row {
+  min-height: 45px;
+  background: #ffffff;
+  border-right: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+  border-left: 1px solid #d9d9d9;
+}
+
+.anandam-mood-history-table__row.is-last {
+  border-radius: 0 0 12px 12px;
+}
+
+.anandam-mood-history-table__date,
+.anandam-mood-history-table__mood {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 24px;
+  color: #667085;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 14px;
+}
+
+.anandam-mood-history-table__date {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.anandam-mood-history-table__mood {
+  font-weight: 400;
+}
+
+.anandam-mood-history-table__mood > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 73.23px;
+  gap: 7px;
+}
+
+.anandam-mood-history-table__mood img {
+  display: block;
+  width: 20.23px;
+  height: 20.23px;
+  object-fit: contain;
+}
+
+/* Empty history is centered in the same 474px card. */
+.anandam-mood-history-card.is-empty {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.anandam-mood-history-card.is-empty .anandam-mood-history-card__title {
+  position: absolute;
+  top: 31px;
+  left: 37px;
+}
+
+.anandam-mood-history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 420px);
+  min-height: 118px;
+  text-align: center;
+}
+
+.anandam-mood-history-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 10px;
+  color: #a9a9a9;
+}
+
+.anandam-mood-history-empty h3 {
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 26px;
+  text-transform: capitalize;
+}
+
+.anandam-mood-history-empty p {
+  margin-top: 8px;
+  color: #7c8696;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  text-transform: capitalize;
+}
+
+/* =========================================================
+   LOADING SKELETON
+   ========================================================= */
+
+.anandam-mood-skeleton {
+  display: block;
+  overflow: hidden;
+  background: linear-gradient(90deg, #f0ebe4 25%, #faf7f2 50%, #f0ebe4 75%);
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: anandam-mood-shimmer 1.4s ease-in-out infinite;
+}
+
+.anandam-mood-skeleton--heading {
+  width: 258px;
+  height: 28px;
+}
+
+.anandam-mood-skeleton--subheading {
+  width: 209px;
+  height: 16px;
+}
+
+.anandam-mood-skeleton--card,
+.anandam-mood-skeleton--history {
+  width: 100%;
+  border: 1px solid #e3ddd5;
+  border-radius: 20px;
+}
+
+.anandam-mood-skeleton--card {
+  height: 304.48px;
+  margin-top: 14px;
+}
+
+.anandam-mood-skeleton--history {
+  height: 474.06px;
+  margin-top: 14px;
+}
+
+@keyframes anandam-mood-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================================
+   GREAT-MOOD CLOVER CELEBRATION
+   ========================================================= */
+
+.anandam-mood-clover-rain {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.anandam-mood-clover-rain img {
+  position: absolute;
+  top: 0;
+  left: var(--clover-left);
+  display: block;
+  width: var(--clover-size);
+  height: var(--clover-size);
+  max-width: none;
+  object-fit: contain;
+  opacity: 0;
+  filter: drop-shadow(0 4px 3px rgba(0, 83, 36, 0.14));
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  animation: anandam-mood-clover-fall var(--clover-duration)
+    cubic-bezier(0.22, 0.58, 0.34, 1) var(--clover-delay) forwards;
+}
+
+/* Natural top-to-bottom fall with alternating horizontal drift. */
+@keyframes anandam-mood-clover-fall {
   0% {
-    transform: translate3d(0, -8vh, 0);
     opacity: 0;
+    transform: translate3d(0, -14vh, 0) rotate(var(--clover-rotation));
   }
+
   8% {
-    opacity: 0.9;
+    opacity: var(--clover-opacity);
   }
-  75% {
-    opacity: 0.9;
+
+  30% {
+    transform: translate3d(var(--clover-sway-right), 27vh, 0)
+      rotate(calc(var(--clover-rotation) + 135deg));
   }
+
+  61% {
+    opacity: var(--clover-opacity);
+    transform: translate3d(var(--clover-sway-left), 61vh, 0)
+      rotate(calc(var(--clover-rotation) + 315deg));
+  }
+
   100% {
-    transform: translate3d(var(--drift), 145vh, 0);
     opacity: 0;
+    transform: translate3d(var(--clover-drift), calc(100vh + 130px), 0)
+      rotate(calc(var(--clover-rotation) + 620deg));
+  }
+}
+
+/* =========================================================
+   LAPTOP / TABLET
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .anandam-mood-header {
+    padding-right: 40px;
+    padding-left: 96px;
+  }
+
+  .anandam-mood-main {
+    width: calc(100% - 120px);
+    margin-right: 24px;
+    margin-left: 96px;
+  }
+
+  .anandam-mood-options {
+    gap: 10px;
+  }
+
+  .anandam-mood-option {
+    padding-right: 6px;
+    padding-left: 6px;
   }
 }
 
 @media (max-width: 900px) {
-  .mood-scale-grid {
-    grid-template-columns: 1fr;
+  .anandam-mood-header {
+    padding-right: 24px;
+    padding-left: 24px;
   }
 
-  .mood-option-card {
-    height: 84px;
+  .anandam-mood-main {
+    width: auto;
+    max-width: none;
+    margin-right: 24px;
+    margin-left: 96px;
+    padding-bottom: 36px;
+  }
+
+  .anandam-mood-checkin-card,
+  .anandam-mood-history-card {
+    padding: 26px;
+  }
+
+  .anandam-mood-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    height: auto;
+  }
+
+  .anandam-mood-checkin-card {
+    min-height: 402px;
+  }
+
+  .anandam-mood-checkin-card.is-complete {
+    min-height: 244px;
+  }
+}
+
+/* =========================================================
+   MOBILE: side navigation becomes a safe-area bottom bar
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .anandam-mood-header {
+    height: 60px;
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-left: max(16px, env(safe-area-inset-left));
+  }
+
+  .anandam-mood-header__logo-button,
+  .anandam-mood-header__logo {
+    width: 32px;
+    height: 38px;
+  }
+
+  .anandam-mood-header__actions {
+    width: auto;
+    gap: 14px;
+  }
+
+  .anandam-mood-header__profile {
+    width: 32px;
+  }
+
+  .anandam-mood-header__identity {
+    display: none;
+  }
+
+  .anandam-mood-navigation {
+    top: auto;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
+    width: auto;
+    height: 72px;
+    padding: 8px 10px;
+    border-radius: 18px;
+  }
+
+  .anandam-mood-navigation__items {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 54px;
+  }
+
+  .anandam-mood-navigation__entry {
+    flex: 1 1 0;
+    width: auto;
+    gap: 0;
+  }
+
+  .anandam-mood-navigation__item,
+  .anandam-mood-navigation__item.is-active {
+    width: 100%;
+    height: 54px;
+  }
+
+  .anandam-mood-navigation__item.is-active .anandam-mood-navigation__icon {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .anandam-mood-navigation__label,
+  .anandam-mood-navigation__item:first-child .anandam-mood-navigation__label {
+    width: 100%;
+    height: 12px;
+    font-size: 9px;
+    line-height: 12px;
+  }
+
+  .anandam-mood-navigation__separator {
+    display: none;
+  }
+
+  .anandam-mood-main {
+    width: auto;
+    min-height: 100svh;
+    margin: 0;
+    padding:
+      82px
+      max(16px, env(safe-area-inset-right))
+      calc(104px + env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+  }
+
+  .anandam-mood-greeting {
+    height: auto;
+  }
+
+  .anandam-mood-greeting h1 {
+    font-size: 22px;
+    line-height: 26px;
+  }
+
+  .anandam-mood-content-stack {
+    margin-top: 18px;
+  }
+
+  .anandam-mood-checkin-card,
+  .anandam-mood-history-card {
+    padding: 22px;
+    border-radius: 16px;
+  }
+
+  .anandam-mood-checkin-card {
+    min-height: 0;
+    gap: 22px;
+  }
+
+  .anandam-mood-checkin-card__body {
+    gap: 24px;
+  }
+
+  .anandam-mood-checkin-card__heading {
+    height: auto;
+  }
+
+  .anandam-mood-checkin-card__heading h2 {
+    font-size: 19px;
+    line-height: 23px;
+  }
+
+  .anandam-mood-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .anandam-mood-option {
+    height: 88px;
+  }
+
+  .anandam-mood-option:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .anandam-mood-checkin-card__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .anandam-mood-submit {
+    flex-basis: 52px;
+    width: 100%;
+  }
+
+  .anandam-mood-checkin-card.is-complete {
+    min-height: 244px;
+  }
+
+  .anandam-mood-complete-state__message p {
+    text-align: center;
+  }
+
+  .anandam-mood-history-card {
+    min-height: 390px;
+  }
+
+  .anandam-mood-history-card.is-empty .anandam-mood-history-card__title {
+    top: 22px;
+    left: 22px;
+  }
+
+  .anandam-mood-history-table-wrap {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .anandam-mood-history-table {
+    min-width: 0;
+  }
+
+  .anandam-mood-history-table__header {
+    display: none;
+  }
+
+  .anandam-mood-history-table__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .anandam-mood-history-table__row,
+  .anandam-mood-history-table__row.is-last {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow: hidden;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+  }
+
+  .anandam-mood-history-table__date,
+  .anandam-mood-history-table__mood {
+    position: relative;
+    justify-content: space-between;
+    min-height: 46px;
+    padding: 14px 14px 14px 104px;
+    text-align: right;
+  }
+
+  .anandam-mood-history-table__date {
+    background: #f9f0ea;
+  }
+
+  .anandam-mood-history-table__date::before,
+  .anandam-mood-history-table__mood::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 14px;
+    color: #667085;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .anandam-mood-history-table__mood > span {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 700px) {
+  .anandam-mood-clover-rain img {
+    width: min(var(--clover-size), 56px);
+    height: min(var(--clover-size), 56px);
+  }
+}
+
+@media (max-width: 390px) {
+  .anandam-mood-header__bell {
+    display: none;
+  }
+
+  .anandam-mood-navigation {
+    right: max(8px, env(safe-area-inset-right));
+    left: max(8px, env(safe-area-inset-left));
+    padding-right: 4px;
+    padding-left: 4px;
+  }
+
+  .anandam-mood-navigation__label,
+  .anandam-mood-navigation__item:first-child .anandam-mood-navigation__label {
+    font-size: 8px;
+  }
+
+  .anandam-mood-main {
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-left: max(12px, env(safe-area-inset-left));
+  }
+
+  .anandam-mood-checkin-card,
+  .anandam-mood-history-card {
+    padding: 18px;
+  }
+
+  .anandam-mood-history-card.is-empty .anandam-mood-history-card__title {
+    top: 18px;
+    left: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anandam-mood-page *,
+  .anandam-mood-page *::before,
+  .anandam-mood-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

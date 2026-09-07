@@ -1,0 +1,780 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap");
+
+/* =========================================================
+   ANANDAM SIGNUP PAGE
+   Desktop Figma target: 1440 x 1024
+   Main layout: 1231.26 x 739
+   Left illustration: 541.26px
+   Column gap: 174px
+   Form panel: 516px
+   ========================================================= */
+
+.anandam-signup-page,
+.anandam-signup-page *,
+.anandam-signup-page *::before,
+.anandam-signup-page *::after {
+  box-sizing: border-box;
+}
+
+.anandam-signup-page {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 32px 52px;
+  overflow: hidden;
+  background: #fcf9f5;
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-synthesis: none;
+}
+
+.anandam-signup-page h1,
+.anandam-signup-page p {
+  margin: 0;
+}
+
+.anandam-signup-page button,
+.anandam-signup-page input {
+  font: inherit;
+}
+
+/* =========================================================
+   FIGMA BACKGROUND DECORATIONS
+   ========================================================= */
+
+.anandam-signup-decoration {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.anandam-signup-decoration--wave-primary {
+  width: 2464px;
+  height: 1720px;
+  left: calc(50% - 1232px - 92px);
+  top: calc(50% - 860px - 397px);
+  object-fit: contain;
+  opacity: 0.17;
+}
+
+.anandam-signup-decoration--wave-secondary {
+  width: 2115.54px;
+  height: 1556px;
+  top: -477px;
+  right: -1970px;
+  object-fit: contain;
+  opacity: 0.36;
+  transform: scaleX(-1) rotate(-7deg);
+  transform-origin: center;
+}
+
+.anandam-signup-decoration--corner-leaf {
+  z-index: 1;
+  display: block;
+  visibility: visible;
+  width: 454px;
+  height: 628px;
+  top: -452px;
+  right: -69px;
+  object-fit: contain;
+  object-position: center;
+  opacity: 1;
+  transform: rotate(-60deg);
+  transform-origin: center;
+}
+
+/* =========================================================
+   MAIN TWO-COLUMN FRAME
+   ========================================================= */
+
+.anandam-signup-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 541.26px 516px;
+  align-items: center;
+  width: 1231.26px;
+  max-width: 100%;
+  height: min(739px, calc(100svh - 64px));
+  min-height: 680px;
+  column-gap: 174px;
+}
+
+/* =========================================================
+   LEFT ANIMATED LEAF
+   ========================================================= */
+
+.anandam-signup-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 541.26px;
+  height: 100%;
+  min-height: 680px;
+}
+
+.anandam-signup-leaf-stage {
+  position: relative;
+  width: 534.26px;
+  height: 100%;
+  max-height: 739px;
+}
+
+.anandam-signup-leaf-frame {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: block;
+  width: 533.89px;
+  max-width: 100%;
+  height: min(679.98px, calc(100% - 40px));
+  object-fit: contain;
+  object-position: center;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 500ms ease-in-out;
+  will-change: opacity;
+  pointer-events: none;
+  user-select: none;
+}
+
+.anandam-signup-leaf-frame.is-active {
+  opacity: 1;
+}
+
+/* =========================================================
+   RIGHT SIGNUP PANEL
+   Default Figma height: 612.5px
+   ========================================================= */
+
+.anandam-signup-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 516px;
+  min-height: 612.5px;
+  gap: 48px;
+}
+
+.anandam-signup-intro {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  width: 516px;
+  height: 128px;
+  gap: 28px;
+}
+
+.anandam-signup-intro h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 332px;
+  height: 36px;
+  color: #0c1421;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 100%;
+  letter-spacing: 0.01em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.anandam-signup-intro p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 321px;
+  height: 64px;
+  color: #313957;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 160%;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* =========================================================
+   FORM AND INPUTS
+   ========================================================= */
+
+.anandam-signup-form {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 516px;
+  min-height: 436.5px;
+  gap: 32px;
+}
+
+.anandam-signup-fields {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 516px;
+  gap: 24px;
+}
+
+.anandam-signup-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 516px;
+  min-height: 74px;
+  gap: 8px;
+}
+
+.anandam-signup-field--password {
+  min-height: 76px;
+}
+
+.anandam-signup-field label {
+  display: flex;
+  flex: 0 0 16px;
+  align-items: center;
+  height: 16px;
+  color: #182033;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0.01em;
+}
+
+.anandam-signup-field > input,
+.anandam-signup-password-control {
+  width: 516px;
+  background: #ffffff;
+  border: 1px solid #d4d7e3;
+  border-radius: 12px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.anandam-signup-field > input {
+  flex: 0 0 50px;
+  height: 50px;
+  padding: 16px 21px;
+  color: #20283a;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0.01em;
+  outline: none;
+}
+
+.anandam-signup-field input::placeholder {
+  color: #8897ad;
+  opacity: 1;
+}
+
+.anandam-signup-field > input:hover,
+.anandam-signup-password-control:hover {
+  border-color: #b6bdca;
+}
+
+.anandam-signup-field > input:focus,
+.anandam-signup-password-control:focus-within {
+  border-color: #8290aa;
+  box-shadow: 0 0 0 3px rgba(130, 144, 170, 0.16);
+}
+
+.anandam-signup-field > input.has-error,
+.anandam-signup-password-control.has-error {
+  border-color: #c81e1e;
+  box-shadow: none;
+}
+
+.anandam-signup-field > input:disabled,
+.anandam-signup-password-control:has(input:disabled) {
+  cursor: not-allowed;
+  background: #f4f1ed;
+  opacity: 0.72;
+}
+
+.anandam-signup-password-control {
+  display: flex;
+  flex: 0 0 52px;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 15px 0 21px;
+}
+
+.anandam-signup-password-control input {
+  flex: 1 1 auto;
+  width: calc(100% - 38px);
+  height: 50px;
+  min-width: 0;
+  padding: 0;
+  color: #20283a;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0.01em;
+}
+
+.anandam-signup-password-toggle {
+  display: grid;
+  flex: 0 0 30px;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: #8897ad;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.anandam-signup-password-toggle:hover:not(:disabled) {
+  color: #712e1e;
+  background: rgba(113, 46, 30, 0.07);
+}
+
+.anandam-signup-password-toggle:focus-visible {
+  outline: 2px solid #712e1e;
+  outline-offset: 2px;
+}
+
+.anandam-signup-password-toggle:disabled {
+  cursor: not-allowed;
+}
+
+/* Figma error state: 14px red helper text and #C81E1E input border. */
+.anandam-signup-field-error {
+  display: flex;
+  flex: 0 0 14px;
+  align-items: center;
+  max-width: 100%;
+  min-height: 14px;
+  color: #c81e1e;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0.01em;
+}
+
+/* =========================================================
+   BUTTON, LOADER, DIVIDER, LOGIN OFFER
+   ========================================================= */
+
+.anandam-signup-actions {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 516px;
+  min-height: 132.5px;
+  gap: 32px;
+}
+
+.anandam-signup-submit {
+  display: flex;
+  flex: 0 0 52px;
+  align-items: center;
+  justify-content: center;
+  width: 516px;
+  height: 52px;
+  min-height: 52px;
+  padding: 16px 0;
+  color: #ffffff;
+  background: #712e1e;
+  border: 0;
+  border-radius: 12px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0.01em;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.anandam-signup-submit__content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 20px;
+}
+
+.anandam-signup-submit:hover:not(:disabled) {
+  background: #5f2518;
+  box-shadow: 0 8px 18px rgba(113, 46, 30, 0.18);
+  transform: translateY(-1px);
+}
+
+.anandam-signup-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.anandam-signup-submit:focus-visible {
+  outline: 3px solid rgba(113, 46, 30, 0.3);
+  outline-offset: 3px;
+}
+
+.anandam-signup-submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.anandam-signup-spinner {
+  display: inline-block;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: anandam-signup-spin 700ms linear infinite;
+}
+
+@keyframes anandam-signup-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.anandam-signup-divider {
+  flex: 0 0 0.5px;
+  width: 516px;
+  height: 0.5px;
+  background: #e5e5e5;
+}
+
+.anandam-signup-login-offer {
+  display: flex;
+  flex: 0 0 16px;
+  align-items: flex-start;
+  width: 243px;
+  height: 16px;
+  gap: 8px;
+  color: #182033;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: 0.01em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.anandam-signup-login-offer span {
+  width: 186px;
+}
+
+.anandam-signup-login-offer a {
+  width: 49px;
+  color: #1e4ae9;
+  text-decoration: none;
+}
+
+.anandam-signup-login-offer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.anandam-signup-login-offer a:focus-visible {
+  border-radius: 3px;
+  outline: 2px solid rgba(30, 74, 233, 0.45);
+  outline-offset: 3px;
+}
+
+.anandam-signup-api-error {
+  width: 100%;
+  margin: -18px 0 -14px;
+  padding: 10px 13px;
+  color: #8d211b;
+  background: rgba(255, 238, 236, 0.96);
+  border: 1px solid rgba(179, 38, 30, 0.28);
+  border-radius: 10px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* Keep the white Figma background when browsers autofill fields. */
+.anandam-signup-page input:-webkit-autofill,
+.anandam-signup-page input:-webkit-autofill:hover,
+.anandam-signup-page input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #20283a;
+  box-shadow: 0 0 0 1000px #ffffff inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* =========================================================
+   RESPONSIVE LAPTOP / TABLET
+   ========================================================= */
+
+@media (max-width: 1320px) {
+  .anandam-signup-page {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+
+  .anandam-signup-layout {
+    grid-template-columns: minmax(410px, 1fr) 516px;
+    width: min(1120px, 100%);
+    column-gap: clamp(54px, 7vw, 100px);
+  }
+
+  .anandam-signup-visual,
+  .anandam-signup-leaf-stage {
+    width: 100%;
+  }
+
+  .anandam-signup-leaf-frame {
+    left: 50%;
+    width: min(533.89px, 100%);
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 1080px) {
+  .anandam-signup-page {
+    padding: 32px;
+  }
+
+  .anandam-signup-layout {
+    grid-template-columns: minmax(330px, 0.85fr) minmax(440px, 516px);
+    column-gap: 44px;
+  }
+
+  .anandam-signup-panel,
+  .anandam-signup-intro,
+  .anandam-signup-form,
+  .anandam-signup-fields,
+  .anandam-signup-field,
+  .anandam-signup-actions,
+  .anandam-signup-field > input,
+  .anandam-signup-password-control,
+  .anandam-signup-submit,
+  .anandam-signup-divider {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   MOBILE / SMALL TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .anandam-signup-page {
+    display: block;
+    min-height: 100svh;
+    padding:
+      max(34px, env(safe-area-inset-top))
+      max(24px, env(safe-area-inset-right))
+      max(42px, env(safe-area-inset-bottom))
+      max(24px, env(safe-area-inset-left));
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .anandam-signup-layout {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 560px);
+    height: auto;
+    min-height: 0;
+    margin: 0 auto;
+    gap: 24px;
+  }
+
+  .anandam-signup-visual {
+    width: 100%;
+    height: clamp(230px, 38vw, 340px);
+    min-height: 0;
+  }
+
+  .anandam-signup-leaf-stage {
+    width: min(100%, 300px);
+    height: 100%;
+  }
+
+  .anandam-signup-leaf-frame {
+    width: 100%;
+    height: 100%;
+  }
+
+  .anandam-signup-panel {
+    width: 100%;
+    min-height: 0;
+    gap: 38px;
+  }
+
+  .anandam-signup-intro {
+    width: 100%;
+    height: auto;
+    gap: 20px;
+  }
+
+  .anandam-signup-intro h1 {
+    width: auto;
+    height: auto;
+    font-size: clamp(31px, 7vw, 36px);
+    white-space: normal;
+  }
+
+  .anandam-signup-intro p {
+    width: min(100%, 321px);
+    height: auto;
+    font-size: 18px;
+    line-height: 150%;
+  }
+
+  .anandam-signup-form,
+  .anandam-signup-fields,
+  .anandam-signup-field,
+  .anandam-signup-actions,
+  .anandam-signup-field > input,
+  .anandam-signup-password-control,
+  .anandam-signup-submit,
+  .anandam-signup-divider {
+    width: 100%;
+  }
+
+  .anandam-signup-form {
+    min-height: 0;
+  }
+
+  .anandam-signup-decoration--corner-leaf {
+    width: 300px;
+    height: 420px;
+    top: -315px;
+    right: -95px;
+    opacity: 1;
+  }
+
+  .anandam-signup-decoration--wave-primary {
+    left: -1050px;
+    top: -760px;
+    opacity: 0.11;
+  }
+
+  .anandam-signup-decoration--wave-secondary {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .anandam-signup-page {
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-left: max(20px, env(safe-area-inset-left));
+  }
+
+  .anandam-signup-layout {
+    gap: 18px;
+  }
+
+  .anandam-signup-visual {
+    height: 220px;
+  }
+
+  .anandam-signup-leaf-stage {
+    width: 210px;
+  }
+
+  .anandam-signup-panel {
+    gap: 32px;
+  }
+
+  .anandam-signup-intro p {
+    font-size: 16px;
+    line-height: 150%;
+  }
+
+  .anandam-signup-form {
+    gap: 28px;
+  }
+
+  .anandam-signup-field > input {
+    padding-right: 17px;
+    padding-left: 17px;
+  }
+
+  .anandam-signup-password-control {
+    padding-right: 11px;
+    padding-left: 17px;
+  }
+
+  .anandam-signup-login-offer {
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+    line-height: 130%;
+    white-space: normal;
+  }
+
+  .anandam-signup-login-offer span,
+  .anandam-signup-login-offer a {
+    width: auto;
+  }
+
+  .anandam-signup-decoration--corner-leaf {
+    width: 230px;
+    height: 320px;
+    top: -238px;
+    right: -72px;
+  }
+}
+
+/* Keep the desktop layout usable on short laptop screens. */
+@media (min-width: 901px) and (max-height: 790px) {
+  .anandam-signup-page {
+    place-items: start center;
+    overflow-y: auto;
+  }
+
+  .anandam-signup-layout {
+    height: 739px;
+    margin: 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anandam-signup-page *,
+  .anandam-signup-page *::before,
+  .anandam-signup-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
