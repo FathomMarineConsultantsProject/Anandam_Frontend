@@ -13,6 +13,7 @@ import MoodPage from "./pages/MoodPage";
 import EmergencyPage from "./pages/EmergencyPage";    // ← NEW
 import ProfilePage from "./pages/ProfilePage";
 import { getStoredToken } from "./utils/storage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 
 function RequireAuth({ children }) {
@@ -43,6 +44,10 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route
+          path="/forgot-password"
+          element={<ForgotPasswordPage />}
+        />
 
         <Route
           path="/mood-quick"
@@ -117,6 +122,7 @@ function App() {
             </RequireAuth>
           }
         />
+
 
 
         <Route path="*" element={<Navigate to="/" replace />} />
