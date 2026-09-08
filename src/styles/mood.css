@@ -323,10 +323,18 @@
 .anandam-mood-main {
   position: relative;
   z-index: 2;
+
+  /* Figma:
+     left = 92px
+     right = 32px
+     1440 - 92 - 32 = 1316px
+  */
   width: calc(100% - 124px);
-  max-width: 1316px;
   min-height: calc(100svh - 87px);
-  margin: 0 32px 0 92px;
+
+  margin-left: 92px;
+  margin-right: 32px;
+
   padding-top: 87px;
   padding-bottom: 40px;
 }
@@ -373,7 +381,7 @@
 .anandam-mood-content-stack {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   width: 100%;
   margin-top: 23px;
   gap: 14px;
@@ -867,6 +875,7 @@
 
 /* =========================================================
    GREAT-MOOD CLOVER CELEBRATION
+   Smooth continuous snowfall-style fall
    ========================================================= */
 
 .anandam-mood-clover-rain {
@@ -878,49 +887,62 @@
   user-select: none;
 }
 
-.anandam-mood-clover-rain img {
+.anandam-mood-clover {
   position: absolute;
-  top: 0;
+  top: -18vh;
   left: var(--clover-left);
   display: block;
   width: var(--clover-size);
   height: var(--clover-size);
-  max-width: none;
-  object-fit: contain;
-  opacity: 0;
-  filter: drop-shadow(0 4px 3px rgba(0, 83, 36, 0.14));
-  transform-origin: 50% 50%;
   will-change: transform, opacity;
-  animation: anandam-mood-clover-fall var(--clover-duration)
-    cubic-bezier(0.22, 0.58, 0.34, 1) var(--clover-delay) forwards;
+  animation: anandam-mood-smooth-clover-fall var(--clover-duration) linear infinite;
+  animation-delay: var(--clover-delay);
 }
 
-/* Natural top-to-bottom fall with alternating horizontal drift. */
-@keyframes anandam-mood-clover-fall {
+.anandam-mood-clover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  opacity: var(--clover-opacity);
+  filter: drop-shadow(0 5px 5px rgba(0, 83, 36, 0.11));
+  transform-origin: center;
+}
+
+@keyframes anandam-mood-smooth-clover-fall {
   0% {
     opacity: 0;
-    transform: translate3d(0, -14vh, 0) rotate(var(--clover-rotation));
+    transform: translate3d(0, -18vh, 0) rotate(0deg);
   }
 
-  8% {
+  5% {
     opacity: var(--clover-opacity);
   }
 
-  30% {
-    transform: translate3d(var(--clover-sway-right), 27vh, 0)
-      rotate(calc(var(--clover-rotation) + 135deg));
+  25% {
+    opacity: var(--clover-opacity);
+    transform: translate3d(var(--clover-sway-1), 22vh, 0) rotate(70deg);
   }
 
-  61% {
+  50% {
     opacity: var(--clover-opacity);
-    transform: translate3d(var(--clover-sway-left), 61vh, 0)
-      rotate(calc(var(--clover-rotation) + 315deg));
+    transform: translate3d(var(--clover-sway-2), 52vh, 0) rotate(145deg);
+  }
+
+  75% {
+    opacity: var(--clover-opacity);
+    transform: translate3d(var(--clover-sway-1), 82vh, 0) rotate(220deg);
+  }
+
+  95% {
+    opacity: var(--clover-opacity);
   }
 
   100% {
     opacity: 0;
-    transform: translate3d(var(--clover-drift), calc(100vh + 130px), 0)
-      rotate(calc(var(--clover-rotation) + 620deg));
+    transform: translate3d(var(--clover-sway-3), 118vh, 0)
+      rotate(var(--clover-rotation-end));
   }
 }
 
@@ -1206,9 +1228,9 @@
 }
 
 @media (max-width: 700px) {
-  .anandam-mood-clover-rain img {
-    width: min(var(--clover-size), 56px);
-    height: min(var(--clover-size), 56px);
+  .anandam-mood-clover {
+    width: min(var(--clover-size), 48px);
+    height: min(var(--clover-size), 48px);
   }
 }
 
@@ -1253,5 +1275,230 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================
+   LARGE DESKTOP
+   Keep the exact Figma 92px / 32px page gutters
+   ========================================================= */
+
+@media (min-width: 1201px) {
+  .anandam-mood-main {
+    width: calc(100% - 124px);
+    margin-left: 92px;
+    margin-right: 32px;
+  }
+}
+
+
+/* =========================================================
+   LAPTOP / TABLET
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .anandam-mood-main {
+    width: calc(100% - 120px);
+    margin-left: 96px;
+    margin-right: 24px;
+    padding-top: 88px;
+  }
+
+  .anandam-mood-checkin-card,
+  .anandam-mood-history-card {
+    width: 100%;
+  }
+
+  .anandam-mood-options {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .anandam-mood-option {
+    padding-inline: 8px;
+  }
+}
+
+
+/* =========================================================
+   SMALL TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .anandam-mood-header {
+    padding: 0 24px;
+  }
+
+  .anandam-mood-header__identity {
+    display: none;
+  }
+
+  .anandam-mood-header__profile {
+    width: 32px;
+  }
+
+  .anandam-mood-header__actions {
+    width: auto;
+  }
+
+  .anandam-mood-main {
+    width: calc(100% - 116px);
+    margin-left: 92px;
+    margin-right: 24px;
+  }
+
+  .anandam-mood-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    height: auto;
+  }
+
+  .anandam-mood-option {
+    height: 87px;
+  }
+
+  .anandam-mood-checkin-card {
+    min-height: auto;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   Left sidebar becomes bottom navigation
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .anandam-mood-page {
+    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+  }
+
+  .anandam-mood-header {
+    height: 60px;
+    padding:
+      env(safe-area-inset-top)
+      18px
+      0;
+  }
+
+  .anandam-mood-header__logo-button,
+  .anandam-mood-header__logo {
+    width: 32px;
+    height: 38px;
+  }
+
+  .anandam-mood-main {
+    width: auto;
+
+    margin-left: 16px;
+    margin-right: 16px;
+
+    padding-top: 82px;
+    padding-bottom: 24px;
+  }
+
+  .anandam-mood-greeting {
+    height: auto;
+  }
+
+  .anandam-mood-greeting h1 {
+    font-size: 22px;
+    line-height: 27px;
+  }
+
+  .anandam-mood-content-stack {
+    margin-top: 20px;
+  }
+
+  .anandam-mood-checkin-card,
+  .anandam-mood-history-card {
+    width: 100%;
+    border-radius: 16px;
+  }
+
+  .anandam-mood-checkin-card {
+    padding: 22px 18px;
+  }
+
+  .anandam-mood-history-card {
+    padding: 22px 18px;
+  }
+
+  .anandam-mood-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+    gap: 10px;
+  }
+
+  .anandam-mood-option {
+    height: 82px;
+  }
+
+  .anandam-mood-option:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .anandam-mood-submit {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  /* Bottom navigation */
+  .anandam-mood-navigation {
+    position: fixed;
+
+    top: auto;
+    right: 12px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 12px;
+
+    width: auto;
+    height: 68px;
+
+    padding: 7px 10px;
+
+    border-radius: 16px;
+  }
+
+  .anandam-mood-navigation__items {
+    flex-direction: row;
+    justify-content: space-between;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  .anandam-mood-navigation__entry {
+    flex: 1 1 0;
+    width: auto;
+    gap: 0;
+  }
+
+  .anandam-mood-navigation__separator {
+    display: none;
+  }
+
+  .anandam-mood-navigation__item,
+  .anandam-mood-navigation__item.is-active {
+    width: 100%;
+    height: 54px;
+  }
+
+  .anandam-mood-navigation__item.is-active
+    .anandam-mood-navigation__icon {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .anandam-mood-navigation__label {
+    width: 100%;
+    font-size: 9px;
+  }
+
+  .anandam-mood-history-table {
+    min-width: 560px;
+  }
+
+  .anandam-mood-history-table-wrap {
+    overflow-x: auto;
   }
 }
