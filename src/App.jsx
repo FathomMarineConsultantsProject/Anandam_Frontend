@@ -49,6 +49,7 @@ function App() {
           element={<ForgotPasswordPage />}
         />
 
+        {/* //comes right after login */}
         <Route
           path="/mood-quick"
           element={
@@ -67,6 +68,9 @@ function App() {
           }
         />
 
+
+{/* main mood checkin page, accessed from the sidebar or dashboard
+ */}
         <Route
           path="/mood"
           element={
@@ -122,8 +126,6 @@ function App() {
             </RequireAuth>
           }
         />
-
-
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
