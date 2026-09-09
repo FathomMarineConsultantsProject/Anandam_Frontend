@@ -1,153 +1,291 @@
-// src/components/layout/AppHeader.jsx
-// Fetches the logged-in user's profile from GET /api/profile on mount
-// so the name/initials are always in sync with the backend — not just localStorage.
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, LogOut, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { clearAuthSession, getStoredUser, saveAuthSession } from "../../utils/storage";
+
+import {
+  clearAuthSession,
+  getStoredUser,
+  saveAuthSession,
+} from "../../utils/storage";
+
 import { apiRequest } from "../../api/client";
-import "../../styles/global.css";
+
+import anandamLogo from "../../assets/anandum logo.png";
 
 function getInitials(fullName = "") {
+  const initials = fullName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+
+  return initials || "U";
+}
+
+function getUserFullName(user) {
   return (
-    fullName.split(" ").filter(Boolean).slice(0, 2)
-      .map((p) => p[0]?.toUpperCase() ?? "").join("") || "U"
+    user?.fullName ||
+    user?.full_name ||
+    user?.name ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
+    "User"
   );
 }
 
-function AppHeader({ header }) {
+function getUserEmail(user) {
+  return user?.email || "";
+}
+
+function getUserAvatar(user) {
+  return (
+    user?.profileImage ||
+    user?.profile_image ||
+    user?.avatar ||
+    user?.avatarUrl ||
+    user?.avatar_url ||
+    null
+  );
+}
+
+function AppHeader() {
   const navigate = useNavigate();
-  const dropRef  = useRef(null);
-  const [open, setOpen]       = useState(false);
+  const dropdownRef = useRef(null);
+
+  const [profileOpen, setProfileOpen] = useState(false);
   const [liveUser, setLiveUser] = useState(() => getStoredUser());
 
-  // Fetch fresh profile from backend on every mount
+  /*
+    Keep the header profile synced with the backend.
+
+    If GET /api/profile succeeds we refresh the user data.
+    If it fails, localStorage data remains as fallback.
+  */
   useEffect(() => {
     let cancelled = false;
-    async function fetchProfile() {
+
+    async function loadProfile() {
       try {
-        const profile = await apiRequest("/profile", { method: "GET" });
+        const profile = await apiRequest("/profile", {
+          method: "GET",
+        });
+
         if (!cancelled && profile) {
-          // Update localStorage so it stays in sync for other reads
-          saveAuthSession({ user: profile });
           setLiveUser(profile);
+
+          try {
+            saveAuthSession({
+              user: profile,
+            });
+          } catch {
+            // Do not break the header if storage update fails.
+          }
         }
       } catch {
-        // Not logged in or token expired — leave whatever is in localStorage
+        // Existing local user is kept as fallback.
       }
     }
-    fetchProfile();
-    return () => { cancelled = true; };
-  }, []);
 
-  // Also re-sync when localStorage changes (other tabs, profile updates)
-  useEffect(() => {
-    function sync() { setLiveUser(getStoredUser()); }
-    window.addEventListener("storage", sync);
-    window.addEventListener("focus",   sync);
+    loadProfile();
+
     return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("focus",   sync);
+      cancelled = true;
     };
   }, []);
 
-  // Close dropdown on outside click
+  /*
+    Keep header updated if another page modifies localStorage,
+    for example after editing profile information.
+  */
   useEffect(() => {
-    if (!open) return;
-    function onOutside(e) {
-      if (dropRef.current && !dropRef.current.contains(e.target)) setOpen(false);
+    function syncUser() {
+      setLiveUser(getStoredUser());
     }
-    document.addEventListener("mousedown", onOutside);
-    return () => document.removeEventListener("mousedown", onOutside);
-  }, [open]);
 
-  function handleSignOut() {
-    setOpen(false);
-    clearAuthSession();
-    navigate("/", { replace: true });
+    window.addEventListener("storage", syncUser);
+    window.addEventListener("focus", syncUser);
+
+    return () => {
+      window.removeEventListener("storage", syncUser);
+      window.removeEventListener("focus", syncUser);
+    };
+  }, []);
+
+  /*
+    Close profile dropdown when clicking anywhere outside it.
+  */
+  useEffect(() => {
+    if (!profileOpen) return undefined;
+
+    function handleOutsideClick(event) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setProfileOpen(false);
+      }
+    }
+
+    function handleEscape(event) {
+      if (event.key === "Escape") {
+        setProfileOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [profileOpen]);
+
+  function handleLogoClick() {
+    navigate("/dashboard");
+  }
+
+  function handleNotifications() {
+    /*
+      Keep this ready for when the notifications page/panel is built.
+      For now it does not navigate anywhere.
+    */
   }
 
   function handleOpenProfile() {
-    setOpen(false);
-    navigate("/app/profile");
+  setProfileOpen(false);
+  navigate("/app/profile");
+}
+
+  function handleSignOut() {
+    setProfileOpen(false);
+    clearAuthSession();
+    navigate("/", {
+      replace: true,
+    });
   }
 
-  if (!header) return null;
-
-  // Prop override → live backend profile → localStorage fallback
-  const fullName =
-    liveUser?.fullName ||
-    header.fullName    ||
-    header.userName    ||
-    "User";
-
-  {getInitials(fullName)}
+  const fullName = getUserFullName(liveUser);
+  const email = getUserEmail(liveUser);
+  const avatar = getUserAvatar(liveUser);
+  const initials = getInitials(fullName);
 
   return (
-    <header className="pd-app-header">
-      <div className="pd-app-header-inner">
+    <header className="anandam-app-header">
+      <div className="anandam-app-header__inner">
+        {/* LOGO */}
+        <button
+          type="button"
+          className="anandam-app-header__logo-button"
+          onClick={handleLogoClick}
+          aria-label="Go to dashboard"
+        >
+          <img
+            src={anandamLogo}
+            alt="Anandam"
+            className="anandam-app-header__logo"
+          />
+        </button>
 
-        <div className="pd-brand">
-          <div className="pd-brand-logo">
-            <div className="pd-brand-logo-outer" />
-            <div className="pd-brand-logo-inner" />
-            <div className="pd-brand-logo-person">
-              <div className="pd-brand-logo-head" />
-              <div className="pd-brand-logo-body">
-                <div className="pd-brand-logo-arm pd-brand-logo-arm-left" />
-                <div className="pd-brand-logo-arm pd-brand-logo-arm-right" />
-              </div>
-              <div className="pd-brand-logo-base" />
-            </div>
-            <div className="pd-brand-logo-dot" />
-          </div>
-          <div className="pd-brand-text">
-            <h1 style={{ color: "#295A8E" }}>{header.appName}</h1>
-            <p>{header.appSubtitle}</p>
-          </div>
-        </div>
-
-        <div className="pd-header-actions">
-          <button className="pd-header-icon-btn" type="button" aria-label="Notifications">
-            <Bell size={18} strokeWidth={2} />
+        {/* RIGHT SIDE */}
+        <div className="anandam-app-header__actions">
+          <button
+            type="button"
+            className="anandam-app-header__notification"
+            onClick={handleNotifications}
+            aria-label="Notifications"
+          >
+            <Bell size={24} strokeWidth={1.5} />
           </button>
 
-          <div className="pd-profile-wrap" ref={dropRef}>
+          <div
+            className="anandam-app-header__profile-wrap"
+            ref={dropdownRef}
+          >
             <button
               type="button"
-              className="pd-user-badge"
-              onClick={() => setOpen((p) => !p)}
-              aria-haspopup="true"
-              aria-expanded={open}
-              aria-label="Profile menu"
+              className="anandam-app-header__profile-button"
+              onClick={() => setProfileOpen((current) => !current)}
+              aria-haspopup="menu"
+              aria-expanded={profileOpen}
             >
-              {getInitials(fullName)}
+              <span className="anandam-app-header__avatar">
+                {avatar ? (
+                  <img src={avatar} alt="" />
+                ) : (
+                  <span>{initials}</span>
+                )}
+              </span>
+
+              <span className="anandam-app-header__identity">
+                <span className="anandam-app-header__name">
+                  {fullName}
+                </span>
+
+                <span className="anandam-app-header__email">
+                  {email}
+                </span>
+              </span>
             </button>
 
-            {open && (
-              <div className="pd-profile-dropdown" role="menu">
-                <div className="pd-profile-welcome">
-                  <div className="pd-profile-avatar">{getInitials(fullName)}</div>
-                  <div className="pd-profile-info">
-                    <p className="pd-profile-greeting">Welcome back</p>
-                    <p className="pd-profile-name">{fullName}</p>
+            {profileOpen && (
+              <div
+                className="anandam-app-profile-menu"
+                role="menu"
+              >
+                <div className="anandam-app-profile-menu__user">
+                  <span className="anandam-app-profile-menu__avatar">
+                    {avatar ? (
+                      <img src={avatar} alt="" />
+                    ) : (
+                      initials
+                    )}
+                  </span>
+
+                  <div>
+                    <p className="anandam-app-profile-menu__label">
+                      Welcome back
+                    </p>
+
+                    <p className="anandam-app-profile-menu__name">
+                      {fullName}
+                    </p>
+
+                    {email && (
+                      <p className="anandam-app-profile-menu__email">
+                        {email}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                <div className="pd-profile-divider" />
+                <div className="anandam-app-profile-menu__divider" />
 
-                <button type="button" className="pd-profile-menu-item" role="menuitem" onClick={handleOpenProfile}>
-                  <User size={15} strokeWidth={2} /> My Profile
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="anandam-app-profile-menu__item"
+                  onClick={handleOpenProfile}
+                >
+                  <User size={17} strokeWidth={1.7} />
+                  <span>My Profile</span>
                 </button>
 
-                <button type="button" className="pd-profile-menu-item signout" role="menuitem" onClick={handleSignOut}>
-                  <LogOut size={15} strokeWidth={2} /> Sign out
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="anandam-app-profile-menu__item anandam-app-profile-menu__item--danger"
+                  onClick={handleSignOut}
+                >
+                  <LogOut size={17} strokeWidth={1.7} />
+                  <span>Sign out</span>
                 </button>
               </div>
             )}
           </div>
         </div>
-
       </div>
     </header>
   );

@@ -1,82 +1,130 @@
-// components/layout/BottomNav.jsx
-// ---------------------------------------------------------------------------
-// Auto-detects the active tab from the current URL using useLocation,
-// so the blue highlight always reflects where you are — no matter which
-// page you navigate to. The activeTab prop is used as a fallback only.
-// ---------------------------------------------------------------------------
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { useNavigate, useLocation } from "react-router-dom";
-import {
-  House,
-  Calendar,
-  Heart,
-  Clock,
-  Activity,
-  TriangleAlert,
-} from "lucide-react";
+import homeIcon from "../../assets/navbar/home.png";
+import calendarIcon from "../../assets/navbar/calendar.png";
+import moodIcon from "../../assets/navbar/mood.png";
+import workIcon from "../../assets/navbar/work.png";
+import fitnessIcon from "../../assets/navbar/fitness.png";
+import emergencyIcon from "../../assets/navbar/emergency.png";
 
-const navIconMap = {
-  home:            House,
-  calendar:        Calendar,
-  heart:           Heart,
-  clock:           Clock,
-  activity:        Activity,
-  "alert-triangle": TriangleAlert,
-};
+const NAV_ITEMS = [
+  {
+    id: "home",
+    label: "Home",
+    icon: homeIcon,
+    path: "/dashboard",
+    matchPaths: ["/dashboard"],
+  },
+  {
+    id: "day",
+    label: "Day",
+    icon: calendarIcon,
+    path: "/app/perfect-day",
+    matchPaths: ["/app/perfect-day"],
+  },
+  {
+    id: "mood",
+    label: "Mood",
+    icon: moodIcon,
 
-function BottomNav({ navigation }) {
+    // IMPORTANT:
+    // Clicking Mood from the sidebar goes to the normal Mood page.
+    path: "/mood",
+
+    // Both mood pages show Mood as active.
+    matchPaths: ["/mood", "/mood-quick"],
+  },
+  {
+    id: "work-rest",
+    label: "Work/rest",
+    icon: workIcon,
+    path: "/app/work-rest",
+    matchPaths: ["/app/work-rest"],
+  },
+  {
+    id: "fitness",
+    label: "Fitness",
+    icon: fitnessIcon,
+    path: "/app/fitness",
+    matchPaths: ["/app/fitness"],
+  },
+  {
+    id: "emergency",
+    label: "Emergency",
+    icon: emergencyIcon,
+    path: "/app/emergency",
+    matchPaths: ["/app/emergency"],
+  },
+];
+
+function isItemActive(item, pathname) {
+  return item.matchPaths.some((path) => {
+    return (
+      pathname === path ||
+      pathname.startsWith(`${path}/`)
+    );
+  });
+}
+
+function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  if (!navigation) return null;
-
-  const { items = [], activeTab = "" } = navigation;
-
-  // Derive active tab from the current URL path.
-  // Falls back to the prop value if no item path matches.
-  function getActiveId() {
-    const currentPath = location.pathname;
-
-    // Exact or prefix match — longest match wins
-    let matched = null;
-    let matchLen = 0;
-    for (const item of items) {
-      if (!item.path) continue;
-      if (
-        (currentPath === item.path || currentPath.startsWith(item.path + "/")) &&
-        item.path.length > matchLen
-      ) {
-        matched = item.id;
-        matchLen = item.path.length;
-      }
-    }
-    return matched ?? activeTab;
-  }
-
-  const activeId = getActiveId();
-
-  function handleNavClick(item) {
+  function handleNavigation(item) {
     if (!item.path) return;
-    navigate(item.path);
+
+    if (location.pathname !== item.path) {
+      navigate(item.path);
+    }
   }
 
   return (
-    <nav className="pd-bottom-nav">
-      <div className="pd-bottom-nav-grid">
-        {items.map((item) => {
-          const Icon    = navIconMap[item.icon];
-          const isActive = activeId === item.id;
+    <nav
+      className="anandam-side-nav"
+      aria-label="Primary application navigation"
+    >
+      <div className="anandam-side-nav__items">
+        {NAV_ITEMS.map((item, index) => {
+          const active = isItemActive(
+            item,
+            location.pathname
+          );
 
           return (
-            <button
+            <div
               key={item.id}
-              type="button"
-              className={`pd-bottom-nav-item ${isActive ? "active" : ""}`}
-              onClick={() => handleNavClick(item)}
+              className="anandam-side-nav__entry"
             >
-              {Icon ? <Icon size={20} strokeWidth={2} /> : null}
-              <span>{item.label}</span>
-            </button>
+              <button
+                type="button"
+                className={`anandam-side-nav__item${
+                  active ? " is-active" : ""
+                }`}
+                onClick={() => handleNavigation(item)}
+                aria-current={active ? "page" : undefined}
+                title={item.label}
+              >
+                <span className="anandam-side-nav__icon-wrap">
+                  <img
+                    src={item.icon}
+                    alt=""
+                    aria-hidden="true"
+                    className="anandam-side-nav__icon"
+                  />
+                </span>
+
+                <span className="anandam-side-nav__label">
+                  {item.label}
+                </span>
+              </button>
+
+              {index < NAV_ITEMS.length - 1 && (
+                <span
+                  className="anandam-side-nav__divider"
+                  aria-hidden="true"
+                />
+              )}
+            </div>
           );
         })}
       </div>

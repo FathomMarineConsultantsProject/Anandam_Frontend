@@ -540,3 +540,97 @@
   border-right: 3px solid transparent;
   border-radius: 0 0 16px 16px;
 }
+/* =========================================================
+   MOOD PAGE + UNIVERSAL APP LAYOUT INTEGRATION
+
+   AppLayout already handles:
+   - fixed header
+   - fixed sidebar
+   - left/right gutters
+   - top spacing
+
+   MoodPage must therefore use 100% of the content area.
+   ========================================================= */
+
+.anandam-app-layout__content
+  .anandam-mood-page {
+  position: relative;
+
+  width: 100%;
+  min-height: calc(
+    100svh - 127px
+  );
+
+  margin: 0;
+  padding: 0;
+
+  background: transparent;
+}
+
+.anandam-app-layout__content
+  .anandam-mood-main {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+
+  margin: 0;
+  padding: 0;
+}
+
+.anandam-app-layout__content
+  .anandam-mood-content-stack {
+  width: 100%;
+
+  margin-top: 23px;
+}
+
+.anandam-app-layout__content
+  .anandam-mood-checkin-card,
+.anandam-app-layout__content
+  .anandam-mood-history-card {
+  width: 100%;
+  max-width: none;
+}
+
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .anandam-app-layout__content
+    .anandam-mood-main {
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+  }
+}
+
+
+/* Mobile */
+
+@media (max-width: 620px) {
+  .anandam-app-layout__content
+    .anandam-mood-page {
+    width: 100%;
+    min-height: auto;
+
+    margin: 0;
+    padding: 0;
+  }
+
+  .anandam-app-layout__content
+    .anandam-mood-main {
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+  }
+
+  .anandam-app-layout__content
+    .anandam-mood-content-stack {
+    margin-top: 20px;
+  }
+}
