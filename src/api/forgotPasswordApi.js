@@ -23,3 +23,10 @@ export async function resetForgotPassword({ resetToken, newPassword, confirmPass
     body: JSON.stringify({ resetToken, newPassword, confirmPassword }),
   });
 }
+
+
+// the flow is
+// - send mail with verification code
+// - verify code
+// - reset password with reset token
+
