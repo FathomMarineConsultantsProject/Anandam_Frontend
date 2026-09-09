@@ -1,0 +1,998 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");
+
+.profile-page,
+.profile-page *,
+.profile-page *::before,
+.profile-page *::after {
+  box-sizing: border-box;
+}
+
+.profile-page {
+  position: relative;
+  isolation: isolate;
+
+  width: min(1324px, 100%);
+
+  margin: 0 auto;
+  padding: 0 0 36px;
+
+  font-family: "Roboto", sans-serif;
+  color: #0c1421;
+}
+
+.profile-page button,
+.profile-page input {
+  font: inherit;
+}
+
+.profile-page h1,
+.profile-page h2,
+.profile-page p {
+  margin: 0;
+}
+
+/* background */
+
+.profile-background-wave {
+  position: fixed;
+  z-index: -1;
+
+  right: -830px;
+  bottom: -380px;
+
+  width: 1500px;
+
+  opacity: 0.14;
+
+  pointer-events: none;
+}
+
+/* heading */
+
+.profile-page-heading {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  margin-bottom: 23px;
+}
+
+.profile-page-heading h1 {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 28px;
+
+  color: #0c1421;
+}
+
+.profile-page-heading p {
+  font-size: 14px;
+  line-height: 16px;
+
+  color: rgba(49, 57, 87, 0.77);
+}
+
+/* =====================================================
+   CARD
+   ===================================================== */
+
+.profile-card {
+  position: relative;
+
+  width: 100%;
+
+  padding: 28px 32px 32px;
+
+  background: #fff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+
+  overflow: visible;
+}
+
+.profile-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  width: 100%;
+
+  margin-bottom: 28px;
+}
+
+.profile-identity {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.profile-identity h2 {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 28px;
+
+  color: #232323;
+}
+
+/* =====================================================
+   AVATAR
+   ===================================================== */
+
+.profile-avatar-wrap {
+  position: relative;
+
+  width: 100px;
+  height: 100px;
+}
+
+.profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100px;
+  height: 100px;
+
+  overflow: hidden;
+
+  background: #fdf1da;
+
+  border: 1px solid #f9e6cb;
+  border-radius: 50%;
+
+  color: #471d1a;
+
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.profile-avatar-edit {
+  position: absolute;
+  z-index: 20;
+
+  right: 4px;
+  bottom: 3px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  height: 24px;
+
+  padding: 4px;
+
+  background: #712e1e;
+
+  border: 0;
+  border-radius: 50%;
+
+  cursor: pointer;
+}
+
+.profile-avatar-edit img {
+  width: 13px;
+  height: 13px;
+
+  filter: brightness(0) invert(1);
+}
+
+/* avatar picker */
+
+.profile-avatar-picker {
+  position: absolute;
+  z-index: 1500;
+
+  top: 108px;
+  left: 0;
+
+  width: 288px;
+
+  padding: 16px;
+
+  background: #fff;
+
+  border: 1px solid #d5d7da;
+  border-radius: 12px;
+
+  box-shadow:
+    0 16px 40px
+      rgba(32, 40, 58, 0.16);
+}
+
+.profile-avatar-picker > span {
+  display: block;
+
+  margin-bottom: 12px;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.profile-avatar-picker-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 10px;
+}
+
+.profile-avatar-picker-grid button {
+  width: 52px;
+  height: 52px;
+
+  padding: 2px;
+
+  background: #fcfaf7;
+
+  border: 2px solid transparent;
+  border-radius: 50%;
+
+  cursor: pointer;
+}
+
+.profile-avatar-picker-grid button.is-selected {
+  border-color: #712e1e;
+}
+
+.profile-avatar-picker-grid img {
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+.profile-use-initials {
+  width: 100%;
+
+  margin-top: 12px;
+  padding: 8px;
+
+  color: #712e1e;
+
+  background: #fff;
+
+  border: 1px solid #712e1e;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+/* edit */
+
+.profile-edit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 120px;
+  height: 40px;
+
+  gap: 10px;
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.profile-edit-button:hover {
+  background: #f5f5f5;
+}
+
+.profile-edit-button img {
+  width: 20px;
+  height: 20px;
+}
+
+/* =====================================================
+   DISPLAY MODE
+   ===================================================== */
+
+.profile-display-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  column-gap: 32px;
+  row-gap: 32px;
+}
+
+.profile-display-field {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 8px;
+}
+
+.profile-display-field.is-full {
+  grid-column: 1 / -1;
+}
+
+.profile-field-label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+
+  color: #07314b;
+}
+
+.profile-display-value {
+  overflow: hidden;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+
+  color: #666;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   EDIT GRID
+   ===================================================== */
+
+.profile-edit-form {
+  width: 100%;
+}
+
+.profile-edit-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  column-gap: 32px;
+  row-gap: 20px;
+
+  width: 100%;
+}
+
+.profile-form-field {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 8px;
+}
+
+.profile-form-field.is-full {
+  grid-column: 1 / -1;
+}
+
+.profile-form-field > input,
+.profile-dropdown-trigger,
+.profile-date-trigger {
+  width: 100%;
+  height: 40px;
+
+  padding: 10px 16px;
+
+  color: #20283a;
+
+  background: #fff;
+
+  border: 1px solid #d5d7da;
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.profile-form-field > input:focus,
+.profile-dropdown-trigger:focus,
+.profile-date-trigger:focus {
+  border-color: #712e1e;
+
+  box-shadow:
+    0 0 0 2px
+      rgba(113, 46, 30, 0.08);
+}
+
+/* =====================================================
+   DROPDOWN
+
+   IMPORTANT FIX:
+   dropdown is ABOVE dates and all following rows
+   ===================================================== */
+
+.profile-dropdown-field {
+  z-index: 30;
+}
+
+.profile-dropdown-field.is-open {
+  z-index: 1200;
+}
+
+.profile-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 40px;
+
+  padding: 8px 14px;
+}
+
+.profile-dropdown-trigger.is-open {
+  border-color: #712e1e;
+
+  border-radius:
+    8px 8px 0 0;
+}
+
+.profile-dropdown-trigger img {
+  width: 14px;
+  height: 14px;
+
+  object-fit: contain;
+
+  transition:
+    transform 150ms ease;
+}
+
+.profile-dropdown-trigger img.is-open {
+  transform: rotate(180deg);
+}
+
+.profile-dropdown-menu {
+  position: absolute;
+  z-index: 1250;
+
+  top: calc(100% + 1px);
+  right: 0;
+  left: 0;
+
+  max-height: 168px;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  border-right: 1px solid #d5d7da;
+  border-bottom: 1px solid #d5d7da;
+  border-left: 1px solid #d5d7da;
+
+  border-radius: 0 0 8px 8px;
+
+  box-shadow:
+    0 10px 22px
+      rgba(32, 40, 58, 0.10);
+}
+
+.profile-dropdown-option {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 34px;
+
+  padding: 8px 16px;
+
+  color: #313144;
+
+  background: #ffffff;
+
+  border: 0;
+
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.profile-dropdown-option:hover {
+  background: #f5f5f5;
+}
+
+.profile-dropdown-option.is-selected {
+  background: #fbf2f0;
+}
+
+/* =====================================================
+   DATE
+   ===================================================== */
+
+.profile-date-field {
+  z-index: 20;
+}
+
+.profile-date-field.is-open {
+  z-index: 1300;
+}
+
+.profile-date-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+}
+
+.profile-date-trigger img {
+  width: 20px;
+  height: 20px;
+}
+
+/*
+  Compact popup.
+
+  The Figma design defines a full 614 x 492
+  calendar component. We intentionally keep
+  the web popup smaller because 614px was
+  overwhelming the profile screen.
+*/
+
+.profile-calendar {
+  position: absolute;
+  z-index: 1400;
+
+  top: calc(100% + 8px);
+
+  width: 390px;
+
+  padding: 16px;
+
+  background: #fff;
+
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+
+  box-shadow:
+    0 16px 42px
+      rgba(32, 40, 58, 0.16);
+}
+
+.profile-calendar--left {
+  left: 0;
+}
+
+.profile-calendar--right {
+  right: 0;
+}
+
+.profile-calendar__header {
+  display: grid;
+
+  grid-template-columns:
+    32px 1fr 32px;
+
+  align-items: center;
+
+  margin-bottom: 12px;
+}
+
+.profile-calendar__header button {
+  width: 32px;
+  height: 32px;
+
+  padding: 0;
+
+  color: #131a29;
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 7px;
+
+  font-size: 24px;
+
+  cursor: pointer;
+}
+
+.profile-calendar__header button:hover {
+  background: #f5f5f5;
+}
+
+.profile-calendar__header strong {
+  text-align: center;
+
+  font-size: 17px;
+  font-weight: 500;
+
+  color: #131a29;
+}
+
+.profile-calendar__weekdays {
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  margin-bottom: 6px;
+}
+
+.profile-calendar__weekdays span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 28px;
+
+  color: #c4c4c4;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.profile-calendar__days {
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  gap: 4px;
+}
+
+.profile-calendar__days button {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 36px;
+
+  padding: 0;
+
+  color: #131a29;
+
+  background: #f5f5f5;
+
+  border: 0;
+  border-radius: 7px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.profile-calendar__days button:hover {
+  background: #fbf2f0;
+}
+
+.profile-calendar__days button.is-muted {
+  color: #c4c4c4;
+
+  background: #fff;
+}
+
+.profile-calendar__days button.is-selected {
+  color: #712e1e;
+
+  background: #fbf2f0;
+
+  outline:
+    1px solid
+    rgba(113, 46, 30, 0.25);
+}
+
+.profile-calendar__days button.is-selected::after {
+  position: absolute;
+
+  bottom: 2px;
+  left: 50%;
+
+  width: 3px;
+  height: 3px;
+
+  content: "";
+
+  background: #712e1e;
+
+  border-radius: 50%;
+
+  transform:
+    translateX(-50%);
+}
+
+.profile-calendar__actions {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 12px;
+
+  margin-top: 14px;
+}
+
+.profile-calendar__actions button {
+  height: 40px;
+
+  border: 0;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.calendar-cancel {
+  color: #888;
+
+  background: #ddd;
+}
+
+.calendar-choose {
+  color: #fff;
+
+  background: #712e1e;
+}
+
+/* =====================================================
+   ACTIONS
+   ===================================================== */
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 18px;
+
+  margin-top: 24px;
+}
+
+.profile-actions button {
+  width: 142px;
+  height: 46px;
+
+  border-radius: 11px;
+
+  font-size: 15px;
+
+  cursor: pointer;
+}
+
+.profile-cancel-button {
+  color: #712e1e;
+
+  background: #fff;
+
+  border: 1px solid #712e1e;
+}
+
+.profile-save-button {
+  color: #fff;
+
+  background: #712e1e;
+
+  border: 1px solid #712e1e;
+}
+
+.profile-actions button:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.6;
+}
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+
+.profile-toast {
+  position: fixed;
+  z-index: 3000;
+
+  top: 76px;
+  right: 24px;
+
+  display: grid;
+
+  grid-template-columns:
+    22px 1fr 20px;
+
+  width: 358px;
+
+  padding: 16px;
+
+  gap: 10px;
+
+  box-shadow:
+    0 8px 25px
+      rgba(0, 0, 0, 0.08);
+
+  border-left: 4px solid;
+}
+
+.profile-toast.is-success {
+  background: #effef5;
+
+  border-color: #55b938;
+}
+
+.profile-toast.is-error {
+  background: #fbe2e0;
+
+  border-color: #c93026;
+}
+
+.profile-toast__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 19px;
+  height: 19px;
+
+  color: #fff;
+
+  border-radius: 50%;
+
+  font-size: 12px;
+}
+
+.is-success .profile-toast__icon {
+  background: #55b938;
+}
+
+.is-error .profile-toast__icon {
+  background: #c93026;
+}
+
+.profile-toast__text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.profile-toast__text strong {
+  color: #000;
+
+  font-size: 15px;
+}
+
+.profile-toast__text span {
+  color: #525252;
+
+  font-size: 13px;
+}
+
+.profile-toast__close {
+  padding: 0;
+
+  background: transparent;
+
+  border: 0;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+/* =====================================================
+   ERROR / LOADING
+   ===================================================== */
+
+.profile-loading,
+.profile-load-error {
+  padding: 30px;
+
+  background: #fff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+.profile-load-error {
+  color: #c93026;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 1000px) {
+  .profile-page {
+    width: 100%;
+  }
+
+  .profile-edit-grid,
+  .profile-display-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .profile-form-field.is-full,
+  .profile-display-field.is-full {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .profile-card {
+    padding: 20px;
+
+    border-radius: 16px;
+  }
+
+  .profile-card-top {
+    margin-bottom: 24px;
+  }
+
+  .profile-avatar-wrap,
+  .profile-avatar {
+    width: 76px;
+    height: 76px;
+  }
+
+  .profile-avatar-edit {
+    right: 0;
+    bottom: 0;
+  }
+
+  .profile-identity h2 {
+    font-size: 19px;
+  }
+
+  .profile-edit-button {
+    width: auto;
+
+    padding: 8px 10px;
+  }
+
+  .profile-calendar {
+    position: fixed;
+
+    top: 50%;
+    right: 14px;
+    left: 14px;
+
+    width: auto;
+
+    transform:
+      translateY(-50%);
+  }
+
+  .profile-actions {
+    width: 100%;
+  }
+
+  .profile-actions button {
+    flex: 1;
+
+    width: auto;
+  }
+
+  .profile-toast {
+    right: 12px;
+    left: 12px;
+
+    width: auto;
+  }
+}

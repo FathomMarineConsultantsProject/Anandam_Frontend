@@ -1,5 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { Bell, LogOut, User } from "lucide-react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import {
+  LogOut,
+  User,
+} from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -11,17 +20,54 @@ import {
 import { apiRequest } from "../../api/client";
 
 import anandamLogo from "../../assets/anandum logo.png";
+import bellIcon from "../../assets/navbar/bell icon.png";
 
-function getInitials(fullName = "") {
-  const initials = fullName
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
+import avatar1 from "../../assets/profile/avatar 1.png";
+import avatar2 from "../../assets/profile/avatar 2.png";
+import avatar3 from "../../assets/profile/avatar 3.png";
+import avatar4 from "../../assets/profile/avatar 4.png";
+import avatar5 from "../../assets/profile/avatar 5.png";
+import avatar6 from "../../assets/profile/avatar 6.png";
+import avatar7 from "../../assets/profile/avatar 7.png";
+import avatar8 from "../../assets/profile/avatar 8.png";
 
-  return initials || "U";
+const AVATAR_MAP = {
+  "1": avatar1,
+  "2": avatar2,
+  "3": avatar3,
+  "4": avatar4,
+  "5": avatar5,
+  "6": avatar6,
+  "7": avatar7,
+  "8": avatar8,
+};
+
+function unwrapProfileResponse(
+  response
+) {
+  return (
+    response?.data ||
+    response?.user ||
+    response
+  );
+}
+
+function getInitials(
+  fullName = ""
+) {
+  return (
+    fullName
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) =>
+        part
+          .charAt(0)
+          .toUpperCase()
+      )
+      .join("") || "U"
+  );
 }
 
 function getUserFullName(user) {
@@ -29,8 +75,18 @@ function getUserFullName(user) {
     user?.fullName ||
     user?.full_name ||
     user?.name ||
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-    [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
+    [
+      user?.firstName,
+      user?.lastName,
+    ]
+      .filter(Boolean)
+      .join(" ") ||
+    [
+      user?.first_name,
+      user?.last_name,
+    ]
+      .filter(Boolean)
+      .join(" ") ||
     "User"
   );
 }
@@ -40,6 +96,25 @@ function getUserEmail(user) {
 }
 
 function getUserAvatar(user) {
+  /*
+    NEW backend avatar system
+  */
+  if (
+    user?.avatarMode ===
+    "AVATAR" &&
+    user?.avatarId
+  ) {
+    return (
+      AVATAR_MAP[
+      String(user.avatarId)
+      ] || null
+    );
+  }
+
+  /*
+    Legacy fallback in case old
+    accounts/storage still contain URL.
+  */
   return (
     user?.profileImage ||
     user?.profile_image ||
@@ -51,28 +126,50 @@ function getUserAvatar(user) {
 }
 
 function AppHeader() {
-  const navigate = useNavigate();
-  const dropdownRef = useRef(null);
+  const navigate =
+    useNavigate();
 
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [liveUser, setLiveUser] = useState(() => getStoredUser());
+  const dropdownRef =
+    useRef(null);
 
-  /*
-    Keep the header profile synced with the backend.
+  const [
+    profileOpen,
+    setProfileOpen,
+  ] = useState(false);
 
-    If GET /api/profile succeeds we refresh the user data.
-    If it fails, localStorage data remains as fallback.
-  */
+  const [
+    liveUser,
+    setLiveUser,
+  ] = useState(() =>
+    getStoredUser()
+  );
+
+  /* ================================================
+     LOAD FRESH PROFILE
+     ================================================ */
+
   useEffect(() => {
     let cancelled = false;
 
     async function loadProfile() {
       try {
-        const profile = await apiRequest("/profile", {
-          method: "GET",
-        });
+        const response =
+          await apiRequest(
+            "/profile",
+            {
+              method: "GET",
+            }
+          );
 
-        if (!cancelled && profile) {
+        const profile =
+          unwrapProfileResponse(
+            response
+          );
+
+        if (
+          !cancelled &&
+          profile
+        ) {
           setLiveUser(profile);
 
           try {
@@ -80,11 +177,11 @@ function AppHeader() {
               user: profile,
             });
           } catch {
-            // Do not break the header if storage update fails.
+            // Ignore storage error.
           }
         }
       } catch {
-        // Existing local user is kept as fallback.
+        // Stored user remains fallback.
       }
     }
 
@@ -95,91 +192,174 @@ function AppHeader() {
     };
   }, []);
 
-  /*
-    Keep header updated if another page modifies localStorage,
-    for example after editing profile information.
-  */
+  /* ================================================
+     SYNC PROFILE CHANGES
+     ================================================ */
+
   useEffect(() => {
-    function syncUser() {
-      setLiveUser(getStoredUser());
+    function syncStoredUser() {
+      setLiveUser(
+        getStoredUser()
+      );
     }
 
-    window.addEventListener("storage", syncUser);
-    window.addEventListener("focus", syncUser);
+    function handleProfileUpdate(
+      event
+    ) {
+      const updatedProfile =
+        event?.detail;
+
+      if (updatedProfile) {
+        setLiveUser(
+          updatedProfile
+        );
+      } else {
+        syncStoredUser();
+      }
+    }
+
+    window.addEventListener(
+      "storage",
+      syncStoredUser
+    );
+
+    window.addEventListener(
+      "focus",
+      syncStoredUser
+    );
+
+    window.addEventListener(
+      "anandam:profile-updated",
+      handleProfileUpdate
+    );
 
     return () => {
-      window.removeEventListener("storage", syncUser);
-      window.removeEventListener("focus", syncUser);
+      window.removeEventListener(
+        "storage",
+        syncStoredUser
+      );
+
+      window.removeEventListener(
+        "focus",
+        syncStoredUser
+      );
+
+      window.removeEventListener(
+        "anandam:profile-updated",
+        handleProfileUpdate
+      );
     };
   }, []);
 
-  /*
-    Close profile dropdown when clicking anywhere outside it.
-  */
-  useEffect(() => {
-    if (!profileOpen) return undefined;
+  /* ================================================
+     CLOSE DROPDOWN
+     ================================================ */
 
-    function handleOutsideClick(event) {
+  useEffect(() => {
+    if (!profileOpen) {
+      return;
+    }
+
+    function handleOutside(
+      event
+    ) {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
+        !dropdownRef.current.contains(
+          event.target
+        )
       ) {
         setProfileOpen(false);
       }
     }
 
-    function handleEscape(event) {
-      if (event.key === "Escape") {
+    function handleEscape(
+      event
+    ) {
+      if (
+        event.key ===
+        "Escape"
+      ) {
         setProfileOpen(false);
       }
     }
 
-    document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener(
+      "mousedown",
+      handleOutside
+    );
+
+    document.addEventListener(
+      "keydown",
+      handleEscape
+    );
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener(
+        "mousedown",
+        handleOutside
+      );
+
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
     };
   }, [profileOpen]);
 
   function handleLogoClick() {
-    navigate("/dashboard");
+    navigate("/");
   }
 
-  function handleNotifications() {
-    /*
-      Keep this ready for when the notifications page/panel is built.
-      For now it does not navigate anywhere.
-    */
-  }
+  function handleNotifications() { }
 
   function handleOpenProfile() {
-  setProfileOpen(false);
-  navigate("/app/profile");
-}
+    setProfileOpen(false);
+
+    navigate(
+      "/app/profile"
+    );
+  }
 
   function handleSignOut() {
     setProfileOpen(false);
+
     clearAuthSession();
+
     navigate("/", {
       replace: true,
     });
   }
 
-  const fullName = getUserFullName(liveUser);
-  const email = getUserEmail(liveUser);
-  const avatar = getUserAvatar(liveUser);
-  const initials = getInitials(fullName);
+  const fullName =
+    getUserFullName(
+      liveUser
+    );
+
+  const email =
+    getUserEmail(
+      liveUser
+    );
+
+  const avatar =
+    getUserAvatar(
+      liveUser
+    );
+
+  const initials =
+    getInitials(
+      fullName
+    );
 
   return (
     <header className="anandam-app-header">
       <div className="anandam-app-header__inner">
-        {/* LOGO */}
         <button
           type="button"
           className="anandam-app-header__logo-button"
-          onClick={handleLogoClick}
+          onClick={
+            handleLogoClick
+          }
           aria-label="Go to dashboard"
         >
           <img
@@ -189,7 +369,6 @@ function AppHeader() {
           />
         </button>
 
-        {/* RIGHT SIDE */}
         <div className="anandam-app-header__actions">
           <button
             type="button"
@@ -197,25 +376,40 @@ function AppHeader() {
             onClick={handleNotifications}
             aria-label="Notifications"
           >
-            <Bell size={24} strokeWidth={1.5} />
+            <img
+              src={bellIcon}
+              alt=""
+              aria-hidden="true"
+              className="anandam-app-header__notification-icon"
+            />
           </button>
 
           <div
             className="anandam-app-header__profile-wrap"
-            ref={dropdownRef}
+            ref={
+              dropdownRef
+            }
           >
             <button
               type="button"
               className="anandam-app-header__profile-button"
-              onClick={() => setProfileOpen((current) => !current)}
-              aria-haspopup="menu"
-              aria-expanded={profileOpen}
+              onClick={() =>
+                setProfileOpen(
+                  (current) =>
+                    !current
+                )
+              }
             >
               <span className="anandam-app-header__avatar">
                 {avatar ? (
-                  <img src={avatar} alt="" />
+                  <img
+                    src={avatar}
+                    alt=""
+                  />
                 ) : (
-                  <span>{initials}</span>
+                  <span>
+                    {initials}
+                  </span>
                 )}
               </span>
 
@@ -238,7 +432,12 @@ function AppHeader() {
                 <div className="anandam-app-profile-menu__user">
                   <span className="anandam-app-profile-menu__avatar">
                     {avatar ? (
-                      <img src={avatar} alt="" />
+                      <img
+                        src={
+                          avatar
+                        }
+                        alt=""
+                      />
                     ) : (
                       initials
                     )}
@@ -267,20 +466,40 @@ function AppHeader() {
                   type="button"
                   role="menuitem"
                   className="anandam-app-profile-menu__item"
-                  onClick={handleOpenProfile}
+                  onClick={
+                    handleOpenProfile
+                  }
                 >
-                  <User size={17} strokeWidth={1.7} />
-                  <span>My Profile</span>
+                  <User
+                    size={17}
+                    strokeWidth={
+                      1.7
+                    }
+                  />
+
+                  <span>
+                    My Profile
+                  </span>
                 </button>
 
                 <button
                   type="button"
                   role="menuitem"
                   className="anandam-app-profile-menu__item anandam-app-profile-menu__item--danger"
-                  onClick={handleSignOut}
+                  onClick={
+                    handleSignOut
+                  }
                 >
-                  <LogOut size={17} strokeWidth={1.7} />
-                  <span>Sign out</span>
+                  <LogOut
+                    size={17}
+                    strokeWidth={
+                      1.7
+                    }
+                  />
+
+                  <span>
+                    Sign out
+                  </span>
                 </button>
               </div>
             )}
