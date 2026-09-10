@@ -28,6 +28,8 @@ import avatar5 from "../assets/profile/avatar 5.png";
 import avatar6 from "../assets/profile/avatar 6.png";
 import avatar7 from "../assets/profile/avatar 7.png";
 import avatar8 from "../assets/profile/avatar 8.png";
+import avatar9 from "../assets/profile/avatar 9.png";
+import avatar10 from "../assets/profile/avatar 10.png";
 
 import "../styles/profile.css";
 
@@ -37,14 +39,19 @@ import "../styles/profile.css";
    ========================================================= */
 
 const AVATARS = [
+  // girls
+  { id: "6", src: avatar6 },
+  { id: "7", src: avatar7 },
+  { id: "8", src: avatar8 },
+  { id: "9", src: avatar9 },
+  { id: "5", src: avatar5 },
+
+  // guys
   { id: "1", src: avatar1 },
   { id: "2", src: avatar2 },
   { id: "3", src: avatar3 },
   { id: "4", src: avatar4 },
-  { id: "5", src: avatar5 },
-  { id: "6", src: avatar6 },
-  { id: "7", src: avatar7 },
-  { id: "8", src: avatar8 },
+  { id: "10", src: avatar10 },
 ];
 
 const RELATIONSHIP_OPTIONS = [
