@@ -1,0 +1,1125 @@
+/* ==========================================================
+   ANANDAM DASHBOARD
+   Figma desktop base: 1440px
+   ========================================================== */
+
+.dashboard-page,
+.dashboard-page * {
+  box-sizing: border-box;
+}
+
+.dashboard-page {
+  position: relative;
+
+  width: 100%;
+  min-height: 100vh;
+
+  margin: 0;
+
+  background: #fcfaf7;
+
+  color: #232323;
+
+  font-family:
+    "Roboto",
+    Arial,
+    sans-serif;
+}
+
+/* ==========================================================
+   MAIN CONTENT
+
+   Figma:
+   x = 92px
+   width = 1324px
+   top = 87px
+   ========================================================== */
+
+.dashboard-main {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: calc(100% - 116px);
+  max-width: 1324px;
+
+  margin-left: 92px;
+  margin-right: 24px;
+
+  padding-top: 87px;
+  padding-bottom: 32px;
+
+  gap: 24px;
+}
+
+/* ==========================================================
+   COMMON
+   ========================================================== */
+
+.dashboard-section-title {
+  margin: 0;
+
+  color: #0c1421;
+
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 23px;
+}
+
+/* ==========================================================
+   VOYAGE / PROFILE
+   ========================================================== */
+
+.dashboard-voyage-card {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-height: 372px;
+
+  padding: 32px 20px;
+
+  gap: 25px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+.dashboard-voyage-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+}
+
+.dashboard-voyage-heading h1 {
+  margin: 0;
+
+  color: #0c1421;
+
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 23px;
+}
+
+.dashboard-connection {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  color: #07314b;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.dashboard-connection__dot {
+  flex: 0 0 auto;
+
+  width: 10px;
+  height: 10px;
+
+  background: #0acf58;
+
+  border-radius: 50%;
+}
+
+/* Profile */
+
+.dashboard-voyage-profile {
+  display: flex;
+  align-items: center;
+
+  min-height: 72px;
+
+  gap: 12px;
+}
+
+.dashboard-voyage-profile__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 72px;
+
+  width: 72px;
+  height: 72px;
+
+  overflow: hidden;
+
+  background: #f8ecd2;
+
+  border-radius: 81px;
+
+  color: #712e1e;
+
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.dashboard-voyage-profile__avatar img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.dashboard-voyage-profile__identity {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.dashboard-voyage-profile__identity h2 {
+  margin: 0;
+
+  color: #232323;
+
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.dashboard-voyage-profile__identity p {
+  margin: 0;
+
+  color: #60657c;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+/* Voyage information */
+
+.dashboard-voyage-information {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  min-height: 70px;
+
+  padding: 8px 0;
+
+  gap: 32px;
+}
+
+.dashboard-voyage-metrics {
+  display: grid;
+
+  grid-template-columns:
+    minmax(170px, 1fr)
+    1px
+    minmax(170px, 1fr)
+    1px
+    minmax(170px, 1fr);
+
+  align-items: center;
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+.dashboard-voyage-metric {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  padding: 0 24px;
+
+  gap: 8px;
+}
+
+.dashboard-voyage-metric__label {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #666666;
+
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+}
+
+.dashboard-voyage-metric__label img {
+  display: block;
+
+  width: 20px;
+  height: 20px;
+
+  object-fit: contain;
+}
+
+.dashboard-voyage-metric strong {
+  color: #232323;
+
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 19px;
+}
+
+.dashboard-voyage-divider {
+  width: 1px;
+  height: 19px;
+
+  background: #d9d9d9;
+}
+
+/* Export */
+
+.dashboard-export-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 180px;
+
+  width: 180px;
+  height: 54px;
+
+  padding: 16px 24px;
+
+  gap: 10px;
+
+  color: #ffffff;
+
+  background: #712e1e;
+
+  border: 1px solid #712e1e;
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 16px;
+
+  cursor: pointer;
+
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+}
+
+.dashboard-export-button:hover {
+  transform: translateY(-1px);
+
+  background: #642719;
+
+  box-shadow:
+    0 5px 14px
+    rgba(113, 46, 30, 0.16);
+}
+
+/* Contract */
+
+.dashboard-contract {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  padding-top: 23px;
+
+  gap: 10px;
+
+  border-top: 1px solid #dcdcdc;
+}
+
+.dashboard-contract__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 24px;
+}
+
+.dashboard-contract__header span {
+  color: #666666;
+
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.dashboard-contract__header strong {
+  color: #232323;
+
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.dashboard-contract__track {
+  position: relative;
+
+  width: calc(100% - 48px);
+  height: 4px;
+
+  margin: 0 24px;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ffffff 1.98%,
+      rgba(184, 138, 50, 0.37)
+        16.07%
+    );
+}
+
+.dashboard-contract__fill {
+  height: 100%;
+
+  background: #b88a32;
+
+  border-radius:
+    1px 80px 80px 1px;
+
+  transition:
+    width 400ms ease;
+}
+
+/* ==========================================================
+   TODAY'S WELLNESS
+   ========================================================== */
+
+.dashboard-wellness {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  padding: 0 20px;
+
+  gap: 14px;
+}
+
+.dashboard-wellness-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  width: 100%;
+
+  gap: 14px;
+}
+
+.dashboard-wellness-card {
+  display: flex;
+  flex-direction: column;
+
+  height: 126px;
+
+  padding: 14px 18px;
+
+  gap: 24px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+.dashboard-wellness-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  height: 37px;
+}
+
+.dashboard-wellness-card__top > span:first-child {
+  color: #232323;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.dashboard-wellness-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 37px;
+
+  width: 37px;
+  height: 37px;
+
+  overflow: hidden;
+
+  background: #b88a32;
+
+  border-radius: 100px;
+}
+
+.dashboard-wellness-card__icon img {
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  object-fit: contain;
+}
+
+.dashboard-wellness-card > strong {
+  color: #232323;
+
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 35px;
+}
+
+/* ==========================================================
+   TOOLKIT
+   ========================================================== */
+
+.dashboard-toolkit {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  padding: 20px;
+
+  gap: 14px;
+
+  background: #ffffff;
+
+  border-radius: 22px;
+}
+
+.dashboard-toolkit-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+/* TOOL CARD */
+
+.dashboard-tool-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  width: 100%;
+  height: 120px;
+
+  padding: 14px 18px;
+
+  gap: 16px;
+
+  color: #232323;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+
+  font-family: inherit;
+
+  text-align: left;
+
+  cursor: default;
+
+  appearance: none;
+}
+
+.dashboard-tool-card--clickable {
+  cursor: pointer;
+}
+
+.dashboard-tool-card--clickable:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(32, 40, 58, 0.08);
+}
+
+.dashboard-tool-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 37px;
+  height: 37px;
+
+  flex: 0 0 37px;
+
+  background: #ffffff;
+
+  border-radius: 100px;
+}
+
+.dashboard-tool-card__icon img {
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  object-fit: contain;
+}
+
+.dashboard-tool-card__bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  width: 100%;
+
+  gap: 8px;
+}
+
+.dashboard-tool-card__text {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 4px;
+}
+
+.dashboard-tool-card__text strong {
+  color: #232323;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.dashboard-tool-card__text span {
+  color: #666666;
+
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.dashboard-tool-card__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 37px;
+
+  width: 37px;
+  height: 37px;
+
+  border-radius: 50%;
+}
+
+/* ==========================================================
+   EMERGENCY SUPPORT
+   ========================================================== */
+
+.dashboard-emergency {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  min-height: 253px;
+
+  padding: 14px 18px;
+
+  gap: 16px;
+
+  background: #fbf1ef;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+.dashboard-emergency__heading {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+.dashboard-emergency__main-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 37px;
+  height: 37px;
+
+  background: #b23b32;
+
+  border-radius: 100px;
+}
+
+.dashboard-emergency__main-icon img {
+  width: 24px;
+  height: 24px;
+
+  object-fit: contain;
+}
+
+.dashboard-emergency__heading h3 {
+  margin: 0 0 4px;
+
+  color: #232323;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.dashboard-emergency__heading p {
+  margin: 0;
+
+  color: #666666;
+
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.dashboard-emergency-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+.dashboard-emergency-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  width: 100%;
+  height: 120px;
+
+  padding: 14px 18px;
+
+  gap: 16px;
+
+  color: #232323;
+
+  background: #ffffff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+
+  font-family: inherit;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.dashboard-emergency-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(32, 40, 58, 0.07);
+}
+
+.dashboard-emergency-card__top {
+  display: flex;
+
+  width: 100%;
+}
+
+.dashboard-emergency-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 37px;
+  height: 37px;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 50%;
+}
+
+.dashboard-emergency-card__icon img {
+  width: 23px;
+  height: 23px;
+
+  object-fit: contain;
+}
+
+.dashboard-emergency-card__bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  width: 100%;
+}
+
+.dashboard-emergency-card__text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.dashboard-emergency-card__text strong {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.dashboard-emergency-card__text span {
+  color: #666666;
+
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+.dashboard-emergency-card__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 37px;
+  height: 37px;
+}
+
+/* ==========================================================
+   STAY IN TOUCH
+   ========================================================== */
+
+.dashboard-contact {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  min-height: 145px;
+
+  padding: 20px;
+
+  gap: 14px;
+
+  background: #ffffff;
+
+  border-radius: 22px;
+}
+
+.dashboard-contact-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+.dashboard-contact-card {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 67px;
+
+  padding: 14px 18px;
+
+  gap: 16px;
+
+  color: #232323;
+
+  background: #ffffff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+
+  font-family: inherit;
+
+  cursor: pointer;
+}
+
+.dashboard-contact-card__icon-wrap {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 38px;
+
+  width: 38px;
+  height: 37px;
+}
+
+.dashboard-contact-card__icon {
+  width: 37px;
+  height: 37px;
+
+  object-fit: contain;
+}
+
+.dashboard-contact-card__dot {
+  position: absolute;
+
+  right: -2px;
+  top: 1px;
+
+  width: 9px;
+  height: 9px;
+
+  background: #b75858;
+
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+}
+
+.dashboard-contact-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+.dashboard-contact-card__name-row {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.dashboard-contact-card__name-row strong {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.dashboard-contact-card__name-row small {
+  color: #232323;
+
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 12px;
+}
+
+.dashboard-contact-card__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 26px;
+  height: 26px;
+}
+
+/* ==========================================================
+   HOVER / TRANSITIONS
+   ========================================================== */
+
+.dashboard-tool-card,
+.dashboard-emergency-card,
+.dashboard-contact-card {
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    border-color 150ms ease;
+}
+
+.dashboard-contact-card:hover {
+  transform: translateY(-1px);
+
+  border-color: #c9a662;
+
+  box-shadow:
+    0 5px 14px
+    rgba(32, 40, 58, 0.06);
+}
+
+/* ==========================================================
+   LARGE TABLETS
+   ========================================================== */
+
+@media (max-width: 1180px) {
+  .dashboard-main {
+    width: calc(100% - 112px);
+
+    margin-left: 88px;
+    margin-right: 24px;
+  }
+
+  .dashboard-toolkit-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-voyage-information {
+    align-items: stretch;
+  }
+
+  .dashboard-voyage-metrics {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .dashboard-voyage-divider {
+    display: none;
+  }
+}
+
+/* ==========================================================
+   TABLET
+   ========================================================== */
+
+@media (max-width: 900px) {
+  .dashboard-voyage-card {
+    min-height: auto;
+  }
+
+  .dashboard-voyage-information {
+    flex-direction: column;
+  }
+
+  .dashboard-voyage-metrics {
+    width: 100%;
+  }
+
+  .dashboard-export-button {
+    align-self: flex-end;
+  }
+
+  .dashboard-wellness-grid,
+  .dashboard-emergency-grid,
+  .dashboard-contact-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .dashboard-wellness-card {
+    height: 116px;
+  }
+
+  .dashboard-emergency {
+    height: auto;
+  }
+}
+
+/* ==========================================================
+   MOBILE
+   Sidebar remains on left because Anandam's universal nav
+   is currently a left-side navigation.
+   ========================================================== */
+
+@media (max-width: 640px) {
+  .dashboard-main {
+    width: calc(100% - 94px);
+
+    margin-left: 82px;
+    margin-right: 12px;
+
+    padding-top: 78px;
+
+    gap: 16px;
+  }
+
+  .dashboard-voyage-card,
+  .dashboard-toolkit,
+  .dashboard-contact {
+    padding: 16px;
+  }
+
+  .dashboard-voyage-heading {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .dashboard-voyage-profile__avatar {
+    flex-basis: 58px;
+
+    width: 58px;
+    height: 58px;
+  }
+
+  .dashboard-voyage-profile__identity h2 {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .dashboard-voyage-metrics {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 15px;
+  }
+
+  .dashboard-voyage-metric {
+    padding: 0;
+  }
+
+  .dashboard-export-button {
+    width: 100%;
+    max-width: none;
+
+    flex-basis: 48px;
+
+    height: 48px;
+  }
+
+  .dashboard-contract__header {
+    padding: 0;
+  }
+
+  .dashboard-contract__track {
+    width: 100%;
+
+    margin: 0;
+  }
+
+  .dashboard-wellness {
+    padding: 0;
+  }
+
+  .dashboard-toolkit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-section-title {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .dashboard-emergency__heading p {
+    line-height: 18px;
+  }
+
+  .dashboard-contact-card__name-row {
+    flex-wrap: wrap;
+  }
+}
