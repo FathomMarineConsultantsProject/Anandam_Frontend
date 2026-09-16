@@ -1268,25 +1268,28 @@ button {
 }
 
 
-/* Notification */
+/* =========================================
+   HEADER NOTIFICATION BELL
+   ========================================= */
 
 .anandam-app-header__notification {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  flex: 0 0 32px;
+  flex: 0 0 28px;
 
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
 
   margin: 0;
-  padding: 4px;
+  padding: 0;
 
   background: transparent;
   border: 0;
   border-radius: 50%;
 
+  line-height: 0;
   cursor: pointer;
 
   transition:
@@ -1295,17 +1298,23 @@ button {
 }
 
 .anandam-app-header__notification:hover {
-  background: rgba(113, 46, 30, 0.06);
+  background: rgba(113, 46, 30, 0.05);
   transform: translateY(-1px);
+}
+
+.anandam-app-header__notification:focus-visible {
+  outline: 2px solid rgba(113, 46, 30, 0.22);
+  outline-offset: 2px;
 }
 
 .anandam-app-header__notification-icon {
   display: block;
 
-  width: 23px;
-  height: 23px;
+  width: 18px;
+  height: 18px;
 
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 
