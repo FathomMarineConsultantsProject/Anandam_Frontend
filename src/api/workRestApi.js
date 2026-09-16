@@ -1,107 +1,186 @@
-// api/workRestApi.js
-// Backend: https://anandam-backend.vercel.app/api
-// JWT token is read from localStorage under the key your app uses after login.
-// Change "token" below if your app stores it under a different key.
+import { apiRequest } from "./client";
 
-const BASE_URL = "https://anandam-backend.vercel.app/api";
+function getHttpStatus(error) {
+  const directStatus = Number(
+    error?.status ??
+      error?.statusCode ??
+      error?.response?.status
+  );
 
-function getAuthHeaders() {
-  const token = localStorage.getItem("token");
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
-
-function normalizeWorkBlocks(blocks) {
-  if (!Array.isArray(blocks)) return Array(48).fill(false);
-  const out = Array(48).fill(false);
-  for (let i = 0; i < Math.min(blocks.length, 48); i++) {
-    out[i] = Boolean(blocks[i]);
-  }
-  return out;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/profile  →  logged-in user's profile
-// ─────────────────────────────────────────────────────────────────────────────
-export async function getMyProfile() {
-  const res = await fetch(`${BASE_URL}/profile`, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-  if (!res.ok) throw new Error(`Profile fetch failed: ${res.status}`);
-  const json = await res.json();
-  return json?.data ?? null;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/work-hours/me/history  →  array of all this user's work block records
-// Response shape: { status, data: [ { id, userId, date, workBlocks: boolean[48] }, ... ] }
-// We find the record matching targetDate and return its workBlocks.
-// If no record exists for that date yet, we return all-false.
-// ─────────────────────────────────────────────────────────────────────────────
-export async function fetchMyWorkGrid(targetDate) {
-  const date = targetDate ?? new Date().toISOString().slice(0, 10);
-
-  const res = await fetch(`${BASE_URL}/work-hours/me/history`, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-
-  // 404 = no history at all yet — treat as all-false
-  if (res.status === 404) {
-    return Array(48).fill(false);
+  if (Number.isFinite(directStatus) && directStatus >= 400) {
+    return directStatus;
   }
 
-  if (!res.ok) throw new Error(`Work grid fetch failed: ${res.status}`);
+  const message = String(error?.message || "");
+  const match = message.match(/\b([45]\d{2})\b/);
 
-  const json = await res.json();
-  const records = json?.data ?? [];
-
-  // Find the record whose date matches targetDate (date portion only)
-  const match = records.find((r) => {
-    const recordDate = (r.date ?? "").slice(0, 10); // "2026-03-24T00:00:00.000Z" → "2026-03-24"
-    return recordDate === date;
-  });
-
-  return normalizeWorkBlocks(match?.workBlocks);
+  return match ? Number(match[1]) : null;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/work-hours  →  save/update the 48-slot boolean array for this user
-// ─────────────────────────────────────────────────────────────────────────────
-export async function saveDailyWorkGrid(targetDate, workBlocks) {
-  const date = targetDate ?? new Date().toISOString().slice(0, 10);
-  const res = await fetch(`${BASE_URL}/work-hours`, {
+export function getWorkRestErrorMessage(error, action = "general") {
+  const status = getHttpStatus(error);
+
+  if (!status) {
+    if (
+      error?.name === "TypeError" ||
+      /network|failed to fetch|fetch failed|offline/i.test(
+        String(error?.message || "")
+      )
+    ) {
+      return "We couldn't reach the server. Check your internet connection and try again.";
+    }
+
+    return "Something went wrong. Please try again.";
+  }
+
+  if (status === 400) {
+    if (action === "manual") {
+      return "That work session could not be saved. Check the start time, end time, and work location, then try again.";
+    }
+
+    if (action === "clock-in") {
+      return "We couldn't start this work session. Please choose a valid work location and try again.";
+    }
+
+    if (action === "slot") {
+      return "That time selection is not valid. Please choose the slot again and retry.";
+    }
+
+    return "Some of the information is not valid. Please check it and try again.";
+  }
+
+  if (status === 401) {
+    return "Your login session has expired. Please sign in again to continue.";
+  }
+
+  if (status === 403) {
+    return "Your session no longer has permission to make this change. Please sign in again. If the problem continues, contact your administrator.";
+  }
+
+  if (status === 404) {
+    return "We couldn't find this work/rest record. Refresh the page and try again.";
+  }
+
+  if (status === 409) {
+    if (action === "clock-in") {
+      return "You already have an active work session. Clock out of the current session before starting another one.";
+    }
+
+    if (action === "manual") {
+      return "This work session overlaps or conflicts with an existing work entry. Choose a different start or end time and try again.";
+    }
+
+    if (action === "slot") {
+      return "This time slot conflicts with an existing work entry. Refresh the record and choose another time.";
+    }
+
+    return "This change conflicts with an existing work/rest record. Refresh the page and try again.";
+  }
+
+  if (status === 422) {
+    return "Some details could not be accepted. Please check the selected time and work location, then try again.";
+  }
+
+  if (status === 429) {
+    return "Too many requests were sent. Please wait a moment and try again.";
+  }
+
+  if (status === 500) {
+    return "The server couldn't complete your request. Your changes were not saved. Please try again.";
+  }
+
+  if (status === 502 || status === 503 || status === 504) {
+    return "The Anandam service is temporarily unavailable. Please wait a moment and try again.";
+  }
+
+  return "We couldn't complete that request. Please try again.";
+}
+
+function unwrapData(response) {
+  if (
+    response &&
+    typeof response === "object" &&
+    Object.prototype.hasOwnProperty.call(response, "data")
+  ) {
+    return response.data;
+  }
+
+  return response;
+}
+
+export async function getWorkRestDay(date) {
+  const response = await apiRequest(`/work-hours/day/${date}`, {
+    method: "GET",
+  });
+
+  return unwrapData(response);
+}
+
+export async function updateWorkRestSlots(date, updates) {
+  const response = await apiRequest(`/work-hours/day/${date}/slots`, {
+    method: "PATCH",
+    body: JSON.stringify({ updates }),
+  });
+
+  return unwrapData(response);
+}
+
+export async function getActiveWorkSession() {
+  const response = await apiRequest("/work-hours/sessions/active", {
+    method: "GET",
+  });
+
+  return unwrapData(response);
+}
+
+export async function clockInToWork(shipLocation) {
+  const response = await apiRequest("/work-hours/sessions/clock-in", {
     method: "POST",
-    headers: getAuthHeaders(),
+    body: JSON.stringify({ shipLocation }),
+  });
+
+  return unwrapData(response);
+}
+
+export async function clockOutOfWork() {
+  const response = await apiRequest("/work-hours/sessions/clock-out", {
+    method: "POST",
+  });
+
+  return unwrapData(response);
+}
+
+export async function createManualWorkSession({
+  startedAt,
+  endedAt,
+  shipLocation,
+}) {
+  const response = await apiRequest("/work-hours/sessions/manual", {
+    method: "POST",
     body: JSON.stringify({
-      targetDate: date,
-      workBlocks: normalizeWorkBlocks(workBlocks),
+      startedAt,
+      endedAt,
+      shipLocation,
     }),
   });
-  if (!res.ok) throw new Error(`Save failed: ${res.status}`);
-  const json = await res.json();
-  return json?.data ?? null;
+
+  return unwrapData(response);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Kept for compatibility — not used in WorkRestPage anymore
-// ─────────────────────────────────────────────────────────────────────────────
-export async function fetchMasterWorkGrid(targetDate) {
-  const date = targetDate ?? new Date().toISOString().slice(0, 10);
-  const res = await fetch(`${BASE_URL}/work-hours/${date}`, {
+export async function getWorkRestSummary(date) {
+  const response = await apiRequest(`/work-hours/summary/${date}`, {
     method: "GET",
-    headers: getAuthHeaders(),
   });
-  if (!res.ok) throw new Error(`Master grid fetch failed: ${res.status}`);
-  const json = await res.json();
-  return (json?.data ?? []).map((m) => ({
-    id: m.userId,
-    userId: m.userId,
-    name: m.fullName ?? "Unknown",
-    rank: m.rank ?? "Crew",
-    workPeriods: normalizeWorkBlocks(m.workBlocks),
-  }));
+
+  return unwrapData(response);
+}
+
+export async function getWorkRestHistory() {
+  const response = await apiRequest("/work-hours/history", {
+    method: "GET",
+  });
+
+  const data = unwrapData(response);
+
+  return Array.isArray(data) ? data : [];
 }

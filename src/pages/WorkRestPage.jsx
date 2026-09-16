@@ -1,40 +1,108 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import {
-  ShieldCheck,
-  Camera,
-  Eye,
-  Activity,
-  MapPin,
-  KeyRound,
-  Clock,
-  ChevronDown,
-} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ChevronLeft, ChevronRight, Clock3, X } from "lucide-react";
+
 import AppHeader from "../components/layout/AppHeader";
 import BottomNav from "../components/layout/BottomNav";
+
 import { workRestMockData } from "../data/workRestData";
+import { getMyProfile } from "../api/profileApi";
+
 import {
-  getMyProfile,
-  fetchMyWorkGrid,
-  saveDailyWorkGrid,
+  getWorkRestDay,
+  updateWorkRestSlots,
+  getActiveWorkSession,
+  clockInToWork,
+  clockOutOfWork,
+  createManualWorkSession,
+  getWorkRestSummary,
+  getWorkRestErrorMessage,
 } from "../api/workRestApi";
+
+import complianceRateIcon from "../assets/workrest/complaince rate.png";
+import violationsIcon from "../assets/workrest/violations.png";
+import hoursWorkedIcon from "../assets/workrest/hours worked.png";
+import restRecordedIcon from "../assets/workrest/rest record.png";
+import dateRangeIcon from "../assets/workrest/date_range.png";
+import editIcon from "../assets/workrest/edit.png";
+
+import avatar1 from "../assets/profile/avatar 1.png";
+import avatar2 from "../assets/profile/avatar 2.png";
+import avatar3 from "../assets/profile/avatar 3.png";
+import avatar4 from "../assets/profile/avatar 4.png";
+import avatar5 from "../assets/profile/avatar 5.png";
+import avatar6 from "../assets/profile/avatar 6.png";
+import avatar7 from "../assets/profile/avatar 7.png";
+import avatar8 from "../assets/profile/avatar 8.png";
+import avatar9 from "../assets/profile/avatar 9.png";
+import avatar10 from "../assets/profile/avatar 10.png";
+
 import "../styles/work-rest.css";
 
-// ─── Time labels ──────────────────────────────────────────────────────────────
+const EMPTY_BLOCKS = Array(48).fill("UNRECORDED");
 
-const HOUR_LABELS = Array.from({ length: 48 }, (_, i) => {
-  const h = Math.floor(i / 2);
-  const m = i % 2 === 0 ? "00" : "30";
-  return `${String(h).padStart(2, "0")}:${m}`;
-});
+const PROFILE_AVATARS = {
+  1: avatar1,
+  2: avatar2,
+  3: avatar3,
+  4: avatar4,
+  5: avatar5,
+  6: avatar6,
+  7: avatar7,
+  8: avatar8,
+  9: avatar9,
+  10: avatar10,
+};
 
-const SUB_LABELS = Array.from({ length: 48 }, (_, i) => {
-  if (i % 2 !== 0) return ":30";
-  const h = Math.floor(i / 2);
-  if (h === 0) return "12AM";
-  if (h === 12) return "12PM";
-  if (h < 12) return `${h}AM`;
-  return `${h - 12}PM`;
-});
+const SHIP_LOCATIONS = [
+  "Bridge (Navigation)",
+  "Engine Room",
+  "Main Deck",
+  "Galley",
+  "Cargo Hold",
+  "Crew Quarters",
+  "Medical Bay",
+  "Accommodation",
+];
+
+const MLC_REQUIREMENTS = [
+  "Minimum 10 hours rest in any 24-hour period",
+  "Minimum 6 hours continuous rest period",
+  "Maximum 14 hours work in any 24-hour period",
+  "Maximum 72 hours work in any 7-day period",
+];
+
+const REMARKS = [
+  "ILO Rest requirements strictly followed as per MLC 2.3",
+  "All crew members briefed on work/rest hour regulations",
+  "Emergency duties may require deviation from schedule - will be recorded separately",
+  "Schedule reviewed and approved by Master",
+];
+
+const STATUS_META = {
+  WORK: { letter: "W", label: "Work" },
+  REST: { letter: "R", label: "Rest" },
+  MEAL: { letter: "M", label: "Meal/Tea/Break" },
+  UNRECORDED: { letter: "U", label: "Unrecorded" },
+};
+
+const DAY_SECTIONS = [
+  {
+    title: "Morning: 06:00–12:00",
+    slots: Array.from({ length: 12 }, (_, index) => index + 12),
+  },
+  {
+    title: "Afternoon: 12:00–18:00",
+    slots: Array.from({ length: 12 }, (_, index) => index + 24),
+  },
+  {
+    title: "Evening: 18:00–12:00",
+    slots: Array.from({ length: 12 }, (_, index) => index + 36),
+  },
+  {
+    title: "Night: 12:00–06:00",
+    slots: Array.from({ length: 12 }, (_, index) => index),
+  },
+];
 
 function getInitials(fullName = "") {
   return (
@@ -42,527 +110,907 @@ function getInitials(fullName = "") {
       .split(" ")
       .filter(Boolean)
       .slice(0, 2)
-      .map((p) => p[0]?.toUpperCase() ?? "")
+      .map((part) => part[0]?.toUpperCase() || "")
       .join("") || "U"
   );
 }
 
-// ─── Schedule Grid ────────────────────────────────────────────────────────────
-// The blue color comes 100% from CSS (.wr-period-cell.working).
-// No inline background or border overrides — those were the original bug.
+function getLocalDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
 
-function ScheduleGrid({ member, date, editableBlocks, savingAny, onToggleBlock }) {
-  const dateLabel = new Date(date).toLocaleDateString("en-US", {
+  return `${year}-${month}-${day}`;
+}
+
+function getProfileAvatar(profile) {
+  if (!profile || profile.avatarMode === "INITIALS") return null;
+
+  const match = String(profile.avatarId ?? "").match(/\d+/);
+  if (!match) return null;
+
+  return PROFILE_AVATARS[Number(match[0])] || null;
+}
+
+function normalizeBlocks(blocks) {
+  if (!Array.isArray(blocks) || blocks.length !== 48) {
+    return [...EMPTY_BLOCKS];
+  }
+
+  return blocks.map((value) => {
+    const status = String(value || "UNRECORDED").toUpperCase();
+    return STATUS_META[status] ? status : "UNRECORDED";
+  });
+}
+
+function formatSlotTime(slotIndex) {
+  const totalMinutes = slotIndex * 30;
+  const hour24 = Math.floor(totalMinutes / 60) % 24;
+  const minute = totalMinutes % 60;
+  const hour12 = hour24 % 12 || 12;
+  const period = hour24 < 12 ? "AM" : "PM";
+
+  return `${hour12}:${String(minute).padStart(2, "0")} ${period}`;
+}
+
+function formatEndTime(slotIndex) {
+  return slotIndex === 48
+    ? "12:00 AM (next day)"
+    : formatSlotTime(slotIndex);
+}
+
+function ordinal(day) {
+  const mod100 = day % 100;
+
+  if (mod100 >= 11 && mod100 <= 13) return `${day}th`;
+  if (day % 10 === 1) return `${day}st`;
+  if (day % 10 === 2) return `${day}nd`;
+  if (day % 10 === 3) return `${day}rd`;
+
+  return `${day}th`;
+}
+
+function formatDateButton(dateKey) {
+  const date = new Date(`${dateKey}T00:00:00.000Z`);
+
+  return `${date.toLocaleDateString("en-GB", {
     weekday: "long",
-    year: "numeric",
+    timeZone: "UTC",
+  })}, ${ordinal(date.getUTCDate())} ${date.toLocaleDateString("en-GB", {
     month: "long",
+    timeZone: "UTC",
+  })}`;
+}
+
+function formatRecordDate(dateKey) {
+  return new Date(`${dateKey}T00:00:00.000Z`).toLocaleDateString("en-GB", {
     day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+
+const CALENDAR_WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+
+function toUtcDate(dateKey) {
+  return new Date(`${dateKey}T00:00:00.000Z`);
+}
+
+function toDateKey(date) {
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, "0"),
+    String(date.getUTCDate()).padStart(2, "0"),
+  ].join("-");
+}
+
+function startOfUtcMonth(date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+}
+
+function shiftUtcMonth(date, amount) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + amount, 1));
+}
+
+function buildCalendarDays(viewDate) {
+  const monthStart = startOfUtcMonth(viewDate);
+  const year = monthStart.getUTCFullYear();
+  const month = monthStart.getUTCMonth();
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+
+  // Monday = 0 ... Sunday = 6, matching the Figma calendar.
+  const leadingDays = (monthStart.getUTCDay() + 6) % 7;
+  const requiredCells = leadingDays + daysInMonth;
+  const totalCells = requiredCells <= 35 ? 35 : 42;
+
+  return Array.from({ length: totalCells }, (_, index) => {
+    const dayOffset = index - leadingDays;
+    const date = new Date(Date.UTC(year, month, dayOffset + 1));
+
+    return {
+      key: toDateKey(date),
+      date,
+      day: date.getUTCDate(),
+      inCurrentMonth: date.getUTCMonth() === month,
+    };
+  });
+}
+
+function FigmaDatePicker({ selectedDate, maxDate, onCancel, onChoose }) {
+  const [draftDate, setDraftDate] = useState(selectedDate);
+  const [viewDate, setViewDate] = useState(() =>
+    startOfUtcMonth(toUtcDate(selectedDate))
+  );
+
+  const days = useMemo(() => buildCalendarDays(viewDate), [viewDate]);
+  const maxUtcDate = toUtcDate(maxDate);
+  const maxMonth = startOfUtcMonth(maxUtcDate);
+  const canGoNext = shiftUtcMonth(viewDate, 1) <= maxMonth;
+
+  const monthLabel = viewDate.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
   });
 
   return (
-    <div className="wr-schedule-wrap">
-      <div className="wr-schedule-scroll">
-        <div className="wr-schedule-inner">
-          <div className="wr-date-label">{dateLabel}</div>
+    <div
+      className={`wr-figma-datepicker${days.length > 35 ? " has-six-weeks" : ""}`}
+      role="dialog"
+      aria-label="Choose work and rest record date"
+    >
+      <div className="wr-figma-datepicker__header">
+        <button
+          type="button"
+          className="wr-figma-datepicker__month-nav"
+          onClick={() => setViewDate((date) => shiftUtcMonth(date, -1))}
+          aria-label="Previous month"
+        >
+          <ChevronLeft size={14} strokeWidth={1.8} />
+        </button>
 
-          {/* Header row */}
-          <div className="wr-grid-row wr-grid-header">
-            <div className="wr-grid-head-cell">Rank / Name</div>
-            {HOUR_LABELS.map((lbl) => (
-              <div key={lbl} className="wr-grid-head-cell">{lbl}</div>
-            ))}
-          </div>
+        <strong>{monthLabel}</strong>
 
-          {/* Sub-label row */}
-          <div className="wr-grid-row wr-grid-sublabel">
-            <div className="wr-grid-sub-cell" style={{ fontSize: 10, color: "#64748b", paddingLeft: 4 }}>
-              Click cells to mark work periods
-            </div>
-            {SUB_LABELS.map((lbl, i) => (
-              <div key={i} className="wr-grid-sub-cell">{lbl}</div>
-            ))}
-          </div>
+        <button
+          type="button"
+          className="wr-figma-datepicker__month-nav"
+          onClick={() => {
+            if (canGoNext) setViewDate((date) => shiftUtcMonth(date, 1));
+          }}
+          disabled={!canGoNext}
+          aria-label="Next month"
+        >
+          <ChevronRight size={14} strokeWidth={1.8} />
+        </button>
+      </div>
 
-          {/* Single user row */}
-          <div className="wr-grid-row">
-            <div className="wr-name-cell">
-              <div className="wr-crew-name">{member.name}</div>
-              <div className="wr-crew-rank">{member.rank}</div>
-            </div>
+      <div className="wr-figma-datepicker__weekdays" aria-hidden="true">
+        {CALENDAR_WEEKDAYS.map((day) => (
+          <span key={day}>{day}</span>
+        ))}
+      </div>
 
-            {editableBlocks.map((isWorking, slotIdx) => (
-              <button
-                key={slotIdx}
-                type="button"
-                // className alone drives the blue — no inline background/border
-                className={`wr-period-cell${isWorking ? " working" : ""}`}
-                title={`${HOUR_LABELS[slotIdx]} — ${
-                  isWorking ? "Working (click to unmark)" : "Rest (click to mark work)"
-                }`}
-                onClick={() => onToggleBlock(slotIdx)}
-                disabled={savingAny}
-                style={{
-                  cursor: savingAny ? "wait" : "pointer",
-                  transition: "background-color 0.12s ease",
-                }}
-              />
-            ))}
-          </div>
+      <div className="wr-figma-datepicker__days" role="grid">
+        {days.map((item) => {
+          const disabled = item.date > maxUtcDate;
+          const selected = item.key === draftDate;
 
-          <div className="wr-schedule-summary">
-            <span>Schedule for <strong>{member.name}</strong></span>
-            <span>Click a cell to toggle <strong>work</strong> — saves automatically</span>
-          </div>
-        </div>
+          return (
+            <button
+              key={item.key}
+              type="button"
+              role="gridcell"
+              className={`wr-figma-datepicker__day${
+                item.inCurrentMonth ? "" : " is-outside"
+              }${selected ? " is-selected" : ""}`}
+              disabled={disabled}
+              aria-selected={selected}
+              onClick={() => {
+                if (disabled) return;
+                setDraftDate(item.key);
+              }}
+            >
+              {item.day}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="wr-figma-datepicker__actions">
+        <button
+          type="button"
+          className="wr-figma-datepicker__cancel"
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="wr-figma-datepicker__choose"
+          onClick={() => onChoose(draftDate)}
+        >
+          Choose Date
+        </button>
       </div>
     </div>
   );
 }
 
-// ─── Compliance ───────────────────────────────────────────────────────────────
+function formatSessionTime(value) {
+  if (!value) return "—";
 
-function ComplianceSection({ compliance }) {
-  return (
-    <>
-      <div className="wr-card">
-        <div className="wr-compliance-card">
-          <h2 className="wr-compliance-title">
-            <ShieldCheck size={20} strokeWidth={2} />
-            MLC 2.3 Compliance Summary
-          </h2>
-          <div className="wr-stats-row">
-            <div>
-              <div className="wr-stat-value green">{compliance.compliantCount}</div>
-              <div className="wr-stat-label">Compliant Crew</div>
-            </div>
-            <div>
-              <div className="wr-stat-value red">{compliance.violationCount}</div>
-              <div className="wr-stat-label">Violations</div>
-            </div>
-            <div>
-              <div className="wr-stat-value blue">{compliance.complianceRate}%</div>
-              <div className="wr-stat-label">Compliance Rate</div>
-            </div>
-          </div>
-          <div className="wr-requirements">
-            <h3>MLC Requirements:</h3>
-            <ul>
-              {compliance.requirements.map((req, i) => <li key={i}>{req}</li>)}
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div className="wr-card">
-        <div className="wr-remarks-card">
-          <h2 className="wr-remarks-title">Remarks</h2>
-          <ul className="wr-remarks-list">
-            {compliance.remarks.map((r, i) => <li key={i}>{r}</li>)}
-          </ul>
-        </div>
-      </div>
-    </>
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC",
+  });
+}
+
+/*
+  Backend slot calculations use UTC day boundaries.
+  Construct manual timestamps in UTC so the clicked 30-minute block
+  maps to the same backend slot index.
+*/
+function buildUtcSlotDate(dateKey, slotIndex) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+
+  return new Date(
+    Date.UTC(year, month - 1, day, 0, slotIndex * 30, 0, 0)
   );
 }
 
-// ─── Face Detection Overlay ───────────────────────────────────────────────────
+function getCurrentSlotIndex(now = new Date()) {
 
-function FaceDetectionOverlay({ videoRef }) {
-  const canvasRef = useRef(null);
-  const animRef = useRef(null);
-  const scanY = useRef(0);
-  const scanDir = useRef(1);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    if (!canvas || !video) return;
-
-    function draw() {
-      const w = video.videoWidth || canvas.offsetWidth || 640;
-      const h = video.videoHeight || canvas.offsetHeight || 360;
-      if (canvas.width !== w) canvas.width = w;
-      if (canvas.height !== h) canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, w, h);
-      const bx = w * 0.25, by = h * 0.08, bw = w * 0.5, bh = h * 0.78, cs = 18;
-      ctx.strokeStyle = "#22c55e"; ctx.lineWidth = 2; ctx.strokeRect(bx, by, bw, bh);
-      ctx.lineWidth = 4; ctx.beginPath();
-      ctx.moveTo(bx, by + cs); ctx.lineTo(bx, by); ctx.lineTo(bx + cs, by);
-      ctx.moveTo(bx + bw - cs, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + cs);
-      ctx.moveTo(bx + bw, by + bh - cs); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw - cs, by + bh);
-      ctx.moveTo(bx + cs, by + bh); ctx.lineTo(bx, by + bh); ctx.lineTo(bx, by + bh - cs);
-      ctx.stroke();
-      scanY.current += scanDir.current * 2;
-      if (scanY.current >= bh - 2) scanDir.current = -1;
-      if (scanY.current <= 2) scanDir.current = 1;
-      const sy = by + scanY.current;
-      const grad = ctx.createLinearGradient(bx, sy - 8, bx, sy + 8);
-      grad.addColorStop(0, "rgba(34,197,94,0)");
-      grad.addColorStop(0.5, "rgba(34,197,94,0.65)");
-      grad.addColorStop(1, "rgba(34,197,94,0)");
-      ctx.fillStyle = grad; ctx.fillRect(bx, sy - 8, bw, 16);
-      ctx.fillStyle = "#22c55e"; ctx.font = "bold 11px system-ui,sans-serif"; ctx.textBaseline = "bottom";
-      ctx.fillText("Face Detected", bx + 4, by - 4);
-      animRef.current = requestAnimationFrame(draw);
-    }
-    animRef.current = requestAnimationFrame(draw);
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [videoRef]);
-
-  return <canvas ref={canvasRef} className="fr-canvas-overlay" />;
+  // Use the device/browser local clock for the TODAY grid.
+  // Example: at 5:23 PM, the 5:00 PM slot is current and
+  // the 5:30 PM slot is still in the future.
+  return (
+    now.getHours() * 2 +
+    (now.getMinutes() >= 30 ? 1 : 0)
+  );
 }
 
-function useLiveClock() {
-  const [now, setNow] = useState(new Date());
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-  return now;
+function firstNumber(source, keys) {
+  for (const key of keys) {
+    const value = source?.[key];
+
+    if (Array.isArray(value)) return value.length;
+
+    if (value !== undefined && value !== null && value !== "") {
+      const numeric = Number(value);
+
+      if (Number.isFinite(numeric)) return numeric;
+    }
+  }
+
+  return null;
 }
 
-const SHIP_LOCATIONS = [
-  "Bridge", "Engine Room", "Galley", "Deck",
-  "Cargo Hold", "Crew Quarters", "Medical Bay", "Accommodation",
-];
+function normalizeSummary(summary, blocks) {
+  const safeSummary = summary || {};
+  const safeBlocks = normalizeBlocks(blocks);
 
-function FaceRecognitionTab({ faceData, activityLog }) {
-  const [cameraActive, setCameraActive] = useState(false);
-  const [cameraError, setCameraError] = useState(null);
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
-  const now = useLiveClock();
-  const [location, setLocation] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [pin, setPin] = useState("");
-  const canClock = location !== "";
-  const timeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true });
-  const dateStr = now.toLocaleDateString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
+  const derivedWorkHours =
+    safeBlocks.filter((status) => status === "WORK").length * 0.5;
 
-  const startCamera = useCallback(async () => {
-    setCameraError(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      const vid = videoRef.current;
-      if (vid) { vid.srcObject = stream; vid.onloadedmetadata = () => vid.play().catch(console.warn); }
-      setCameraActive(true);
-    } catch (err) {
-      if (err.name === "NotAllowedError") setCameraError("Camera permission denied.");
-      else if (err.name === "NotFoundError") setCameraError("No camera found on this device.");
-      else setCameraError(`Could not access camera: ${err.message}`);
-    }
-  }, []);
+  const derivedRestHours =
+    safeBlocks.filter((status) => status === "REST").length * 0.5;
 
-  const stopCamera = useCallback(() => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    if (videoRef.current) videoRef.current.srcObject = null;
-    setCameraActive(false); setCameraError(null);
-  }, []);
+  const compliance = safeSummary?.compliance || safeSummary;
 
-  useEffect(() => () => stopCamera(), [stopCamera]);
+  const violations = firstNumber(compliance, [
+    "violationCount",
+    "violations",
+    "totalViolations",
+  ]);
+
+  let complianceRate = firstNumber(compliance, [
+    "complianceRate",
+    "compliancePercentage",
+    "compliancePercent",
+  ]);
+
+  if (
+    complianceRate === null &&
+    typeof compliance.isCompliant === "boolean"
+  ) {
+    complianceRate = compliance.isCompliant ? 100 : 0;
+  }
+
+  return {
+    complianceRate,
+    violations,
+    hoursWorked:
+      firstNumber(safeSummary, [
+        "hoursWorked",
+        "workHours",
+        "totalWorkHours",
+        "totalWork",
+      ]) ?? derivedWorkHours,
+    restRecorded:
+      firstNumber(safeSummary, [
+        "restRecorded",
+        "restHours",
+        "totalRestHours",
+        "totalRest",
+      ]) ?? derivedRestHours,
+  };
+}
+
+function formatMetric(value) {
+  if (value === null || value === undefined) return "—";
+
+  return Number.isInteger(value)
+    ? String(value)
+    : Number(value).toFixed(1).replace(/\.0$/, "");
+}
+
+function Accordion({ title, items, open, onToggle }) {
+  return (
+    <section className={`wr-accordion${open ? " is-open" : ""}`}>
+      <button
+        type="button"
+        className="wr-accordion__button"
+        onClick={onToggle}
+        aria-expanded={open}
+      >
+        <span>{title}</span>
+
+        <ChevronDown
+          size={24}
+          strokeWidth={1.5}
+          className="wr-accordion__chevron"
+        />
+      </button>
+
+      {open && (
+        <div className="wr-accordion__content">
+          {items.map((item) => (
+            <p key={item}>{item}</p>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function StatCard({ icon, tone, label, value, suffix = "" }) {
+  return (
+    <article className="wr-stat-card">
+      <div className="wr-stat-card__top">
+        <span
+          className={`wr-stat-icon wr-stat-icon--${tone}`}
+          aria-hidden="true"
+        >
+          <img src={icon} alt="" />
+        </span>
+
+        <span>{label}</span>
+      </div>
+
+      <strong>
+        {formatMetric(value)}
+        {value !== null && value !== undefined ? suffix : ""}
+      </strong>
+    </article>
+  );
+}
+
+function SlotEditor({
+  manualMode,
+  startLabel,
+  workLocation,
+  setWorkLocation,
+  manualEndIndex,
+  setManualEndIndex,
+  manualEndOptions,
+  saving,
+  activeSession,
+  onDirectStatus,
+  onClockIn,
+  onSaveManual,
+  onClose,
+  onOpenWork,
+  workOpen,
+  alignRight,
+}) {
+  const canClockIn =
+    Boolean(workLocation) &&
+    !saving &&
+    !activeSession;
+
+  const canSaveManual =
+    Boolean(workLocation) &&
+    manualEndIndex !== "" &&
+    !saving;
 
   return (
-    <>
-      <div className="wr-card">
-        <div className="wr-fr-card-inner">
-          <div className="wr-fr-title-row">
-            <Camera size={18} strokeWidth={2} />
-            <div>
-              <h2 className="wr-fr-title">Face Recognition Status</h2>
-              <p className="wr-fr-subtitle">Real-time face recognition system for crew member identification</p>
+    <div
+      className={`wr-slot-popover${alignRight ? " is-right" : ""}${
+        workOpen ? " has-work-panel" : ""
+      }`}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="wr-slot-popover__menu">
+        <p className="wr-slot-popover__title">Update selected time</p>
+
+        <button
+          type="button"
+          className="wr-slot-action"
+          onClick={onOpenWork}
+          disabled={Boolean(activeSession)}
+        >
+          <span className="wr-slot-action__left">
+            <span className="wr-status-square is-work" />
+            Work
+          </span>
+
+          <ChevronRight size={14} />
+        </button>
+
+        <button
+          type="button"
+          className="wr-slot-action"
+          onClick={() => onDirectStatus("REST")}
+          disabled={saving}
+        >
+          <span className="wr-slot-action__left">
+            <span className="wr-status-square is-rest" />
+            Rest
+          </span>
+        </button>
+
+        <button
+          type="button"
+          className="wr-slot-action"
+          onClick={() => onDirectStatus("MEAL")}
+          disabled={saving}
+        >
+          <span className="wr-slot-action__left">
+            <span className="wr-status-square is-meal" />
+            Meal/Tea/Break
+          </span>
+        </button>
+
+        <button
+          type="button"
+          className="wr-slot-action wr-slot-action--cancel"
+          onClick={onClose}
+        >
+          <span className="wr-slot-action__left">
+            <X size={14} />
+            Cancel
+          </span>
+        </button>
+      </div>
+
+      {workOpen && (
+        <div className="wr-slot-popover__work">
+          <p className="wr-slot-popover__title">
+            {manualMode ? "Add missed work session" : "Start work session"}
+          </p>
+
+          {!manualMode && (
+            <div className="wr-popover-info-row">
+              <span>Start time</span>
+              <strong>{startLabel}</strong>
             </div>
-          </div>
-          <div className="wr-fr-two-col">
-            <div className="wr-fr-info-col">
-              <div className="wr-fr-info-row wr-fr-info-row--header">
-                <span style={{ fontWeight: 700, fontSize: 14, color: "#0f172a" }}>Face Recognition System</span>
-                <span className={`wr-fr-status-badge ${cameraActive ? "active" : "inactive"}`}>
-                  {cameraActive ? "Active" : "Inactive"}
-                </span>
-              </div>
-              <div className="wr-fr-info-row"><span className="wr-fr-info-key">Accuracy</span><span className="wr-fr-info-val">{faceData.accuracy}</span></div>
-              <div className="wr-fr-info-row"><span className="wr-fr-info-key">Last Scan</span><span className="wr-fr-info-val">{faceData.lastScan}</span></div>
-              <div className="wr-fr-info-row"><span className="wr-fr-info-key">Success Rate</span><span className="wr-fr-info-val">{faceData.successRate}</span></div>
-            </div>
-            <div className="wr-fr-camera-col">
-              <div className="wr-fr-camera-header">
-                <Eye size={14} strokeWidth={2} style={{ color: "#3b82f6" }} />
-                <span className="wr-fr-camera-label">Camera Feed</span>
-              </div>
-              <div className="wr-fr-camera-box">
-                <video ref={videoRef} className="wr-fr-video" autoPlay playsInline muted style={{ display: cameraActive ? "block" : "none" }} />
-                {cameraActive && <FaceDetectionOverlay videoRef={videoRef} />}
-                {!cameraActive && (
-                  <div className="wr-fr-camera-placeholder">
-                    <Camera size={36} strokeWidth={1.2} style={{ color: "#9ca3af" }} />
-                    {cameraError && <p className="wr-fr-camera-error">{cameraError}</p>}
-                  </div>
-                )}
-              </div>
-              {cameraActive
-                ? <button className="wr-fr-activate-btn wr-fr-deactivate-btn" type="button" onClick={stopCamera}>Deactivate Camera</button>
-                : <button className="wr-fr-activate-btn" type="button" onClick={startCamera}>Activate Face Recognition</button>
+          )}
+
+          {manualMode && (
+            <label className="wr-popover-field">
+              <span>End time</span>
+
+              <select
+                value={manualEndIndex}
+                onChange={(event) =>
+                  setManualEndIndex(event.target.value)
+                }
+              >
+                <option value="">Select End time</option>
+
+                {manualEndOptions.map((slotIndex) => (
+                  <option key={slotIndex} value={slotIndex}>
+                    {formatEndTime(slotIndex)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          <label className="wr-popover-field">
+            <span>Work location</span>
+
+            <select
+              value={workLocation}
+              onChange={(event) =>
+                setWorkLocation(event.target.value)
               }
-            </div>
-          </div>
-        </div>
-      </div>
+            >
+              <option value="">Choose ship area</option>
 
-      <div className="wr-card">
-        <div className="wr-tc-card-inner">
-          <div className="wr-tc-title-row">
-            <MapPin size={18} strokeWidth={2} />
-            <div>
-              <h2 className="wr-tc-title">Location-Based Time Clock</h2>
-              <p className="wr-tc-subtitle">Clock in/out at specific ship locations with face recognition</p>
-            </div>
-          </div>
-          <div className="wr-tc-two-col">
-            <div className="wr-tc-left">
-              <div className="wr-tc-field">
-                <label className="wr-tc-label">Select Location</label>
-                <div style={{ position: "relative" }}>
-                  <button type="button" className="wr-tc-select-btn" onClick={() => setDropdownOpen((o) => !o)}>
-                    <span style={{ color: location ? "#0f172a" : "#94a3b8" }}>{location || "Choose ship area"}</span>
-                    <ChevronDown size={16} strokeWidth={2} style={{ opacity: 0.5, flexShrink: 0 }} />
-                  </button>
-                  {dropdownOpen && (
-                    <div className="wr-tc-dropdown">
-                      {SHIP_LOCATIONS.map((loc) => (
-                        <button key={loc} type="button"
-                          className={`wr-tc-dropdown-item${location === loc ? " selected" : ""}`}
-                          onClick={() => { setLocation(loc); setDropdownOpen(false); }}>
-                          {loc}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="wr-tc-field">
-                <label className="wr-tc-label">Current Time</label>
-                <div className="wr-tc-clock-box">
-                  <div className="wr-tc-clock-time">{timeStr}</div>
-                  <div className="wr-tc-clock-date">{dateStr}</div>
-                </div>
-              </div>
-              <div className="wr-tc-clock-btns">
-                <button type="button" className="wr-tc-btn wr-tc-btn--in" disabled={!canClock}>
-                  <Clock size={16} strokeWidth={2} /> Clock In
-                </button>
-                <button type="button" className="wr-tc-btn wr-tc-btn--out" disabled={!canClock}>
-                  <Clock size={16} strokeWidth={2} /> Clock Out
-                </button>
-              </div>
-            </div>
-            <div className="wr-tc-right">
-              <div className="wr-tc-pin-box">
-                <div className="wr-tc-pin-header">
-                  <KeyRound size={16} strokeWidth={2} style={{ color: "#ea580c" }} />
-                  <span className="wr-tc-pin-title">PIN Backup</span>
-                </div>
-                <p className="wr-tc-pin-desc">Use PIN if face recognition fails</p>
-                <input type="password" className="wr-tc-pin-input" placeholder="Enter 4-digit PIN"
-                  maxLength={4} value={pin} onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} />
-                <button type="button" className="wr-tc-pin-auth-btn" disabled={pin.length !== 4}>
-                  Authenticate with PIN
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              {SHIP_LOCATIONS.map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <div className="wr-card">
-        <div className="wr-tc-activity-inner">
-          <div className="wr-tc-activity-title">
-            <Activity size={18} strokeWidth={2} />
-            <span>Face Recognition Activity</span>
-          </div>
-          <div className="wr-tc-activity-list">
-            {activityLog.map((entry, i) => (
-              <div key={i} className={`wr-tc-activity-row wr-tc-activity-row--${entry.type}`}>
-                <div className="wr-tc-activity-left">
-                  <div className={`wr-tc-activity-dot wr-tc-activity-dot--${entry.type}`} />
-                  <div>
-                    <div className="wr-tc-activity-name">{entry.label}</div>
-                    <div className="wr-tc-activity-meta">{entry.location} - {entry.time}</div>
-                  </div>
-                </div>
-                <span className={`wr-tc-activity-badge wr-tc-activity-badge--${entry.type}`}>{entry.badgeLabel}</span>
-              </div>
-            ))}
-          </div>
+          <button
+            type="button"
+            className="wr-popover-submit"
+            onClick={manualMode ? onSaveManual : onClockIn}
+            disabled={manualMode ? !canSaveManual : !canClockIn}
+          >
+            <Clock3 size={14} />
+            {manualMode ? "Save work session" : "Clock in"}
+          </button>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
-
-function TimeClockTab({ timeClockRecords, dailySummary }) {
-  return (
-    <>
-      <div className="wr-card">
-        <div className="wr-tcr-inner">
-          <div className="wr-tcr-title-row">
-            <Clock size={18} strokeWidth={2} />
-            <div>
-              <h2 className="wr-tcr-title">Time Clock Records</h2>
-              <p className="wr-tcr-subtitle">Complete log of clock in/out activities across ship locations</p>
-            </div>
-          </div>
-          <div className="wr-tcr-list">
-            {timeClockRecords.map((record) => (
-              <div key={record.id} className="wr-tcr-row">
-                <div className="wr-tcr-left">
-                  <div className={`wr-tcr-dot wr-tcr-dot--${record.dotType}`} />
-                  <div>
-                    <div className="wr-tcr-name">{record.name}</div>
-                    <div className="wr-tcr-location">{record.location}</div>
-                  </div>
-                </div>
-                <div className="wr-tcr-middle">
-                  <div className="wr-tcr-action">{record.action}</div>
-                  <div className="wr-tcr-time">{record.time}</div>
-                </div>
-                <div className="wr-tcr-right">
-                  <span className={`wr-tcr-badge wr-tcr-badge--${record.authType}`}>
-                    {record.authType === "face" ? "Face Recognition" : "PIN Backup"}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="wr-card">
-        <div className="wr-dts-inner">
-          <h2 className="wr-dts-title">Daily Time Summary</h2>
-          <div className="wr-dts-grid">
-            <div className="wr-dts-stat wr-dts-stat--green">
-              <div className="wr-dts-value green">{dailySummary.hoursWorked}</div>
-              <div className="wr-dts-label">Hours Worked</div>
-            </div>
-            <div className="wr-dts-stat wr-dts-stat--blue">
-              <div className="wr-dts-value blue">{dailySummary.locationChanges}</div>
-              <div className="wr-dts-label">Location Changes</div>
-            </div>
-            <div className="wr-dts-stat wr-dts-stat--purple">
-              <div className="wr-dts-value purple">{dailySummary.faceRecognitionRate}</div>
-              <div className="wr-dts-label">Face Recognition Rate</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 
 function WorkRestPage() {
-  const mockData = workRestMockData;
+  const datePickerRef = useRef(null);
 
-  const [activeTab, setActiveTab] = useState("schedule");
-  const [selectedDate] = useState(new Date().toISOString().slice(0, 10));
+  // Keep the TODAY restriction synced to the user's device/browser clock.
+  // The device timezone therefore controls what counts as "future".
+  const [localNow, setLocalNow] = useState(() => new Date());
 
-  const [myProfile, setMyProfile] = useState(null);
-  const [editableBlocks, setEditableBlocks] = useState(Array(48).fill(false));
-  const [loadingGrid, setLoadingGrid] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [gridError, setGridError] = useState("");
-  const [gridSuccess, setGridSuccess] = useState("");
-
-  const { compliance, faceRecognition, activityLog, timeClockRecords, dailySummary, header, navigation } = mockData;
-
-  const tabs = [
-    { id: "schedule", label: "Work Schedule" },
-    { id: "face",     label: "Face Recognition" },
-    { id: "time",     label: "Time Clock" },
-  ];
-
-  // ── Load: profile + this user's own work blocks via /me/:date ────────────
   useEffect(() => {
-    async function loadData() {
+    const timer = window.setInterval(() => {
+      setLocalNow(new Date());
+    }, 30_000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const todayKey = getLocalDateKey(localNow);
+  const [selectedDate, setSelectedDate] = useState(() =>
+    getLocalDateKey(new Date())
+  );
+  const [profile, setProfile] = useState(null);
+
+  const [dayData, setDayData] = useState(null);
+  const [summaryData, setSummaryData] = useState(null);
+  const [activeSession, setActiveSession] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  const [mlcOpen, setMlcOpen] = useState(false);
+  const [remarksOpen, setRemarksOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [workOpen, setWorkOpen] = useState(false);
+  const [workLocation, setWorkLocation] = useState("");
+  const [manualEndIndex, setManualEndIndex] = useState("");
+
+  const baseHeader = workRestMockData?.header || {};
+  const navigation = workRestMockData?.navigation || [];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProfile() {
       try {
-        setLoadingGrid(true);
-        setGridError("");
+        const data = await getMyProfile();
 
-        // Fetch profile and this user's personal work grid in parallel
-        const [profile, myBlocks] = await Promise.all([
-          getMyProfile(),
-          fetchMyWorkGrid(selectedDate),
-        ]);
-
-        setMyProfile(profile);
-        setEditableBlocks(myBlocks);
-      } catch (err) {
-        console.error("Load failed:", err);
-        setGridError(err.message || "Failed to load your schedule.");
-      } finally {
-        setLoadingGrid(false);
+        if (!cancelled) setProfile(data);
+      } catch (profileError) {
+        console.error("Failed to load profile:", profileError);
       }
     }
-    loadData();
-  }, [selectedDate]);
 
-  const mergedHeader = useMemo(() => {
-    if (!myProfile) return header;
-    return {
-      ...header,
-      fullName: myProfile.fullName,
-      userInitials: getInitials(myProfile.fullName),
+    loadProfile();
+
+    return () => {
+      cancelled = true;
     };
-  }, [header, myProfile]);
+  }, []);
 
-  const scheduleInfo = useMemo(() => ({
-    title: "WORKING SCHEDULE",
-    vessel: myProfile?.vessel ?? mockData.scheduleInfo.vessel,
-    imoNo: mockData.scheduleInfo.imoNo,
-    flag: mockData.scheduleInfo.flag,
-    location: mockData.scheduleInfo.location,
-    date: selectedDate,
-    scheduleType: mockData.scheduleInfo.scheduleType,
-  }), [myProfile, selectedDate, mockData.scheduleInfo]);
+  const refreshDateData = useCallback(
+    async (showLoader = false) => {
+      if (showLoader) setLoading(true);
 
-  // The member object built from profile — only one row shown
-  const myMember = useMemo(() => {
-    if (!myProfile) return null;
-    return {
-      name: myProfile.fullName ?? "My Schedule",
-      rank: myProfile.rank ?? "Crew",
+      setError("");
+
+      try {
+        const [day, summary, active] = await Promise.all([
+          getWorkRestDay(selectedDate),
+          getWorkRestSummary(selectedDate),
+          getActiveWorkSession(),
+        ]);
+
+        setDayData(day);
+        setSummaryData(summary);
+        setActiveSession(active || null);
+      } catch (loadError) {
+        console.error("Failed to load work/rest page:", loadError);
+
+        setError(getWorkRestErrorMessage(loadError, "load"));
+      } finally {
+        if (showLoader) setLoading(false);
+      }
+    },
+    [selectedDate]
+  );
+
+  useEffect(() => {
+    setSelectedSlot(null);
+    setWorkOpen(false);
+    setWorkLocation("");
+    setManualEndIndex("");
+    setNotice("");
+
+    refreshDateData(true);
+  }, [selectedDate, refreshDateData]);
+
+  useEffect(() => {
+    if (!activeSession?.id) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      refreshDateData(false);
+    }, 60_000);
+
+    return () => window.clearInterval(intervalId);
+  }, [activeSession?.id, refreshDateData]);
+
+
+  useEffect(() => {
+    if (!datePickerOpen) return undefined;
+
+    function handlePointerDown(event) {
+      if (
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target)
+      ) {
+        setDatePickerOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setDatePickerOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [myProfile]);
+  }, [datePickerOpen]);
 
-  // ── Toggle a cell: optimistic blue → save to backend ────────────────────
-  async function handleToggleBlock(slotIdx) {
-    if (isSaving) return; // block while any save is in flight
+  const blocks = useMemo(
+    () => normalizeBlocks(dayData?.statusBlocks),
+    [dayData?.statusBlocks]
+  );
 
-    setGridError("");
-    setGridSuccess("");
+  const stats = useMemo(
+    () =>
+      normalizeSummary(
+        summaryData || dayData?.summary,
+        blocks
+      ),
+    [summaryData, dayData?.summary, blocks]
+  );
 
-    const previousBlocks = [...editableBlocks];
-    const nextBlocks = editableBlocks.map((v, i) => (i === slotIdx ? !v : v));
+  const avatarImage = useMemo(
+    () => getProfileAvatar(profile),
+    [profile]
+  );
 
-    // Optimistic update: turn blue instantly
-    setEditableBlocks(nextBlocks);
-    setIsSaving(true);
+  const mergedHeader = useMemo(
+    () => ({
+      ...baseHeader,
+      fullName: profile?.fullName || baseHeader.fullName,
+      email: profile?.email || baseHeader.email,
+      userInitials: getInitials(
+        profile?.fullName || baseHeader.fullName
+      ),
+    }),
+    [baseHeader, profile]
+  );
+
+  const currentSlotIndex = getCurrentSlotIndex(localNow);
+  const isToday = selectedDate === todayKey;
+
+  const manualMode =
+    selectedSlot !== null &&
+    (!isToday ||
+      editMode ||
+      selectedSlot !== currentSlotIndex);
+
+  const manualEndOptions = useMemo(() => {
+    if (selectedSlot === null) return [];
+
+    let lastPossibleEnd = 48;
+
+    if (isToday) {
+      lastPossibleEnd = Math.floor(
+        (localNow.getHours() * 60 + localNow.getMinutes()) / 30
+      );
+    }
+
+    if (lastPossibleEnd <= selectedSlot) return [];
+
+    return Array.from(
+      { length: lastPossibleEnd - selectedSlot },
+      (_, index) => selectedSlot + index + 1
+    );
+  }, [selectedSlot, isToday, localNow]);
+
+  function closeSlotEditor() {
+    setSelectedSlot(null);
+    setWorkOpen(false);
+    setWorkLocation("");
+    setManualEndIndex("");
+  }
+
+  function openDatePicker() {
+    setDatePickerOpen((value) => !value);
+    closeSlotEditor();
+  }
+
+  function handleSlotClick(slotIndex, status) {
+    if (saving || status === "WORK") return;
+    if (!isToday && !editMode) return;
+    if (isToday && slotIndex > currentSlotIndex) return;
+
+    setSelectedSlot(slotIndex);
+    setWorkOpen(false);
+    setWorkLocation("");
+    setManualEndIndex("");
+    setError("");
+    setNotice("");
+  }
+
+  async function handleDirectStatus(status) {
+    if (selectedSlot === null || saving) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
 
     try {
-      await saveDailyWorkGrid(selectedDate, nextBlocks);
-      setGridSuccess("Saved.");
-      setTimeout(() => setGridSuccess(""), 2000);
-    } catch (err) {
-      console.error("Save failed:", err);
-      setEditableBlocks(previousBlocks); // roll back on error
-      setGridError(err.message || "Failed to save. Please try again.");
+      const updatedDay = await updateWorkRestSlots(
+        selectedDate,
+        [{ slotIndex: selectedSlot, status }]
+      );
+
+      setDayData(updatedDay);
+
+      if (updatedDay?.summary) {
+        setSummaryData(updatedDay.summary);
+      } else {
+        setSummaryData(await getWorkRestSummary(selectedDate));
+      }
+
+      setNotice(
+        status === "REST"
+          ? "Rest time updated."
+          : "Meal/Tea/Break updated."
+      );
+
+      closeSlotEditor();
+    } catch (updateError) {
+      console.error("Slot update failed:", updateError);
+
+      setError(getWorkRestErrorMessage(updateError, "slot"));
     } finally {
-      setIsSaving(false);
+      setSaving(false);
+    }
+  }
+
+  async function handleClockIn() {
+    if (!workLocation || activeSession || saving) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const session = await clockInToWork(workLocation);
+
+      setActiveSession(session);
+      setNotice("Clocked in successfully.");
+
+      closeSlotEditor();
+      await refreshDateData(false);
+    } catch (clockInError) {
+      console.error("Clock in failed:", clockInError);
+
+      setError(getWorkRestErrorMessage(clockInError, "clock-in"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleManualWork() {
+    if (
+      selectedSlot === null ||
+      manualEndIndex === "" ||
+      !workLocation ||
+      saving
+    ) {
+      return;
+    }
+
+    const startedAt = buildUtcSlotDate(
+      selectedDate,
+      selectedSlot
+    );
+
+    const endedAt = buildUtcSlotDate(
+      selectedDate,
+      Number(manualEndIndex)
+    );
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const manualPayload = {
+        startedAt: startedAt.toISOString(),
+        endedAt: endedAt.toISOString(),
+        shipLocation: workLocation,
+      };
+
+      console.log("Manual work session payload:", manualPayload);
+
+      await createManualWorkSession(manualPayload);
+
+      setNotice("Missed work session saved.");
+
+      closeSlotEditor();
+      await refreshDateData(false);
+    } catch (manualError) {
+      console.error("Manual work save failed:", manualError);
+
+      setError(getWorkRestErrorMessage(manualError, "manual"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleClockOut() {
+    if (!activeSession || saving) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      await clockOutOfWork();
+
+      setActiveSession(null);
+      setNotice("Clocked out successfully.");
+
+      await refreshDateData(false);
+    } catch (clockOutError) {
+      console.error("Clock out failed:", clockOutError);
+
+      setError(getWorkRestErrorMessage(clockOutError, "clock-out"));
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -570,84 +1018,323 @@ function WorkRestPage() {
     <div className="app-shell">
       <AppHeader header={mergedHeader} />
 
-      <main className="wr-page">
-        <div className="wr-card">
-          {/* Page header */}
-          <div className="wr-schedule-header">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+      <main className="work-rest-page">
+        <div className="work-rest-container">
+          <section className="wr-profile-strip">
+            <div className="wr-profile-avatar">
+              {avatarImage ? (
+                <img src={avatarImage} alt="" />
+              ) : (
+                <span>{getInitials(profile?.fullName)}</span>
+              )}
+            </div>
+
+            <div className="wr-profile-copy">
+              <strong>{profile?.fullName || "Crew Member"}</strong>
+
               <div>
-                <h1 className="wr-schedule-title">{scheduleInfo.title}</h1>
-                <div className="wr-meta-row">
-                  <span><strong>Vessel:</strong> {scheduleInfo.vessel}</span>
-                  <span><strong>IMO No:</strong> {scheduleInfo.imoNo}</span>
-                  <span><strong>Flag:</strong> {scheduleInfo.flag}</span>
-                  <span><strong>Location:</strong> {scheduleInfo.location}</span>
-                </div>
-              </div>
-              <div className="wr-header-actions">
-                <span className="wr-badge">{scheduleInfo.scheduleType}</span>
+                <span>Vessel - {profile?.vessel || "—"}</span>
+                <span className="wr-profile-divider">·</span>
+                <span>Location - {profile?.vessel || "—"}</span>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Tabs */}
-          <div className="wr-tabs">
-            <div className="wr-tab-list" role="tablist">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                  className={`wr-tab-btn${activeTab === tab.id ? " active" : ""}`}
-                  onClick={() => setActiveTab(tab.id)}
+          <section className="wr-compliance-section">
+            <div className="wr-section-heading">
+              <h1>MLC 2.3 Compliance Summary</h1>
+              <p>
+                Track your work/rest compliance and review the selected day.
+              </p>
+            </div>
+
+            <div className="wr-stat-grid">
+              <StatCard
+                icon={complianceRateIcon}
+                tone="compliance"
+                label="Compliance rate"
+                value={stats.complianceRate}
+                suffix="%"
+              />
+
+              <StatCard
+                icon={violationsIcon}
+                tone="violations"
+                label="Violations"
+                value={stats.violations}
+              />
+
+              <StatCard
+                icon={hoursWorkedIcon}
+                tone="hours"
+                label="Hours worked"
+                value={stats.hoursWorked}
+              />
+
+              <StatCard
+                icon={restRecordedIcon}
+                tone="rest"
+                label="Rest recorded"
+                value={stats.restRecorded}
+              />
+            </div>
+
+            <div className="wr-accordion-stack">
+              <Accordion
+                title="MLC Requirement"
+                items={MLC_REQUIREMENTS}
+                open={mlcOpen}
+                onToggle={() => setMlcOpen((value) => !value)}
+              />
+
+              <Accordion
+                title="Remarks"
+                items={REMARKS}
+                open={remarksOpen}
+                onToggle={() =>
+                  setRemarksOpen((value) => !value)
+                }
+              />
+            </div>
+          </section>
+
+          <section className="wr-record-card">
+            <div className="wr-record-header">
+              <div>
+                <h2>
+                  Daily Work &amp; Rest Record –{" "}
+                  {formatRecordDate(selectedDate)}
+                </h2>
+
+                <p>
+                  Review or update your Work and Rest hours for the
+                  selected date.
+                </p>
+              </div>
+
+              <div className="wr-record-controls">
+                <div
+                  className="wr-date-picker-shell"
+                  ref={datePickerRef}
                 >
-                  {tab.label}
+                  <button
+                    type="button"
+                    className={`wr-date-control${
+                      datePickerOpen ? " is-open" : ""
+                    }`}
+                    onClick={openDatePicker}
+                    aria-expanded={datePickerOpen}
+                    aria-haspopup="dialog"
+                    aria-label={`Select work/rest date. Current date ${formatDateButton(
+                      selectedDate
+                    )}`}
+                  >
+                    <span>{formatDateButton(selectedDate)}</span>
+                    <img
+                      src={dateRangeIcon}
+                      alt=""
+                      aria-hidden="true"
+                      draggable="false"
+                    />
+                  </button>
+
+                  {datePickerOpen ? (
+                    <FigmaDatePicker
+                      selectedDate={selectedDate}
+                      maxDate={todayKey}
+                      onCancel={() => setDatePickerOpen(false)}
+                      onChoose={(dateKey) => {
+                        setSelectedDate(dateKey);
+                        setEditMode(false);
+                        setDatePickerOpen(false);
+                        closeSlotEditor();
+                      }}
+                    />
+                  ) : null}
+                </div>
+
+                <button
+                  type="button"
+                  className={`wr-edit-button${
+                    editMode ? " is-active" : ""
+                  }`}
+                  aria-pressed={editMode}
+                  title={
+                    editMode
+                      ? "Editing enabled for the selected date"
+                      : "Enable editing for a previous date"
+                  }
+                  onClick={() => {
+                    setDatePickerOpen(false);
+                    setEditMode((value) => !value);
+                    closeSlotEditor();
+                  }}
+                >
+                  <img
+                    src={editIcon}
+                    alt=""
+                    aria-hidden="true"
+                    draggable="false"
+                  />
+                  <span>Edit</span>
                 </button>
+              </div>
+            </div>
+
+            <div className="wr-status-legend">
+              {Object.entries(STATUS_META).map(([status, meta]) => (
+                <span key={status}>
+                  <i
+                    className={`wr-legend-dot wr-legend-dot--${status.toLowerCase()}`}
+                  />
+                  {meta.label}
+                </span>
               ))}
             </div>
-          </div>
 
-          {/* Schedule tab */}
-          {activeTab === "schedule" && (
-            <>
-              {gridError && (
-                <div style={{ margin: "12px 16px 0", padding: "10px 12px", borderRadius: 10, background: "#fff4f4", color: "#b42318", fontSize: 14, fontWeight: 500 }}>
-                  {gridError}
-                </div>
-              )}
-              {gridSuccess && (
-                <div style={{ margin: "12px 16px 0", padding: "10px 12px", borderRadius: 10, background: "#eefbf3", color: "#067647", fontSize: 14, fontWeight: 500 }}>
-                  {gridSuccess}
-                </div>
-              )}
+            {activeSession && selectedDate === todayKey && (
+              <div className="wr-active-banner">
+                <div>
+                  <strong>
+                    Currently working at {activeSession.shipLocation}
+                  </strong>
 
-              {loadingGrid ? (
-                <div style={{ padding: 24, color: "#475569" }}>Loading your schedule…</div>
-              ) : myMember ? (
-                <ScheduleGrid
-                  member={myMember}
-                  date={scheduleInfo.date}
-                  editableBlocks={editableBlocks}
-                  savingAny={isSaving}
-                  onToggleBlock={handleToggleBlock}
-                />
-              ) : (
-                <div style={{ padding: 24, color: "#475569" }}>No schedule found for your account.</div>
-              )}
-            </>
-          )}
+                  <span>
+                    Started at{" "}
+                    {formatSessionTime(activeSession.startedAt)}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleClockOut}
+                  disabled={saving}
+                >
+                  <Clock3 size={14} />
+                  Clock out
+                </button>
+              </div>
+            )}
+
+            {error && (
+              <div className="wr-message is-error">{error}</div>
+            )}
+
+            {notice && (
+              <div className="wr-message is-success">{notice}</div>
+            )}
+
+            {loading ? (
+              <div className="wr-loading">
+                Loading work/rest record...
+              </div>
+            ) : (
+              <div className="wr-day-sections">
+                {DAY_SECTIONS.map((section) => (
+                  <div
+                    key={section.title}
+                    className="wr-day-section"
+                  >
+                    <h3>{section.title}</h3>
+
+                    <div className="wr-time-grid">
+                      {section.slots.map(
+                        (slotIndex, sectionSlotIndex) => {
+                          const status = blocks[slotIndex];
+                          const meta =
+                            STATUS_META[status] ||
+                            STATUS_META.UNRECORDED;
+
+                          const selected =
+                            selectedSlot === slotIndex;
+
+                          const isFuture =
+                            isToday &&
+                            slotIndex > currentSlotIndex;
+
+                          const pastLocked =
+                            !isToday && !editMode;
+
+                          const disabled =
+                            saving ||
+                            status === "WORK" ||
+                            isFuture ||
+                            pastLocked;
+
+                          return (
+                            <div
+                              key={slotIndex}
+                              className="wr-slot-anchor"
+                            >
+                              <button
+                                type="button"
+                                className={`wr-time-slot wr-time-slot--${status.toLowerCase()}${
+                                  selected ? " is-selected" : ""
+                                }`}
+                                onClick={() =>
+                                  handleSlotClick(
+                                    slotIndex,
+                                    status
+                                  )
+                                }
+                                disabled={disabled}
+                                title={
+                                  status === "WORK"
+                                    ? "Work time comes from a work session."
+                                    : pastLocked
+                                    ? "Click Edit to update a previous date."
+                                    : isFuture
+                                    ? "Future time cannot be updated yet."
+                                    : meta.label
+                                }
+                              >
+                                {meta.letter}
+                              </button>
+
+                              <span className="wr-time-label">
+                                {formatSlotTime(slotIndex)}
+                              </span>
+
+                              {selected && (
+                                <SlotEditor
+                                  manualMode={manualMode}
+                                  startLabel={
+                                    manualMode
+                                      ? formatSlotTime(slotIndex)
+                                      : formatSessionTime(
+                                          new Date()
+                                        )
+                                  }
+                                  workLocation={workLocation}
+                                  setWorkLocation={setWorkLocation}
+                                  manualEndIndex={manualEndIndex}
+                                  setManualEndIndex={setManualEndIndex}
+                                  manualEndOptions={manualEndOptions}
+                                  saving={saving}
+                                  activeSession={activeSession}
+                                  onDirectStatus={handleDirectStatus}
+                                  onClockIn={handleClockIn}
+                                  onSaveManual={handleManualWork}
+                                  onClose={closeSlotEditor}
+                                  onOpenWork={() => {
+                                    setWorkOpen(true);
+                                    setManualEndIndex("");
+                                  }}
+                                  workOpen={workOpen}
+                                  alignRight={sectionSlotIndex >= 8}
+                                />
+                              )}
+                            </div>
+                          );
+                        }
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
-
-        {activeTab === "face" && (
-          <FaceRecognitionTab faceData={faceRecognition} activityLog={activityLog} />
-        )}
-        {activeTab === "time" && (
-          <TimeClockTab timeClockRecords={timeClockRecords} dailySummary={dailySummary} />
-        )}
-        {activeTab === "schedule" && (
-          <ComplianceSection compliance={compliance} />
-        )}
       </main>
 
       <BottomNav navigation={navigation} />
