@@ -317,26 +317,25 @@
 }
 
 /* =========================================================
-   MAIN CONTENT — x: 92, y: 87, width: 1316
+   MAIN CONTENT
+
+   IMPORTANT:
+   AppLayout already provides the universal page offsets:
+   - 92px left space for the fixed sidebar
+   - 87px top space for the fixed 64px header + Figma gap
+
+   Do NOT repeat those offsets here, otherwise the Mood page
+   gets pushed right/down twice.
    ========================================================= */
 
 .anandam-mood-main {
   position: relative;
   z-index: 2;
-
-  /* Figma:
-     left = 92px
-     right = 32px
-     1440 - 92 - 32 = 1316px
-  */
-  width: calc(100% - 124px);
-  min-height: calc(100svh - 87px);
-
-  margin-left: 92px;
-  margin-right: 32px;
-
-  padding-top: 87px;
-  padding-bottom: 40px;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .anandam-mood-greeting {
@@ -381,7 +380,7 @@
 .anandam-mood-content-stack {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: flex-start;
   width: 100%;
   margin-top: 23px;
   gap: 14px;
@@ -951,15 +950,9 @@
    ========================================================= */
 
 @media (max-width: 1180px) {
-  .anandam-mood-header {
-    padding-right: 40px;
-    padding-left: 96px;
-  }
-
   .anandam-mood-main {
-    width: calc(100% - 120px);
-    margin-right: 24px;
-    margin-left: 96px;
+    width: 100%;
+    margin: 0;
   }
 
   .anandam-mood-options {
@@ -973,17 +966,11 @@
 }
 
 @media (max-width: 900px) {
-  .anandam-mood-header {
-    padding-right: 24px;
-    padding-left: 24px;
-  }
-
   .anandam-mood-main {
-    width: auto;
+    width: 100%;
     max-width: none;
-    margin-right: 24px;
-    margin-left: 96px;
-    padding-bottom: 36px;
+    margin: 0;
+    padding: 0;
   }
 
   .anandam-mood-checkin-card,
@@ -1084,14 +1071,10 @@
   }
 
   .anandam-mood-main {
-    width: auto;
-    min-height: 100svh;
+    width: 100%;
+    min-height: 0;
     margin: 0;
-    padding:
-      82px
-      max(16px, env(safe-area-inset-right))
-      calc(104px + env(safe-area-inset-bottom))
-      max(16px, env(safe-area-inset-left));
+    padding: 0;
   }
 
   .anandam-mood-greeting {
@@ -1252,8 +1235,9 @@
   }
 
   .anandam-mood-main {
-    padding-right: max(12px, env(safe-area-inset-right));
-    padding-left: max(12px, env(safe-area-inset-left));
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   .anandam-mood-checkin-card,
@@ -1275,230 +1259,5 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/* =========================================================
-   LARGE DESKTOP
-   Keep the exact Figma 92px / 32px page gutters
-   ========================================================= */
-
-@media (min-width: 1201px) {
-  .anandam-mood-main {
-    width: calc(100% - 124px);
-    margin-left: 92px;
-    margin-right: 32px;
-  }
-}
-
-
-/* =========================================================
-   LAPTOP / TABLET
-   ========================================================= */
-
-@media (max-width: 1200px) {
-  .anandam-mood-main {
-    width: calc(100% - 120px);
-    margin-left: 96px;
-    margin-right: 24px;
-    padding-top: 88px;
-  }
-
-  .anandam-mood-checkin-card,
-  .anandam-mood-history-card {
-    width: 100%;
-  }
-
-  .anandam-mood-options {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
-  .anandam-mood-option {
-    padding-inline: 8px;
-  }
-}
-
-
-/* =========================================================
-   SMALL TABLET
-   ========================================================= */
-
-@media (max-width: 900px) {
-  .anandam-mood-header {
-    padding: 0 24px;
-  }
-
-  .anandam-mood-header__identity {
-    display: none;
-  }
-
-  .anandam-mood-header__profile {
-    width: 32px;
-  }
-
-  .anandam-mood-header__actions {
-    width: auto;
-  }
-
-  .anandam-mood-main {
-    width: calc(100% - 116px);
-    margin-left: 92px;
-    margin-right: 24px;
-  }
-
-  .anandam-mood-options {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    height: auto;
-  }
-
-  .anandam-mood-option {
-    height: 87px;
-  }
-
-  .anandam-mood-checkin-card {
-    min-height: auto;
-  }
-}
-
-
-/* =========================================================
-   MOBILE
-   Left sidebar becomes bottom navigation
-   ========================================================= */
-
-@media (max-width: 700px) {
-  .anandam-mood-page {
-    padding-bottom: calc(82px + env(safe-area-inset-bottom));
-  }
-
-  .anandam-mood-header {
-    height: 60px;
-    padding:
-      env(safe-area-inset-top)
-      18px
-      0;
-  }
-
-  .anandam-mood-header__logo-button,
-  .anandam-mood-header__logo {
-    width: 32px;
-    height: 38px;
-  }
-
-  .anandam-mood-main {
-    width: auto;
-
-    margin-left: 16px;
-    margin-right: 16px;
-
-    padding-top: 82px;
-    padding-bottom: 24px;
-  }
-
-  .anandam-mood-greeting {
-    height: auto;
-  }
-
-  .anandam-mood-greeting h1 {
-    font-size: 22px;
-    line-height: 27px;
-  }
-
-  .anandam-mood-content-stack {
-    margin-top: 20px;
-  }
-
-  .anandam-mood-checkin-card,
-  .anandam-mood-history-card {
-    width: 100%;
-    border-radius: 16px;
-  }
-
-  .anandam-mood-checkin-card {
-    padding: 22px 18px;
-  }
-
-  .anandam-mood-history-card {
-    padding: 22px 18px;
-  }
-
-  .anandam-mood-options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    height: auto;
-    gap: 10px;
-  }
-
-  .anandam-mood-option {
-    height: 82px;
-  }
-
-  .anandam-mood-option:last-child {
-    grid-column: 1 / -1;
-  }
-
-  .anandam-mood-submit {
-    width: 100%;
-    flex-basis: auto;
-  }
-
-  /* Bottom navigation */
-  .anandam-mood-navigation {
-    position: fixed;
-
-    top: auto;
-    right: 12px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    left: 12px;
-
-    width: auto;
-    height: 68px;
-
-    padding: 7px 10px;
-
-    border-radius: 16px;
-  }
-
-  .anandam-mood-navigation__items {
-    flex-direction: row;
-    justify-content: space-between;
-
-    width: 100%;
-    height: 100%;
-  }
-
-  .anandam-mood-navigation__entry {
-    flex: 1 1 0;
-    width: auto;
-    gap: 0;
-  }
-
-  .anandam-mood-navigation__separator {
-    display: none;
-  }
-
-  .anandam-mood-navigation__item,
-  .anandam-mood-navigation__item.is-active {
-    width: 100%;
-    height: 54px;
-  }
-
-  .anandam-mood-navigation__item.is-active
-    .anandam-mood-navigation__icon {
-    width: 32px;
-    height: 32px;
-    flex-basis: 32px;
-  }
-
-  .anandam-mood-navigation__label {
-    width: 100%;
-    font-size: 9px;
-  }
-
-  .anandam-mood-history-table {
-    min-width: 560px;
-  }
-
-  .anandam-mood-history-table-wrap {
-    overflow-x: auto;
   }
 }

@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { loginUser, registerUser } from "../api/authApi";
+import {
+  registerUser,
+} from "../api/authApi";
+
+import {
+  getUserFriendlyError,
+} from "../api/client";
 import { resetMoodGate, saveAuthSession } from "../utils/storage";
 
 import leafFrame11 from "../assets/loginpage/Property 1=Frame 11.png";
@@ -134,21 +140,11 @@ function AnimatedLeaf() {
           alt=""
           aria-hidden="true"
           draggable="false"
-          className={`anandam-signup-leaf-frame${
-            activeFrame === index ? " is-active" : ""
-          }`}
+          className={`anandam-signup-leaf-frame${activeFrame === index ? " is-active" : ""
+            }`}
         />
       ))}
     </div>
-  );
-}
-
-function getApiErrorMessage(error) {
-  return (
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    "Signup failed. Please try again."
   );
 }
 
@@ -233,27 +229,31 @@ function SignupPage() {
     setLoading(true);
 
     try {
-      await registerUser({
-        fullName,
-        email,
-        password: form.password,
-      });
-
-      const loginData = await loginUser({
-        email,
-        password: form.password,
-      });
+      const signupData =
+        await registerUser({
+          fullName,
+          email,
+          password: form.password,
+        });
 
       saveAuthSession({
-        token: loginData.token,
-        refreshToken: loginData.refreshToken,
-        user: loginData.user,
+        token:
+          signupData.token,
+
+        refreshToken:
+          signupData.refreshToken,
+
+        user:
+          signupData.user,
       });
 
       resetMoodGate();
       navigate("/mood-quick", { replace: true });
     } catch (error) {
-      const message = getApiErrorMessage(error);
+      const message = getUserFriendlyError(
+        error,
+        "We couldn\'t create your account. Please try again."
+      );
       const isEmailConflict =
         /email/i.test(message) &&
         /(already|exists|registered|taken|in use)/i.test(message);
@@ -391,9 +391,8 @@ function SignupPage() {
                 <label htmlFor="signup-password">Password</label>
 
                 <div
-                  className={`anandam-signup-password-control${
-                    fieldErrors.password ? " has-error" : ""
-                  }`}
+                  className={`anandam-signup-password-control${fieldErrors.password ? " has-error" : ""
+                    }`}
                 >
                   <input
                     id="signup-password"

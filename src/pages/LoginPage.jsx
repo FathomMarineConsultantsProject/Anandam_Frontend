@@ -12,6 +12,9 @@ import leafFrame15 from "../assets/loginpage/Property 1=Frame 15.png";
 import leafFrame16 from "../assets/loginpage/Property 1=Frame 16.png";
 import backgroundWave from "../assets/landing/about-wave.png";
 import bgLeaf from "../assets/loginpage/image9.png";
+import {
+  getUserFriendlyError,
+} from "../api/client";
 
 import "../styles/login.css";
 
@@ -131,9 +134,8 @@ function AnimatedLeaf() {
           alt=""
           aria-hidden="true"
           draggable="false"
-          className={`anandam-login-leaf-frame${
-            activeFrame === index ? " is-active" : ""
-          }`}
+          className={`anandam-login-leaf-frame${activeFrame === index ? " is-active" : ""
+            }`}
         />
       ))}
     </div>
@@ -147,6 +149,25 @@ function LoginPage() {
   const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+  try {
+    const authNotice =
+      sessionStorage.getItem(
+        "anandam_auth_notice"
+      );
+
+    if (authNotice) {
+      setApiError(authNotice);
+
+      sessionStorage.removeItem(
+        "anandam_auth_notice"
+      );
+    }
+  } catch {
+    // Ignore browser storage errors.
+  }
+}, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -174,8 +195,8 @@ function LoginPage() {
 
     if (!form.password) {
       errors.password = "Password is required.";
-    } else if (form.password.length < 6) {
-      errors.password = "Password must be at least 6 characters.";
+    } else if (form.password.length < 8) {
+      errors.password = "Password must be at least 8 characters.";
     }
 
     return errors;
@@ -210,7 +231,10 @@ function LoginPage() {
       navigate("/mood-quick", { replace: true });
     } catch (error) {
       setApiError(
-        error?.message || "Login failed. Please check your credentials.",
+        getUserFriendlyError(
+          error,
+          "We couldn't sign you in. Please try again."
+        )
       );
     } finally {
       setLoading(false);
@@ -297,9 +321,8 @@ function LoginPage() {
                   <label htmlFor="login-password">Password</label>
 
                   <div
-                    className={`anandam-login-password-control${
-                      fieldErrors.password ? " has-error" : ""
-                    }`}
+                    className={`anandam-login-password-control${fieldErrors.password ? " has-error" : ""
+                      }`}
                   >
                     <input
                       id="login-password"

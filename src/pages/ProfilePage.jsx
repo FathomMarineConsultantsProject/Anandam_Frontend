@@ -12,6 +12,10 @@ import {
   updateProfile,
 } from "../api/profileApi";
 
+import {
+  getUserFriendlyError,
+} from "../api/client";
+
 import { saveAuthSession } from "../utils/storage";
 
 import backgroundWave from "../assets/landing/about-wave.png";
@@ -231,13 +235,13 @@ function buildForm(profile) {
    ========================================================= */
 
 function ProfileToast({
-  type,
+  toast,
   onClose,
 }) {
-  if (!type) return null;
+  if (!toast) return null;
 
   const success =
-    type === "success";
+    toast.type === "success";
 
   return (
     <div
@@ -264,9 +268,7 @@ function ProfileToast({
         </strong>
 
         <span>
-          {success
-            ? "Your changes have been saved successfully."
-            : "We couldn’t save your changes. Please try again."}
+          {toast.message}
         </span>
       </div>
 
@@ -274,6 +276,7 @@ function ProfileToast({
         type="button"
         className="profile-toast__close"
         onClick={onClose}
+        aria-label="Close notification"
       >
         ×
       </button>
@@ -854,8 +857,10 @@ function ProfilePage() {
         if (!mounted) return;
 
         setError(
-          err?.message ||
-            "Failed to load profile."
+          getUserFriendlyError(
+            err,
+            "We couldn't load your profile. Please try again."
+          )
         );
       } finally {
         if (mounted) {
@@ -964,7 +969,11 @@ function ProfilePage() {
       form.contractEnd <
         form.contractStart
     ) {
-      setToast("error");
+      setToast({
+        type: "error",
+        message:
+          "Contract end date cannot be earlier than the contract start date.",
+      });
       return;
     }
 
@@ -1060,16 +1069,25 @@ function ProfilePage() {
 
       setEditing(false);
 
-      setToast(
-        "success"
-      );
+      setToast({
+        type: "success",
+        message:
+          "Your changes have been saved successfully.",
+      });
     } catch (err) {
       console.error(
         "Profile update failed",
         err
       );
 
-      setToast("error");
+      setToast({
+        type: "error",
+        message:
+          getUserFriendlyError(
+            err,
+            "We couldn't save your profile changes. Please try again."
+          ),
+      });
     } finally {
       setSaving(false);
     }
@@ -1127,7 +1145,7 @@ function ProfilePage() {
         />
 
         <ProfileToast
-          type={toast}
+          toast={toast}
           onClose={() =>
             setToast(null)
           }
