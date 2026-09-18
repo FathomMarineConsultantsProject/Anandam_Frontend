@@ -1,234 +1,229 @@
+// src/api/perfectDayApi.js
 import { apiRequest } from "./client";
 
-const DEFAULT_DATE = new Date().toISOString().slice(0, 10);
+function unwrap(response) {
+  if (
+    response &&
+    typeof response === "object" &&
+    Object.prototype.hasOwnProperty.call(response, "data")
+  ) {
+    return response.data;
+  }
 
-function formatTimeFromISO(isoString) {
-  if (!isoString) return "";
-  const date = new Date(isoString);
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  return response;
 }
 
-function getIconFromCategory(category) {
-  const normalized = String(category || "").toLowerCase();
-
-  const map = {
-    work: "anchor",
-    wellness: "heart",
-    nutrition: "utensils",
-    learning: "book",
-    social: "phone",
-    fitness: "dumbbell",
-    safety: "shield",
-    professional: "target",
-    mindfulness: "heart",
-    skills: "trending-up",
-    training: "target",
-    health: "heart",
-  };
-
-  return map[normalized] || "target";
+export function getLocalDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
-function getHabitCategoryClass(category) {
-  const normalized = String(category || "").toLowerCase();
-  const known = [
-    "safety",
-    "professional",
-    "wellness",
-    "social",
-    "mindfulness",
-    "skills",
-    "nutrition",
-  ];
-  return known.includes(normalized) ? normalized : "professional";
-}
+// =========================================================
+// MY DAY
+// =========================================================
 
-function prettifyCategory(category) {
-  if (!category) return "Professional";
-  const normalized = String(category).toLowerCase();
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-}
-
-function mapPlanActivity(activity) {
-  return {
-    id: activity.id,
-    icon: getIconFromCategory(activity.category),
-    title: activity.title,
-    time: formatTimeFromISO(activity.startTime),
-    duration: `${activity.durationMinutes} minutes`,
-    category: String(activity.category || "").toLowerCase(),
-    completed: !!activity.isCompleted,
-  };
-}
-
-function mapTemplateActivity(activity, index) {
-  return {
-    id: `${activity.title}-${index}`,
-    time: activity.time,
-    title: activity.title,
-    icon: getIconFromCategory(activity.category),
-    category: activity.category
-      ? activity.category.charAt(0).toUpperCase() + activity.category.slice(1)
-      : null,
-  };
-}
-
-function buildPlannerPayload(items = []) {
-  const completedCount = items.filter((item) => item.completed).length;
-  const total = items.length;
-  const progressPercent =
-    total > 0 ? Math.round((completedCount / total) * 100) : 0;
-
-  return {
-    header: {
-      appName: "Anandüm by Fathom",
-      appSubtitle: "Wellness for Seafarers",
-      userInitials: "NC",
-      progressBadge: `${progressPercent}% Complete`,
-    },
-    planner: {
-      title: "Perfect Day Planner",
-      subtitle:
-        "Design your ideal maritime day with balanced wellness and productivity",
-      tabs: [
-        { id: "day-planner", label: "Day Planner" },
-        { id: "habits", label: "Maritime Habits" },
-        { id: "templates", label: "Templates" },
-        { id: "analytics", label: "Analytics" },
-      ],
-      activeTab: "day-planner",
-      focusTitle: "Today's Focus",
-      focusSubtitle: "Set your main intention for the day",
-      dailyGoalLabel: "Daily Goal",
-      dailyGoalPlaceholder:
-        "e.g., Maintain calm seas mindset during navigation",
-    },
-    scheduleSection: {
-      title: "Daily Schedule",
-      subtitle: "Your perfectly planned maritime day",
-      progressPercent,
-      completedText: `${completedCount} of ${total} activities completed`,
-      items,
-    },
-  };
-}
-
-export async function getPerfectDayTemplates() {
-  const response = await apiRequest("/daily-plan/templates", {
+export async function getDailyPlan(date = getLocalDateKey()) {
+  const response = await apiRequest(`/daily-plan/day/${date}`, {
     method: "GET",
   });
-
-  return (response?.data || []).map((template) => ({
-    id: template.id,
-    name: template.title,
-    description: template.description,
-    activities: (template.activities || []).map(mapTemplateActivity),
-    extraCount: 0,
-  }));
+  return unwrap(response);
 }
 
-export async function applyPerfectDayTemplate(templateId, targetDate) {
-  return apiRequest("/daily-plan/apply", {
+export async function createDailyActivity(payload) {
+  const response = await apiRequest("/daily-plan/activities", {
     method: "POST",
-    body: JSON.stringify({ templateId, targetDate }),
+    body: JSON.stringify(payload),
   });
+  return unwrap(response);
 }
 
-export async function getPerfectDaySchedule(targetDate = DEFAULT_DATE) {
-  const response = await apiRequest(`/daily-plan/${targetDate}`, {
-    method: "GET",
-  });
-
-  const plan = response?.data;
-  const items = (plan?.activities || []).map(mapPlanActivity);
-
-  return {
-    ...buildPlannerPayload(items),
-    selectedDate: targetDate,
-    mainFocus: plan?.mainFocus || "",
-    dailyPlanId: plan?.id || null,
-  };
-}
-
-export async function togglePerfectDayActivity(activityId, isCompleted) {
-  const response = await apiRequest(`/daily-plan/activity/${activityId}`, {
+export async function updateDailyActivity(activityId, payload) {
+  const response = await apiRequest(`/daily-plan/activities/${activityId}`, {
     method: "PATCH",
-    body: JSON.stringify({ isCompleted }),
+    body: JSON.stringify(payload),
   });
-
-  return response?.data;
+  return unwrap(response);
 }
 
-export async function getPerfectDayHabits(targetDate = DEFAULT_DATE) {
-  const response = await apiRequest(`/habits/${targetDate}`, {
-    method: "GET",
-  });
-
-  const payload = response?.data || {};
-
-  return {
-    percentageCompleted: payload.percentageCompleted || 0,
-    totalHabits: payload.totalHabits || 0,
-    completedCount: payload.completedCount || 0,
-    habits: (payload.habits || []).map((habit) => ({
-      id: habit.id,
-      icon: "target",
-      title: habit.title,
-      doneCount: habit.isCompleted ? 1 : 0,
-      targetCount: 1,
-      category: getHabitCategoryClass(habit.category),
-      categoryLabel: prettifyCategory(habit.category),
-      completed: !!habit.isCompleted,
-    })),
-  };
-}
-
-export async function createPerfectDayHabit({ title, category }) {
-  const response = await apiRequest("/habits", {
-    method: "POST",
-    body: JSON.stringify({ title, category }),
-  });
-
-  return response?.data;
-}
-
-export async function togglePerfectDayHabit(habitId, targetDate = DEFAULT_DATE) {
-  return apiRequest(`/habits/${habitId}/toggle`, {
-    method: "POST",
-    body: JSON.stringify({ targetDate }),
-  });
-}
-
-export async function deletePerfectDayHabit(habitId) {
-  return apiRequest(`/habits/${habitId}`, {
+export async function deleteDailyActivity(activityId) {
+  return apiRequest(`/daily-plan/activities/${activityId}`, {
     method: "DELETE",
   });
 }
 
-export async function getPerfectDayAnalytics() {
-  return {
-    dailyProgress: {
-      completed: 0,
-      total: 0,
-      motivationText: "Apply a template to start building your perfect day.",
-    },
-    habitStreaks: {
-      completed: 0,
-      total: 0,
-      progressPct: 0,
-      averageStreakDays: 0,
-    },
-    activityCategories: [],
-    fitnessIntegration: {
-      dailyFitnessActivities: 0,
-      fitnessHabits: 0,
-    },
-    insight: {
-      text: "Your analytics will appear after you apply a template and start completing activities.",
-    },
+export async function toggleDailyActivityStatus(activityId, isCompleted) {
+  const response = await apiRequest(
+    `/daily-plan/activities/${activityId}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ isCompleted }),
+    }
+  );
+  return unwrap(response);
+}
+
+// =========================================================
+// AVAILABLE TEMPLATES
+// =========================================================
+
+export async function getDailyTemplates() {
+  const response = await apiRequest("/daily-plan/templates", {
+    method: "GET",
+  });
+  const data = unwrap(response);
+  return Array.isArray(data) ? data : [];
+}
+
+export async function applyDailyTemplate({
+  templateId,
+  templateType,
+  targetDate,
+  mode,
+  activities,
+}) {
+  const payload = {
+    templateId,
+    templateType,
+    targetDate,
   };
+
+  if (mode) payload.mode = mode;
+  if (Array.isArray(activities)) payload.activities = activities;
+
+  const response = await apiRequest("/daily-plan/templates/apply", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  return unwrap(response);
+}
+
+// =========================================================
+// MY TEMPLATES
+// =========================================================
+
+export async function getMyDayTemplates() {
+  const response = await apiRequest("/daily-plan/my-templates", {
+    method: "GET",
+  });
+  const data = unwrap(response);
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getMyDayTemplate(templateId) {
+  const response = await apiRequest(`/daily-plan/my-templates/${templateId}`, {
+    method: "GET",
+  });
+  return unwrap(response);
+}
+
+export async function createMyDayTemplate(payload) {
+  const response = await apiRequest("/daily-plan/my-templates", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return unwrap(response);
+}
+
+export async function updateMyDayTemplate(templateId, payload) {
+  const response = await apiRequest(`/daily-plan/my-templates/${templateId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return unwrap(response);
+}
+
+export async function deleteMyDayTemplate(templateId) {
+  return apiRequest(`/daily-plan/my-templates/${templateId}`, {
+    method: "DELETE",
+  });
+}
+
+// =========================================================
+// TEMPLATE ACTIVITY MANAGEMENT
+// =========================================================
+
+export async function addMyTemplateActivity(templateId, payload) {
+  const response = await apiRequest(
+    `/daily-plan/my-templates/${templateId}/activities`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
+  return unwrap(response);
+}
+
+export async function updateMyTemplateActivity(
+  templateId,
+  activityId,
+  payload
+) {
+  const response = await apiRequest(
+    `/daily-plan/my-templates/${templateId}/activities/${activityId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }
+  );
+  return unwrap(response);
+}
+
+export async function deleteMyTemplateActivity(templateId, activityId) {
+  return apiRequest(
+    `/daily-plan/my-templates/${templateId}/activities/${activityId}`,
+    {
+      method: "DELETE",
+    }
+  );
+}
+
+// =========================================================
+// PROGRESS
+// =========================================================
+
+export async function getPlannerProgress(days = 7) {
+  const response = await apiRequest(
+    `/daily-plan/progress?days=${encodeURIComponent(days)}`,
+    { method: "GET" }
+  );
+  return unwrap(response);
+}
+
+// =========================================================
+// TEMPORARY OLD-NAME COMPATIBILITY
+// =========================================================
+
+export async function getPerfectDaySchedule(targetDate = getLocalDateKey()) {
+  return getDailyPlan(targetDate);
+}
+
+export async function getPerfectDayTemplates() {
+  return getDailyTemplates();
+}
+
+export async function applyPerfectDayTemplate(
+  templateId,
+  targetDate,
+  options = {}
+) {
+  const template =
+    options.template ||
+    (await getDailyTemplates()).find(
+      (item) => String(item.id) === String(templateId)
+    );
+
+  return applyDailyTemplate({
+    templateId,
+    templateType: template?.templateType || "SYSTEM",
+    targetDate,
+    mode: options.mode,
+    activities: options.activities,
+  });
+}
+
+export async function togglePerfectDayActivity(activityId, isCompleted) {
+  return toggleDailyActivityStatus(activityId, isCompleted);
 }

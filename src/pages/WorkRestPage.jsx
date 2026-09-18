@@ -349,20 +349,29 @@ function formatSessionTime(value) {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-    timeZone: "UTC",
   });
 }
 
 /*
-  Backend slot calculations use UTC day boundaries.
-  Construct manual timestamps in UTC so the clicked 30-minute block
-  maps to the same backend slot index.
+  The Work/Rest screen is displayed in the user's LOCAL/browser time.
+  Build the selected slot as local wall-clock time first. Calling
+  .toISOString() later converts that real local instant to UTC for the API.
+
+  Example in India:
+  09:00 local -> 03:30Z
+  12:00 local -> 06:30Z
 */
-function buildUtcSlotDate(dateKey, slotIndex) {
+function buildLocalSlotDate(dateKey, slotIndex) {
   const [year, month, day] = dateKey.split("-").map(Number);
 
   return new Date(
-    Date.UTC(year, month - 1, day, 0, slotIndex * 30, 0, 0)
+    year,
+    month - 1,
+    day,
+    0,
+    slotIndex * 30,
+    0,
+    0
   );
 }
 
@@ -953,12 +962,12 @@ function WorkRestPage() {
       return;
     }
 
-    const startedAt = buildUtcSlotDate(
+    const startedAt = buildLocalSlotDate(
       selectedDate,
       selectedSlot
     );
 
-    const endedAt = buildUtcSlotDate(
+    const endedAt = buildLocalSlotDate(
       selectedDate,
       Number(manualEndIndex)
     );
@@ -969,9 +978,17 @@ function WorkRestPage() {
 
     try {
       const manualPayload = {
+        // Real instants used by backend validation / overlap checks.
         startedAt: startedAt.toISOString(),
         endedAt: endedAt.toISOString(),
         shipLocation: workLocation,
+
+        // Local-grid metadata keeps the selected 30-minute blocks aligned
+        // with what the user clicked on screen.
+        selectedDate,
+        startSlotIndex: selectedSlot,
+        endSlotIndex: Number(manualEndIndex),
+        timezoneOffsetMinutes: startedAt.getTimezoneOffset(),
       };
 
       console.log("Manual work session payload:", manualPayload);

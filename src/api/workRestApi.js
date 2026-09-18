@@ -17,8 +17,19 @@ function getHttpStatus(error) {
   return match ? Number(match[1]) : null;
 }
 
+function getBackendError(error) {
+  return String(
+    error?.data?.error ??
+      error?.data?.message ??
+      error?.response?.data?.error ??
+      error?.response?.data?.message ??
+      ""
+  ).trim();
+}
+
 export function getWorkRestErrorMessage(error, action = "general") {
   const status = getHttpStatus(error);
+  const backendError = getBackendError(error);
 
   if (!status) {
     if (
@@ -34,6 +45,26 @@ export function getWorkRestErrorMessage(error, action = "general") {
   }
 
   if (status === 400) {
+    if (/cannot end in the future/i.test(backendError)) {
+      return "The selected end time is still in the future. Choose a time that has already passed and try again.";
+    }
+
+    if (/end time must be after start time/i.test(backendError)) {
+      return "The end time must be later than the start time.";
+    }
+
+    if (/ship location is required|location.*required/i.test(backendError)) {
+      return "Please choose a work location before saving the work session.";
+    }
+
+    if (/invalid start\/end date/i.test(backendError)) {
+      return "The selected work time is not valid. Please choose the start and end time again.";
+    }
+
+    if (/slotIndex|slot index/i.test(backendError)) {
+      return "The selected time slot is not valid. Please choose the time again.";
+    }
+
     if (action === "manual") {
       return "That work session could not be saved. Check the start time, end time, and work location, then try again.";
     }
@@ -46,7 +77,7 @@ export function getWorkRestErrorMessage(error, action = "general") {
       return "That time selection is not valid. Please choose the slot again and retry.";
     }
 
-    return "Some of the information is not valid. Please check it and try again.";
+    return backendError || "Some of the information is not valid. Please check it and try again.";
   }
 
   if (status === 401) {
@@ -54,7 +85,7 @@ export function getWorkRestErrorMessage(error, action = "general") {
   }
 
   if (status === 403) {
-    return "Your session no longer has permission to make this change. Please sign in again. If the problem continues, contact your administrator.";
+    return "You don't have permission to make this change. Please refresh the page and sign in again if needed.";
   }
 
   if (status === 404) {
@@ -62,12 +93,12 @@ export function getWorkRestErrorMessage(error, action = "general") {
   }
 
   if (status === 409) {
-    if (action === "clock-in") {
-      return "You already have an active work session. Clock out of the current session before starting another one.";
+    if (/overlaps another work session/i.test(backendError)) {
+      return "This work session overlaps an existing work session. Choose a different start or end time and try again.";
     }
 
-    if (action === "manual") {
-      return "This work session overlaps or conflicts with an existing work entry. Choose a different start or end time and try again.";
+    if (/already have an active work session/i.test(backendError)) {
+      return "You already have an active work session. Clock out of the current session before starting another one.";
     }
 
     if (action === "slot") {
@@ -93,7 +124,7 @@ export function getWorkRestErrorMessage(error, action = "general") {
     return "The Anandam service is temporarily unavailable. Please wait a moment and try again.";
   }
 
-  return "We couldn't complete that request. Please try again.";
+  return backendError || "We couldn't complete that request. Please try again.";
 }
 
 function unwrapData(response) {
@@ -154,6 +185,10 @@ export async function createManualWorkSession({
   startedAt,
   endedAt,
   shipLocation,
+  selectedDate,
+  startSlotIndex,
+  endSlotIndex,
+  timezoneOffsetMinutes,
 }) {
   const response = await apiRequest("/work-hours/sessions/manual", {
     method: "POST",
@@ -161,6 +196,10 @@ export async function createManualWorkSession({
       startedAt,
       endedAt,
       shipLocation,
+      selectedDate,
+      startSlotIndex,
+      endSlotIndex,
+      timezoneOffsetMinutes,
     }),
   });
 
