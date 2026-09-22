@@ -1,15 +1,9 @@
 /* src/styles/perfect-day-schedule.css */
 
 /* =========================================================
-   IMPORTANT ALIGNMENT NOTE
-
-   AppLayout already provides the universal desktop frame:
-   - fixed 64px header
-   - content starts at 87px from top
-   - 92px reserved for the universal left sidebar
-   - 32px right margin
-
-   This stylesheet intentionally does NOT add those offsets again.
+   DAY PLANNER
+   AppLayout already provides the universal header/sidebar
+   spacing. Do not add those offsets again here.
    ========================================================= */
 
 .day-planner-page,
@@ -25,23 +19,21 @@
   --dp-muted: #9498a7;
   --dp-border: #d9d9d9;
   --dp-field-border: #d5d7da;
+  --dp-bg: #fbf9f7;
+  --dp-white: #ffffff;
 
   position: relative;
-
   width: 100%;
   min-width: 0;
-
   margin: 0;
   padding: 0 0 48px;
 
   color: var(--dp-heading);
-
   font-family: "Roboto", Arial, sans-serif;
 }
 
 /* =========================================================
    PAGE HEADING
-   Figma: title 24/28, subtitle 14/16
    ========================================================= */
 
 .dp-page-heading {
@@ -64,7 +56,6 @@
 
 .dp-page-heading h1 {
   color: #0c1421;
-
   font-size: 24px;
   font-weight: 400;
   line-height: 28px;
@@ -72,7 +63,6 @@
 
 .dp-page-heading p {
   color: #60657c;
-
   font-size: 14px;
   font-weight: 400;
   line-height: 16px;
@@ -91,6 +81,8 @@
 
   margin: 0 0 26px;
   padding: 0;
+
+  border-bottom: 1px solid transparent;
 }
 
 .dp-tabs button {
@@ -101,7 +93,6 @@
   justify-content: center;
 
   height: 36px;
-
   padding: 0 12px;
 
   color: #5d616b;
@@ -113,13 +104,11 @@
 
   background: transparent;
   border: 0;
-
   cursor: pointer;
 }
 
 .dp-tabs button::after {
   position: absolute;
-
   right: 12px;
   bottom: 0;
   left: 12px;
@@ -127,7 +116,6 @@
   height: 1px;
 
   content: "";
-
   background: transparent;
 }
 
@@ -156,7 +144,6 @@
 
 /* =========================================================
    SUMMARY CARDS
-   Figma: 4 cards, 14px gap, 142px height
    ========================================================= */
 
 .dp-summary-grid {
@@ -164,7 +151,11 @@
 
   width: 100%;
 
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(
+    4,
+    minmax(0, 1fr)
+  );
+
   gap: 14px;
 }
 
@@ -199,28 +190,31 @@
 
   width: 37px;
   height: 37px;
-
   flex: 0 0 37px;
 
   border-radius: 100px;
 }
 
-.dp-summary-card--total .dp-summary-card__icon {
+.dp-summary-card--total
+  .dp-summary-card__icon {
   color: #4a3f3a;
   background: #eaf4f8;
 }
 
-.dp-summary-card--completed .dp-summary-card__icon {
+.dp-summary-card--completed
+  .dp-summary-card__icon {
   color: #676767;
   background: #e8fbe6;
 }
 
-.dp-summary-card--remaining .dp-summary-card__icon {
+.dp-summary-card--remaining
+  .dp-summary-card__icon {
   color: #6676a8;
   background: #eef0fa;
 }
 
-.dp-summary-card--streak .dp-summary-card__icon {
+.dp-summary-card--streak
+  .dp-summary-card__icon {
   color: #b76a55;
   background: #fbece6;
 }
@@ -244,7 +238,7 @@
 }
 
 /* =========================================================
-   SCHEDULE / TEMPLATE CARD
+   SCHEDULE CARD
    ========================================================= */
 
 .dp-schedule-card,
@@ -299,6 +293,7 @@
 .dp-schedule-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 
   gap: 12px;
 }
@@ -316,6 +311,7 @@
   min-height: 40px;
 
   padding: 0 24px;
+
   gap: 10px;
 
   border-radius: 8px;
@@ -376,7 +372,126 @@
 }
 
 /* =========================================================
-   EMPTY STATE
+   GOOGLE CALENDAR BUTTON
+   Always visible and sits LEFT of Add Activity.
+   ========================================================= */
+
+.dp-google-calendar-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  min-width: 196px;
+  min-height: 40px;
+
+  padding: 0 16px;
+  gap: 9px;
+
+  color: #315f9f;
+  background: #eef5ff;
+  border: 1px solid #bfd4f4;
+
+  border-radius: 8px;
+
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+
+  white-space: nowrap;
+  cursor: pointer;
+
+  box-shadow:
+    0 1px 2px
+      rgba(66, 133, 244, 0.05);
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.dp-google-calendar-btn:hover:not(:disabled) {
+  color: #244f8d;
+  background: #e4efff;
+  border-color: #9fbee9;
+
+  transform: translateY(-1px);
+}
+
+.dp-google-calendar-btn.is-connected {
+  color: #2e6f44;
+  background: #edf8f0;
+  border-color: #b6ddc0;
+}
+
+.dp-google-calendar-btn.is-connected:hover:not(:disabled) {
+  color: #28623b;
+  background: #e4f4e8;
+  border-color: #96cea5;
+}
+
+.dp-google-calendar-btn:disabled {
+  cursor: wait;
+  opacity: 0.72 !important;
+}
+
+.dp-google-calendar-mark {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 6px);
+
+  grid-template-rows:
+    repeat(2, 6px);
+
+  width: 17px;
+  height: 17px;
+
+  padding: 1px;
+  gap: 1px;
+
+  flex: 0 0 17px;
+
+  background: #ffffff;
+  border: 1px solid #d9e1ef;
+  border-radius: 4px;
+}
+
+.dp-google-calendar-mark i {
+  display: block;
+
+  min-width: 0;
+  min-height: 0;
+
+  border-radius: 1px;
+}
+
+.dp-google-calendar-mark
+  .is-blue {
+  background: #4285f4;
+}
+
+.dp-google-calendar-mark
+  .is-red {
+  background: #ea4335;
+}
+
+.dp-google-calendar-mark
+  .is-yellow {
+  background: #fbbc05;
+}
+
+.dp-google-calendar-mark
+  .is-green {
+  background: #34a853;
+}
+
+/* =========================================================
+   EMPTY STATES
    ========================================================= */
 
 .dp-empty-schedule {
@@ -415,17 +530,16 @@
   max-height: 100%;
 
   object-fit: contain;
+
   user-select: none;
   pointer-events: none;
 }
 
-/* Figma empty-day illustration: image 175 = 150 × 112 */
 .dp-empty-illustration__image--activities {
   width: 150px;
   height: 112px;
 }
 
-/* Figma empty-template illustration: Group 1597885718 = 137.42 × 96.47 */
 .dp-empty-illustration__image--templates {
   width: 137.42px;
   height: 96.47px;
@@ -470,7 +584,6 @@
 
 /* =========================================================
    ACTIVITY LIST
-   Figma row: 74px, 18px 28px padding
    ========================================================= */
 
 .dp-schedule-list {
@@ -585,7 +698,8 @@
   text-overflow: ellipsis;
 }
 
-.dp-activity-row.is-complete .dp-activity-copy strong {
+.dp-activity-row.is-complete
+  .dp-activity-copy strong {
   color: #777b83;
   text-decoration: line-through;
 }
@@ -658,7 +772,7 @@
 }
 
 /* =========================================================
-   THREE DOT MENU
+   ROW MENU
    ========================================================= */
 
 .dp-row-menu {
@@ -707,7 +821,9 @@
   border: 1px solid #e5e5e5;
   border-radius: 12px;
 
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+  box-shadow:
+    0 16px 36px
+      rgba(15, 23, 42, 0.14);
 }
 
 .dp-row-menu__panel button {
@@ -718,6 +834,7 @@
   min-height: 54px;
 
   padding: 0 24px;
+
   gap: 16px;
 
   color: #0c1421;
@@ -748,7 +865,6 @@
   justify-content: center;
 
   color: #60657c;
-
   font-size: 14px;
 }
 
@@ -766,7 +882,6 @@
 
 /* =========================================================
    DRAWER LAYER
-   Covers header/sidebar, like the Figma overlay.
    ========================================================= */
 
 .dp-drawer-layer,
@@ -790,6 +905,8 @@
 
   background: rgba(12, 20, 33, 0.28);
   border: 0;
+
+  cursor: default;
 }
 
 .dp-drawer {
@@ -808,7 +925,9 @@
 
   background: #ffffff;
 
-  box-shadow: -12px 0 40px rgba(15, 23, 42, 0.12);
+  box-shadow:
+    -12px 0 40px
+      rgba(15, 23, 42, 0.12);
 
   overflow: hidden;
 }
@@ -894,6 +1013,7 @@
   width: 100%;
 
   padding: 32px 0;
+
   gap: 32px;
 }
 
@@ -906,7 +1026,8 @@
   gap: 8px;
 }
 
-.dp-field > span {
+.dp-field > span,
+.dp-time-picker + span {
   color: #0c1421;
 
   font-size: 14px;
@@ -955,7 +1076,9 @@
 .dp-input-button:focus,
 .dp-textarea:focus {
   border-color: #9a6558;
-  box-shadow: 0 0 0 3px rgba(113, 46, 30, 0.08);
+  box-shadow:
+    0 0 0 3px
+      rgba(113, 46, 30, 0.08);
 }
 
 .dp-input-button {
@@ -983,6 +1106,7 @@
 .dp-time-picker,
 .dp-duration-field {
   position: relative;
+
   width: 100%;
 }
 
@@ -1002,7 +1126,8 @@
 
   pointer-events: none;
 
-  transform: translateY(-50%);
+  transform:
+    translateY(-50%);
 }
 
 .dp-date-input {
@@ -1053,7 +1178,9 @@
   border: 1px solid #d9d9d9;
   border-radius: 10px;
 
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.16);
+  box-shadow:
+    0 16px 30px
+      rgba(15, 23, 42, 0.16);
 }
 
 .dp-time-popover__label {
@@ -1345,6 +1472,7 @@
 
 .dp-template-choice span {
   color: #777b83;
+
   font-size: 12px;
 }
 
@@ -1369,13 +1497,15 @@
 .dp-template-preview-row {
   display: grid;
 
-  grid-template-columns: 88px minmax(0, 1fr) auto;
+  grid-template-columns:
+    88px minmax(0, 1fr) auto;
 
   align-items: center;
 
   min-height: 64px;
 
   padding: 12px 14px;
+
   gap: 12px;
 
   border: 1px solid #e1e1e1;
@@ -1409,12 +1539,14 @@
 
 .dp-template-preview-row__copy span {
   color: #9498a7;
+
   font-size: 11px;
 }
 
 .dp-template-preview-row__actions,
 .dp-template-builder-row__actions {
   display: flex;
+
   gap: 6px;
 }
 
@@ -1449,6 +1581,7 @@
   flex-direction: column;
 
   padding: 14px;
+
   gap: 10px;
 
   background: #fafafa;
@@ -1460,7 +1593,10 @@
 .dp-template-activity-form__two {
   display: grid;
 
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
   gap: 10px;
 }
 
@@ -1501,6 +1637,7 @@
 .dp-template-conflict__actions {
   display: flex;
   flex-wrap: wrap;
+
   gap: 10px;
 }
 
@@ -1528,7 +1665,11 @@
 .dp-my-template-grid {
   display: grid;
 
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(
+    3,
+    minmax(0, 1fr)
+  );
+
   gap: 16px;
 }
 
@@ -1555,6 +1696,7 @@
 
 .dp-my-template-card__category {
   color: #9498a7;
+
   font-size: 11px;
 }
 
@@ -1562,6 +1704,7 @@
   margin: 4px 0 0;
 
   color: #0c1421;
+
   font-size: 16px;
 }
 
@@ -1571,6 +1714,7 @@
   padding: 5px 8px;
 
   color: #60657c;
+
   font-size: 11px;
 
   background: #f5f5f5;
@@ -1582,15 +1726,20 @@
   flex-direction: column;
 
   margin: 20px 0;
+
   gap: 8px;
 }
 
 .dp-my-template-card__preview > div {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
+
+  grid-template-columns:
+    72px minmax(0, 1fr);
+
   gap: 10px;
 
   color: #60657c;
+
   font-size: 12px;
 }
 
@@ -1607,6 +1756,7 @@
   margin: 2px 0 0;
 
   color: #9498a7;
+
   font-size: 11px;
 }
 
@@ -1615,6 +1765,7 @@
   align-items: center;
 
   margin-top: auto;
+
   gap: 7px;
 }
 
@@ -1642,10 +1793,12 @@
   border-color: #cfaea6;
 }
 
-.dp-my-template-card__actions .dp-template-use {
+.dp-my-template-card__actions
+  .dp-template-use {
   flex: 1;
 
   color: #ffffff;
+
   background: #712e1e;
   border-color: #712e1e;
 }
@@ -1668,6 +1821,7 @@
   justify-content: center;
 
   margin: 0 auto 28px;
+
   gap: 10px;
 }
 
@@ -1717,6 +1871,7 @@
 
 .dp-template-builder__heading h3 {
   margin: 0;
+
   font-size: 16px;
 }
 
@@ -1724,6 +1879,7 @@
   margin: 5px 0 0;
 
   color: #777b83;
+
   font-size: 12px;
 }
 
@@ -1743,6 +1899,7 @@
   flex-direction: column;
 
   padding: 18px;
+
   gap: 16px;
 
   background: #fafafa;
@@ -1773,6 +1930,7 @@
   min-height: 96px;
 
   color: #9498a7;
+
   font-size: 13px;
 
   border: 1px dashed #d9d9d9;
@@ -1787,6 +1945,7 @@
   min-height: 64px;
 
   padding: 12px 14px;
+
   gap: 12px;
 
   border: 1px solid #e0e0e0;
@@ -1813,6 +1972,7 @@
 
 .dp-template-builder-row span {
   color: #9498a7;
+
   font-size: 11px;
 }
 
@@ -1833,15 +1993,19 @@
   background: #ffffff;
   border-radius: 14px;
 
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+  box-shadow:
+    0 18px 50px
+      rgba(15, 23, 42, 0.18);
 
-  transform: translate(-50%, -50%);
+  transform:
+    translate(-50%, -50%);
 }
 
 .dp-confirm h3 {
   margin: 0;
 
   color: #0c1421;
+
   font-size: 18px;
 }
 
@@ -1876,9 +2040,13 @@
   align-items: flex-start;
   justify-content: space-between;
 
-  width: min(390px, calc(100vw - 32px));
+  width: min(
+    390px,
+    calc(100vw - 32px)
+  );
 
   padding: 15px 16px;
+
   gap: 14px;
 
   background: #ffffff;
@@ -1886,7 +2054,9 @@
   border-left-width: 4px;
   border-radius: 10px;
 
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+  box-shadow:
+    0 14px 34px
+      rgba(15, 23, 42, 0.14);
 }
 
 .dp-toast--success {
@@ -1897,14 +2067,20 @@
   border-left-color: #b42318;
 }
 
+.dp-toast--warning {
+  border-left-color: #f59e0b;
+}
+
 .dp-toast__body {
   display: flex;
   flex-direction: column;
+
   gap: 3px;
 }
 
 .dp-toast__body strong {
   color: #0c1421;
+
   font-size: 14px;
 }
 
@@ -1936,16 +2112,34 @@
 
 /* =========================================================
    RESPONSIVE
-   Desktop keeps the exact AppLayout offsets.
    ========================================================= */
+
+@media (max-width: 1250px) {
+  .dp-schedule-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .dp-google-calendar-btn {
+    min-width: 180px;
+  }
+}
 
 @media (max-width: 1180px) {
   .dp-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
   .dp-my-template-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 }
 
@@ -1962,10 +2156,17 @@
 
   .dp-schedule-actions {
     width: 100%;
+    flex-wrap: wrap;
   }
 
   .dp-schedule-actions .dp-btn {
     flex: 1;
+  }
+
+  .dp-google-calendar-btn {
+    width: 100%;
+    min-width: 0;
+    flex-basis: 100% !important;
   }
 
   .dp-activity-row {
@@ -1979,17 +2180,23 @@
   .dp-activity-time {
     width: 70px;
     flex-basis: 70px;
+
     font-size: 14px;
   }
 
   .dp-drawer {
-    width: min(620px, calc(100vw - 24px));
+    width: min(
+      620px,
+      calc(100vw - 24px)
+    );
+
     padding-right: 24px;
     padding-left: 24px;
   }
 
   .dp-drawer__divider {
     width: calc(100% + 48px);
+
     margin-right: -24px;
     margin-left: -24px;
   }
@@ -2005,7 +2212,8 @@
   }
 
   .dp-summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .dp-summary-card {
@@ -2015,6 +2223,7 @@
   .dp-schedule-card,
   .dp-template-page-card {
     padding: 18px;
+
     border-radius: 16px;
   }
 
@@ -2023,6 +2232,7 @@
   .dp-template-conflict__actions {
     flex-direction: column;
     align-items: stretch;
+
     width: 100%;
   }
 
@@ -2036,6 +2246,7 @@
 
   .dp-activity-row__left {
     align-items: flex-start;
+
     gap: 12px;
   }
 
@@ -2050,32 +2261,49 @@
   .dp-drawer,
   .dp-drawer--template {
     width: 100%;
-    padding: 24px 18px calc(18px + env(safe-area-inset-bottom));
+
+    padding:
+      24px 18px
+      calc(
+        18px +
+          env(
+            safe-area-inset-bottom
+          )
+      );
+
     border-radius: 0;
   }
 
   .dp-drawer__divider {
     width: calc(100% + 36px);
+
     margin-right: -18px;
     margin-left: -18px;
   }
 
   .dp-template-inline-edit__row,
   .dp-template-activity-form__two {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .dp-time-popover {
     right: auto;
     left: 0;
-    width: min(310px, calc(100vw - 50px));
+
+    width: min(
+      310px,
+      calc(100vw - 50px)
+    );
   }
 
   .dp-my-template-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
-  .dp-template-page-card__header .dp-btn {
+  .dp-template-page-card__header
+    .dp-btn {
     width: 100%;
   }
 
@@ -2083,6 +2311,7 @@
     top: 72px;
     right: 16px;
     left: 16px;
+
     width: auto;
   }
 }

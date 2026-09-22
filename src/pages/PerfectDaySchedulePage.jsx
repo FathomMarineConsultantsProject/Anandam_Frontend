@@ -35,6 +35,13 @@ import {
   toggleDailyActivityStatus,
   updateDailyActivity,
   updateMyDayTemplate,
+
+  // Google Calendar
+  getGoogleCalendarStatus,
+  getGoogleCalendarConnectUrl,
+  disconnectGoogleCalendar,
+  syncGoogleCalendarActivity,
+  getBrowserTimeZone,
 } from "../api/perfectDayApi";
 import { getUserFriendlyError } from "../api/client";
 import "../styles/perfect-day-schedule.css";
@@ -140,6 +147,20 @@ function toTemplatePayloadActivity(activity, index) {
 
 function friendlyError(error, fallback) {
   return getUserFriendlyError(error, fallback);
+}
+
+function GoogleCalendarMark() {
+  return (
+    <span
+      className="dp-google-calendar-mark"
+      aria-hidden="true"
+    >
+      <i className="is-blue" />
+      <i className="is-red" />
+      <i className="is-yellow" />
+      <i className="is-green" />
+    </span>
+  );
 }
 
 function PlannerToast({ toast, onClose }) {
@@ -549,6 +570,7 @@ function ActivityDrawer({
   onClose,
   onSaved,
   setToast,
+  googleConnected = false,
 }) {
   const [form, setForm] = useState(EMPTY_ACTIVITY);
   const [saving, setSaving] = useState(false);
@@ -610,59 +632,112 @@ function ActivityDrawer({
     }
 
     try {
-      setSaving(true);
+  setSaving(true);
 
-      if (mode === "edit") {
-        await updateDailyActivity(initialActivity.id, {
-          title: form.title.trim(),
-          category: form.category,
-          date: form.date,
-          time: form.time,
-          durationMinutes: Number(form.durationMinutes),
-          note: form.note.trim() || null,
-        });
-      } else if (mode === "reschedule") {
-        await updateDailyActivity(initialActivity.id, {
-          date: form.date,
-          time: form.time,
-        });
-      } else {
-        await createDailyActivity({
-          title: form.title.trim(),
-          category: form.category,
-          date: form.date,
-          time: form.time,
-          durationMinutes: Number(form.durationMinutes),
-          note: form.note.trim() || null,
-        });
-      }
+  let savedActivity = null;
 
-      setToast({
-        type: "success",
-        title:
-          mode === "edit"
-            ? "Activity updated"
-            : mode === "reschedule"
-            ? "Activity rescheduled"
-            : "Activity added",
-        message:
-          mode === "add"
-            ? "The activity has been added to your day."
-            : "Your changes have been saved.",
-      });
-
-      await onSaved(form.date);
-      onClose();
-    } catch (error) {
-      setToast({
-        type: "error",
-        title: "Unable to save activity",
-        message: friendlyError(
-          error,
-          "We couldn't save this activity. Please check the details and try again."
+  if (mode === "edit") {
+    savedActivity = await updateDailyActivity(
+      initialActivity.id,
+      {
+        title: form.title.trim(),
+        category: form.category,
+        date: form.date,
+        time: form.time,
+        durationMinutes: Number(
+          form.durationMinutes
         ),
-      });
-    } finally {
+        note:
+          form.note.trim() || null,
+      }
+    );
+  } else if (mode === "reschedule") {
+    savedActivity = await updateDailyActivity(
+      initialActivity.id,
+      {
+        date: form.date,
+        time: form.time,
+      }
+    );
+  } else {
+    savedActivity = await createDailyActivity({
+      title: form.title.trim(),
+      category: form.category,
+      date: form.date,
+      time: form.time,
+      durationMinutes: Number(
+        form.durationMinutes
+      ),
+      note:
+        form.note.trim() || null,
+    });
+  }
+
+  // -----------------------------------------
+  // GOOGLE CALENDAR AUTO SYNC
+  // -----------------------------------------
+
+  let calendarSynced = false;
+  let calendarSyncFailed = false;
+
+  if (
+    googleConnected &&
+    savedActivity?.id
+  ) {
+    try {
+      const syncResult =
+        await syncGoogleCalendarActivity(
+          savedActivity.id
+        );
+
+      calendarSynced =
+        Boolean(syncResult?.synced);
+    } catch (calendarError) {
+      console.error(
+        "Google Calendar sync failed:",
+        calendarError
+      );
+
+      calendarSyncFailed = true;
+    }
+  }
+
+  setToast({
+    type:
+      calendarSyncFailed
+        ? "warning"
+        : "success",
+
+    title:
+      mode === "edit"
+        ? "Activity updated"
+        : mode === "reschedule"
+        ? "Activity rescheduled"
+        : "Activity added",
+
+    message:
+      calendarSyncFailed
+        ? "The activity was saved in Anandam, but Google Calendar could not be updated."
+        : calendarSynced
+        ? "Saved in Anandam and synced to Google Calendar."
+        : mode === "add"
+        ? "The activity has been added to your day."
+        : "Your changes have been saved.",
+  });
+
+  await onSaved(form.date);
+
+  onClose();
+} catch (error) {
+  setToast({
+    type: "error",
+    title: "Unable to save activity",
+    message: friendlyError(
+      error,
+      "We couldn't save this activity. Please check the details and try again."
+    ),
+  });
+} finally {
       setSaving(false);
     }
   }
@@ -1846,12 +1921,276 @@ function PerfectDaySchedulePage() {
   const [deleteTemplateTarget, setDeleteTemplateTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [toast, setToast] = useState(null);
+  const [googleCalendar, setGoogleCalendar] =
+  useState({
+    loading: true,
+    connected: false,
+    connection: null,
+  });
+
+const [
+  googleCalendarBusy,
+  setGoogleCalendarBusy,
+] = useState(false);
+
+  const googlePopupRef = useRef(null);
+  const googlePollTimerRef = useRef(null);
 
   useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(null), 4500);
     return () => window.clearTimeout(timer);
   }, [toast]);
+
+  function stopGoogleCalendarPolling() {
+    if (googlePollTimerRef.current) {
+      window.clearInterval(googlePollTimerRef.current);
+      googlePollTimerRef.current = null;
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      stopGoogleCalendarPolling();
+
+      try {
+        if (
+          googlePopupRef.current &&
+          !googlePopupRef.current.closed
+        ) {
+          googlePopupRef.current.close();
+        }
+      } catch {
+        // Ignore popup cleanup errors.
+      }
+    };
+  }, []);
+
+  async function loadGoogleCalendarStatus(
+  options = {}
+) {
+  const {
+    quiet = false,
+  } = options;
+
+  try {
+    if (!quiet) {
+      setGoogleCalendar(
+        (current) => ({
+          ...current,
+          loading: true,
+        })
+      );
+    }
+
+    const data =
+      await getGoogleCalendarStatus();
+
+    setGoogleCalendar({
+      loading: false,
+      connected:
+        Boolean(data?.connected),
+      connection:
+        data?.connection || null,
+    });
+
+    return data;
+  } catch (error) {
+    console.error(
+      "Google Calendar status check failed:",
+      error
+    );
+
+    setGoogleCalendar(
+      (current) => ({
+        ...current,
+        loading: false,
+      })
+    );
+
+    return null;
+  }
+}
+
+async function handleGoogleCalendarConnect() {
+  if (
+    googleCalendarBusy ||
+    googleCalendar.connected
+  ) {
+    return;
+  }
+
+  let popup = null;
+
+  try {
+    setGoogleCalendarBusy(true);
+
+    /*
+      Open a blank popup immediately from the click event so
+      browsers do not block it while we wait for the API.
+    */
+    popup = window.open(
+      "",
+      "anandam-google-calendar",
+      "popup=yes,width=620,height=760,left=200,top=80"
+    );
+
+    googlePopupRef.current = popup;
+
+    const data =
+      await getGoogleCalendarConnectUrl(
+        getBrowserTimeZone()
+      );
+
+    if (!data?.authUrl) {
+      throw new Error(
+        "Google authorization URL was not returned."
+      );
+    }
+
+    /*
+      If popups are blocked, fall back to the normal
+      same-tab Google authorization flow.
+    */
+    if (!popup) {
+      window.location.assign(data.authUrl);
+      return;
+    }
+
+    popup.location.href = data.authUrl;
+    popup.focus();
+
+    stopGoogleCalendarPolling();
+
+    /*
+      The backend callback may redirect the popup to the
+      frontend home page. That is okay.
+
+      The main Day Planner tab stays open and checks
+      /google-calendar/status until the backend reports
+      connected:true.
+    */
+    googlePollTimerRef.current =
+      window.setInterval(async () => {
+        try {
+          if (popup.closed) {
+            stopGoogleCalendarPolling();
+            setGoogleCalendarBusy(false);
+
+            await loadGoogleCalendarStatus({
+              quiet: true,
+            });
+
+            return;
+          }
+
+          const status =
+            await getGoogleCalendarStatus();
+
+          if (status?.connected) {
+            setGoogleCalendar({
+              loading: false,
+              connected: true,
+              connection:
+                status?.connection || null,
+            });
+
+            stopGoogleCalendarPolling();
+            setGoogleCalendarBusy(false);
+
+            try {
+              popup.close();
+            } catch {
+              // Ignore popup close errors.
+            }
+
+            setToast({
+              type: "success",
+              title:
+                "Google Calendar connected",
+              message:
+                status?.connection?.googleEmail
+                  ? `Connected to ${status.connection.googleEmail}. New Day Planner activities will sync to Google Calendar.`
+                  : "Google Calendar is connected. New Day Planner activities will sync automatically.",
+            });
+          }
+        } catch (pollError) {
+          /*
+            Do not fail the whole connect flow because one
+            polling request temporarily failed.
+          */
+          console.warn(
+            "Google Calendar connection check failed:",
+            pollError
+          );
+        }
+      }, 1500);
+
+  } catch (error) {
+    stopGoogleCalendarPolling();
+    setGoogleCalendarBusy(false);
+
+    try {
+      if (popup && !popup.closed) {
+        popup.close();
+      }
+    } catch {
+      // Ignore popup close errors.
+    }
+
+    setToast({
+      type: "error",
+      title:
+        "Unable to connect Google Calendar",
+      message: friendlyError(
+        error,
+        "We couldn't start the Google Calendar connection. Please try again."
+      ),
+    });
+  }
+}
+
+async function handleGoogleCalendarDisconnect() {
+  if (
+    googleCalendarBusy ||
+    !googleCalendar.connected
+  ) {
+    return;
+  }
+
+  try {
+    setGoogleCalendarBusy(true);
+    stopGoogleCalendarPolling();
+
+    await disconnectGoogleCalendar();
+
+    setGoogleCalendar({
+      loading: false,
+      connected: false,
+      connection: null,
+    });
+
+    setToast({
+      type: "success",
+      title:
+        "Google Calendar disconnected",
+      message:
+        "New Day Planner activities will no longer sync to Google Calendar.",
+    });
+  } catch (error) {
+    setToast({
+      type: "error",
+      title:
+        "Unable to disconnect Google Calendar",
+      message: friendlyError(
+        error,
+        "We couldn't disconnect Google Calendar. Please try again."
+      ),
+    });
+  } finally {
+    setGoogleCalendarBusy(false);
+  }
+}
 
   async function loadDay(date = selectedDate, options = {}) {
     const { quiet = false } = options;
@@ -1898,7 +2237,35 @@ function PerfectDaySchedulePage() {
   }
 
   useEffect(() => {
-    loadDay(getLocalDateKey()).catch(() => {});
+    loadDay(
+      getLocalDateKey()
+    ).catch(() => {});
+
+    /*
+      If this Anandam account was already connected in
+      Postman or during an earlier browser session, this
+      immediately changes the button to "Calendar Connected".
+    */
+    loadGoogleCalendarStatus();
+  }, []);
+
+  useEffect(() => {
+    function refreshGoogleStatusOnFocus() {
+      loadGoogleCalendarStatus({
+        quiet: true,
+      });
+    }
+
+    window.addEventListener(
+      "focus",
+      refreshGoogleStatusOnFocus
+    );
+
+    return () =>
+      window.removeEventListener(
+        "focus",
+        refreshGoogleStatusOnFocus
+      );
   }, []);
 
   useEffect(() => {
@@ -2063,29 +2430,86 @@ function PerfectDaySchedulePage() {
                       <p>Everything you have planned for today.</p>
                     </div>
 
-                    <div className="dp-schedule-actions">
-                      <button
-                        type="button"
-                        className="dp-btn dp-btn--primary"
-                        onClick={() =>
-                          setActivityDrawer({
-                            mode: "add",
-                            activity: null,
-                          })
-                        }
-                      >
-                        Add Activity
-                        <Plus size={18} />
-                      </button>
+                  <div className="dp-schedule-actions">
+  {/* ADD ACTIVITY */}
+  <button
+    type="button"
+    className="dp-btn dp-btn--primary"
+    onClick={() =>
+      setActivityDrawer({
+        mode: "add",
+        activity: null,
+      })
+    }
+  >
+    Add Activity
 
-                      <button
-                        type="button"
-                        className="dp-btn dp-btn--secondary"
-                        onClick={() => setTemplateDrawer({ templateId: null })}
-                      >
-                        Use a Template
-                      </button>
-                    </div>
+    <Plus size={18} />
+  </button>
+
+  {/* GOOGLE CALENDAR */}
+  <button
+    type="button"
+    className={`dp-btn dp-google-calendar-btn ${
+      googleCalendar.connected
+        ? "is-connected"
+        : ""
+    }`}
+    onClick={
+      googleCalendar.connected
+        ? handleGoogleCalendarDisconnect
+        : handleGoogleCalendarConnect
+    }
+    disabled={
+      googleCalendar.loading ||
+      googleCalendarBusy
+    }
+    title={
+      googleCalendar.connected
+        ? `Connected to ${
+            googleCalendar
+              .connection
+              ?.googleEmail ||
+            "Google Calendar"
+          }. Click to disconnect.`
+        : "Connect your Google Calendar"
+    }
+  >
+    <GoogleCalendarMark />
+
+    <span>
+      {googleCalendar.loading
+        ? "Checking Calendar..."
+        : googleCalendarBusy
+        ? googleCalendar.connected
+          ? "Disconnecting..."
+          : "Connecting..."
+        : googleCalendar.connected
+        ? "Calendar Connected"
+        : "Connect Google Calendar"}
+    </span>
+
+    {googleCalendar.connected && (
+      <Check
+        size={15}
+        strokeWidth={2.2}
+      />
+    )}
+  </button>
+
+  {/* TEMPLATE */}
+  <button
+    type="button"
+    className="dp-btn dp-btn--secondary"
+    onClick={() =>
+      setTemplateDrawer({
+        templateId: null,
+      })
+    }
+  >
+    Use a Template
+  </button>
+</div>
                   </div>
 
                   {activities.length === 0 ? (
@@ -2140,16 +2564,31 @@ function PerfectDaySchedulePage() {
         )}
 
         <ActivityDrawer
-          open={Boolean(activityDrawer)}
-          mode={activityDrawer?.mode || "add"}
-          initialActivity={activityDrawer?.activity || null}
-          selectedDate={selectedDate}
-          onClose={() => setActivityDrawer(null)}
-          onSaved={async (date) => {
-            await loadDay(date, { quiet: true });
-          }}
-          setToast={setToast}
-        />
+  open={Boolean(activityDrawer)}
+  mode={
+    activityDrawer?.mode ||
+    "add"
+  }
+  initialActivity={
+    activityDrawer?.activity ||
+    null
+  }
+  selectedDate={
+    selectedDate
+  }
+  onClose={() =>
+    setActivityDrawer(null)
+  }
+  onSaved={async (date) => {
+    await loadDay(date, {
+      quiet: true,
+    });
+  }}
+  setToast={setToast}
+  googleConnected={
+    googleCalendar.connected
+  }
+/>
 
         <UseTemplateDrawer
           open={Boolean(templateDrawer)}

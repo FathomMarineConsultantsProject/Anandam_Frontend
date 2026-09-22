@@ -17,6 +17,7 @@ export function getLocalDateKey(date = new Date()) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
+
   return `${year}-${month}-${day}`;
 }
 
@@ -24,43 +25,71 @@ export function getLocalDateKey(date = new Date()) {
 // MY DAY
 // =========================================================
 
-export async function getDailyPlan(date = getLocalDateKey()) {
-  const response = await apiRequest(`/daily-plan/day/${date}`, {
-    method: "GET",
-  });
+export async function getDailyPlan(
+  date = getLocalDateKey()
+) {
+  const response = await apiRequest(
+    `/daily-plan/day/${date}`,
+    {
+      method: "GET",
+    }
+  );
+
   return unwrap(response);
 }
 
 export async function createDailyActivity(payload) {
-  const response = await apiRequest("/daily-plan/activities", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+  const response = await apiRequest(
+    "/daily-plan/activities",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
+
   return unwrap(response);
 }
 
-export async function updateDailyActivity(activityId, payload) {
-  const response = await apiRequest(`/daily-plan/activities/${activityId}`, {
-    method: "PATCH",
-    body: JSON.stringify(payload),
-  });
+export async function updateDailyActivity(
+  activityId,
+  payload
+) {
+  const response = await apiRequest(
+    `/daily-plan/activities/${activityId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }
+  );
+
   return unwrap(response);
 }
 
-export async function deleteDailyActivity(activityId) {
-  return apiRequest(`/daily-plan/activities/${activityId}`, {
-    method: "DELETE",
-  });
+export async function deleteDailyActivity(
+  activityId
+) {
+  return apiRequest(
+    `/daily-plan/activities/${activityId}`,
+    {
+      method: "DELETE",
+    }
+  );
 }
 
-export async function toggleDailyActivityStatus(activityId, isCompleted) {
+export async function toggleDailyActivityStatus(
+  activityId,
+  isCompleted
+) {
   const response = await apiRequest(
     `/daily-plan/activities/${activityId}/status`,
     {
       method: "PATCH",
-      body: JSON.stringify({ isCompleted }),
+      body: JSON.stringify({
+        isCompleted,
+      }),
     }
   );
+
   return unwrap(response);
 }
 
@@ -69,11 +98,18 @@ export async function toggleDailyActivityStatus(activityId, isCompleted) {
 // =========================================================
 
 export async function getDailyTemplates() {
-  const response = await apiRequest("/daily-plan/templates", {
-    method: "GET",
-  });
+  const response = await apiRequest(
+    "/daily-plan/templates",
+    {
+      method: "GET",
+    }
+  );
+
   const data = unwrap(response);
-  return Array.isArray(data) ? data : [];
+
+  return Array.isArray(data)
+    ? data
+    : [];
 }
 
 export async function applyDailyTemplate({
@@ -89,13 +125,21 @@ export async function applyDailyTemplate({
     targetDate,
   };
 
-  if (mode) payload.mode = mode;
-  if (Array.isArray(activities)) payload.activities = activities;
+  if (mode) {
+    payload.mode = mode;
+  }
 
-  const response = await apiRequest("/daily-plan/templates/apply", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+  if (Array.isArray(activities)) {
+    payload.activities = activities;
+  }
+
+  const response = await apiRequest(
+    "/daily-plan/templates/apply",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
 
   return unwrap(response);
 }
@@ -105,47 +149,81 @@ export async function applyDailyTemplate({
 // =========================================================
 
 export async function getMyDayTemplates() {
-  const response = await apiRequest("/daily-plan/my-templates", {
-    method: "GET",
-  });
+  const response = await apiRequest(
+    "/daily-plan/my-templates",
+    {
+      method: "GET",
+    }
+  );
+
   const data = unwrap(response);
-  return Array.isArray(data) ? data : [];
+
+  return Array.isArray(data)
+    ? data
+    : [];
 }
 
-export async function getMyDayTemplate(templateId) {
-  const response = await apiRequest(`/daily-plan/my-templates/${templateId}`, {
-    method: "GET",
-  });
+export async function getMyDayTemplate(
+  templateId
+) {
+  const response = await apiRequest(
+    `/daily-plan/my-templates/${templateId}`,
+    {
+      method: "GET",
+    }
+  );
+
   return unwrap(response);
 }
 
-export async function createMyDayTemplate(payload) {
-  const response = await apiRequest("/daily-plan/my-templates", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export async function createMyDayTemplate(
+  payload
+) {
+  const response = await apiRequest(
+    "/daily-plan/my-templates",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
+
   return unwrap(response);
 }
 
-export async function updateMyDayTemplate(templateId, payload) {
-  const response = await apiRequest(`/daily-plan/my-templates/${templateId}`, {
-    method: "PATCH",
-    body: JSON.stringify(payload),
-  });
+export async function updateMyDayTemplate(
+  templateId,
+  payload
+) {
+  const response = await apiRequest(
+    `/daily-plan/my-templates/${templateId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }
+  );
+
   return unwrap(response);
 }
 
-export async function deleteMyDayTemplate(templateId) {
-  return apiRequest(`/daily-plan/my-templates/${templateId}`, {
-    method: "DELETE",
-  });
+export async function deleteMyDayTemplate(
+  templateId
+) {
+  return apiRequest(
+    `/daily-plan/my-templates/${templateId}`,
+    {
+      method: "DELETE",
+    }
+  );
 }
 
 // =========================================================
 // TEMPLATE ACTIVITY MANAGEMENT
 // =========================================================
 
-export async function addMyTemplateActivity(templateId, payload) {
+export async function addMyTemplateActivity(
+  templateId,
+  payload
+) {
   const response = await apiRequest(
     `/daily-plan/my-templates/${templateId}/activities`,
     {
@@ -153,6 +231,7 @@ export async function addMyTemplateActivity(templateId, payload) {
       body: JSON.stringify(payload),
     }
   );
+
   return unwrap(response);
 }
 
@@ -168,10 +247,14 @@ export async function updateMyTemplateActivity(
       body: JSON.stringify(payload),
     }
   );
+
   return unwrap(response);
 }
 
-export async function deleteMyTemplateActivity(templateId, activityId) {
+export async function deleteMyTemplateActivity(
+  templateId,
+  activityId
+) {
   return apiRequest(
     `/daily-plan/my-templates/${templateId}/activities/${activityId}`,
     {
@@ -184,11 +267,16 @@ export async function deleteMyTemplateActivity(templateId, activityId) {
 // PROGRESS
 // =========================================================
 
-export async function getPlannerProgress(days = 7) {
+export async function getPlannerProgress(
+  days = 7
+) {
   const response = await apiRequest(
     `/daily-plan/progress?days=${encodeURIComponent(days)}`,
-    { method: "GET" }
+    {
+      method: "GET",
+    }
   );
+
   return unwrap(response);
 }
 
@@ -196,7 +284,9 @@ export async function getPlannerProgress(days = 7) {
 // TEMPORARY OLD-NAME COMPATIBILITY
 // =========================================================
 
-export async function getPerfectDaySchedule(targetDate = getLocalDateKey()) {
+export async function getPerfectDaySchedule(
+  targetDate = getLocalDateKey()
+) {
   return getDailyPlan(targetDate);
 }
 
@@ -212,18 +302,113 @@ export async function applyPerfectDayTemplate(
   const template =
     options.template ||
     (await getDailyTemplates()).find(
-      (item) => String(item.id) === String(templateId)
+      (item) =>
+        String(item.id) ===
+        String(templateId)
     );
 
   return applyDailyTemplate({
     templateId,
-    templateType: template?.templateType || "SYSTEM",
+    templateType:
+      template?.templateType ||
+      "SYSTEM",
     targetDate,
     mode: options.mode,
-    activities: options.activities,
+    activities:
+      options.activities,
   });
 }
 
-export async function togglePerfectDayActivity(activityId, isCompleted) {
-  return toggleDailyActivityStatus(activityId, isCompleted);
+export async function togglePerfectDayActivity(
+  activityId,
+  isCompleted
+) {
+  return toggleDailyActivityStatus(
+    activityId,
+    isCompleted
+  );
+}
+
+// =========================================================
+// GOOGLE CALENDAR
+// Backend:
+// GET  /google-calendar/status
+// GET  /google-calendar/connect-url
+// POST /google-calendar/disconnect
+// POST /google-calendar/sync/:activityId
+// =========================================================
+
+export function getBrowserTimeZone() {
+  try {
+    return (
+      Intl.DateTimeFormat()
+        .resolvedOptions()
+        .timeZone ||
+      "UTC"
+    );
+  } catch {
+    return "UTC";
+  }
+}
+
+export async function getGoogleCalendarStatus() {
+  const response = await apiRequest(
+    "/google-calendar/status",
+    {
+      method: "GET",
+    }
+  );
+
+  return unwrap(response);
+}
+
+export async function getGoogleCalendarConnectUrl(
+  timeZone = getBrowserTimeZone()
+) {
+  const params =
+    new URLSearchParams();
+
+  params.set(
+    "timeZone",
+    timeZone || "UTC"
+  );
+
+  const response = await apiRequest(
+    `/google-calendar/connect-url?${params.toString()}`,
+    {
+      method: "GET",
+    }
+  );
+
+  return unwrap(response);
+}
+
+export async function disconnectGoogleCalendar() {
+  const response = await apiRequest(
+    "/google-calendar/disconnect",
+    {
+      method: "POST",
+    }
+  );
+
+  return unwrap(response);
+}
+
+export async function syncGoogleCalendarActivity(
+  activityId
+) {
+  if (!activityId) {
+    throw new Error(
+      "Activity ID is required for Google Calendar sync."
+    );
+  }
+
+  const response = await apiRequest(
+    `/google-calendar/sync/${encodeURIComponent(activityId)}`,
+    {
+      method: "POST",
+    }
+  );
+
+  return unwrap(response);
 }
