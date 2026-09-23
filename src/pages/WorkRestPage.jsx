@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, ChevronLeft, ChevronRight, Clock3, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  Pencil,
+  Save,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import AppHeader from "../components/layout/AppHeader";
 import BottomNav from "../components/layout/BottomNav";
@@ -10,10 +19,15 @@ import { getMyProfile } from "../api/profileApi";
 import {
   getWorkRestDay,
   updateWorkRestSlots,
+  deleteWorkRestSlot,
+  updateWorkRestDayComment,
+  deleteWorkRestDayComment,
   getActiveWorkSession,
   clockInToWork,
   clockOutOfWork,
   createManualWorkSession,
+  updateExistingWorkSession,
+  deleteExistingWorkSession,
   getWorkRestSummary,
   getWorkRestErrorMessage,
 } from "../api/workRestApi";
@@ -39,6 +53,8 @@ import avatar10 from "../assets/profile/avatar 10.png";
 import "../styles/work-rest.css";
 
 const EMPTY_BLOCKS = Array(48).fill("UNRECORDED");
+const MINUTES_PER_SLOT = 30;
+const SLOT_MS = MINUTES_PER_SLOT * 60 * 1000;
 
 const PROFILE_AVATARS = {
   1: avatar1,
@@ -85,22 +101,23 @@ const STATUS_META = {
   UNRECORDED: { letter: "U", label: "Unrecorded" },
 };
 
+// Midnight-to-midnight display order.
 const DAY_SECTIONS = [
   {
-    title: "Morning: 06:00–12:00",
+    title: "Night: 12:00 AM–06:00 AM",
+    slots: Array.from({ length: 12 }, (_, index) => index),
+  },
+  {
+    title: "Morning: 06:00 AM–12:00 PM",
     slots: Array.from({ length: 12 }, (_, index) => index + 12),
   },
   {
-    title: "Afternoon: 12:00–18:00",
+    title: "Afternoon: 12:00 PM–06:00 PM",
     slots: Array.from({ length: 12 }, (_, index) => index + 24),
   },
   {
-    title: "Evening: 18:00–12:00",
+    title: "Evening: 06:00 PM–12:00 AM",
     slots: Array.from({ length: 12 }, (_, index) => index + 36),
-  },
-  {
-    title: "Night: 12:00–06:00",
-    slots: Array.from({ length: 12 }, (_, index) => index),
   },
 ];
 
@@ -144,7 +161,7 @@ function normalizeBlocks(blocks) {
 }
 
 function formatSlotTime(slotIndex) {
-  const totalMinutes = slotIndex * 30;
+  const totalMinutes = slotIndex * MINUTES_PER_SLOT;
   const hour24 = Math.floor(totalMinutes / 60) % 24;
   const minute = totalMinutes % 60;
   const hour12 = hour24 % 12 || 12;
@@ -191,7 +208,6 @@ function formatRecordDate(dateKey) {
   });
 }
 
-
 const CALENDAR_WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 function toUtcDate(dateKey) {
@@ -220,7 +236,6 @@ function buildCalendarDays(viewDate) {
   const month = monthStart.getUTCMonth();
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 
-  // Monday = 0 ... Sunday = 6, matching the Figma calendar.
   const leadingDays = (monthStart.getUTCDay() + 6) % 7;
   const requiredCells = leadingDays + daysInMonth;
   const totalCells = requiredCells <= 35 ? 35 : 42;
@@ -308,8 +323,7 @@ function FigmaDatePicker({ selectedDate, maxDate, onCancel, onChoose }) {
               disabled={disabled}
               aria-selected={selected}
               onClick={() => {
-                if (disabled) return;
-                setDraftDate(item.key);
+                if (!disabled) setDraftDate(item.key);
               }}
             >
               {item.day}
@@ -352,15 +366,6 @@ function formatSessionTime(value) {
   });
 }
 
-/*
-  The Work/Rest screen is displayed in the user's LOCAL/browser time.
-  Build the selected slot as local wall-clock time first. Calling
-  .toISOString() later converts that real local instant to UTC for the API.
-
-  Example in India:
-  09:00 local -> 03:30Z
-  12:00 local -> 06:30Z
-*/
 function buildLocalSlotDate(dateKey, slotIndex) {
   const [year, month, day] = dateKey.split("-").map(Number);
 
@@ -369,21 +374,96 @@ function buildLocalSlotDate(dateKey, slotIndex) {
     month - 1,
     day,
     0,
-    slotIndex * 30,
+    slotIndex * MINUTES_PER_SLOT,
     0,
     0
   );
 }
 
 function getCurrentSlotIndex(now = new Date()) {
-
-  // Use the device/browser local clock for the TODAY grid.
-  // Example: at 5:23 PM, the 5:00 PM slot is current and
-  // the 5:30 PM slot is still in the future.
   return (
     now.getHours() * 2 +
     (now.getMinutes() >= 30 ? 1 : 0)
   );
+}
+
+function getCompletedBoundaryIndex(now = new Date()) {
+  return Math.floor((now.getHours() * 60 + now.getMinutes()) / 30);
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getSessionSlotRangeForDate(session, dateKey) {
+  if (!session?.startedAt) return null;
+
+  const sessionStart = new Date(session.startedAt);
+  const sessionEnd = new Date(session.endedAt || Date.now());
+  const dayStart = buildLocalSlotDate(dateKey, 0);
+  const dayEnd = buildLocalSlotDate(dateKey, 48);
+
+  if (
+    Number.isNaN(sessionStart.getTime()) ||
+    Number.isNaN(sessionEnd.getTime()) ||
+    sessionEnd <= dayStart ||
+    sessionStart >= dayEnd
+  ) {
+    return null;
+  }
+
+  const overlapStart = sessionStart > dayStart ? sessionStart : dayStart;
+  const overlapEnd = sessionEnd < dayEnd ? sessionEnd : dayEnd;
+
+  const startIndex = clamp(
+    Math.floor((overlapStart.getTime() - dayStart.getTime()) / SLOT_MS),
+    0,
+    47
+  );
+
+  const endIndex = clamp(
+    Math.ceil((overlapEnd.getTime() - dayStart.getTime()) / SLOT_MS),
+    1,
+    48
+  );
+
+  if (endIndex <= startIndex) return null;
+
+  return { startIndex, endIndex };
+}
+
+function findWorkSessionForSlot(sessions, dateKey, slotIndex) {
+  if (!Array.isArray(sessions)) return null;
+
+  return (
+    sessions.find((session) => {
+      const range = getSessionSlotRangeForDate(session, dateKey);
+      return (
+        range &&
+        slotIndex >= range.startIndex &&
+        slotIndex < range.endIndex
+      );
+    }) || null
+  );
+}
+
+function splitLocation(value) {
+  const location = String(value || "").trim();
+
+  if (!location) {
+    return { choice: "", custom: "" };
+  }
+
+  if (SHIP_LOCATIONS.includes(location)) {
+    return { choice: location, custom: "" };
+  }
+
+  return { choice: "Other", custom: location };
+}
+
+function resolveWorkLocation(choice, custom) {
+  if (choice === "Other") return String(custom || "").trim();
+  return String(choice || "").trim();
 }
 
 function firstNumber(source, keys) {
@@ -394,7 +474,6 @@ function firstNumber(source, keys) {
 
     if (value !== undefined && value !== null && value !== "") {
       const numeric = Number(value);
-
       if (Number.isFinite(numeric)) return numeric;
     }
   }
@@ -471,7 +550,6 @@ function Accordion({ title, items, open, onToggle }) {
         aria-expanded={open}
       >
         <span>{title}</span>
-
         <ChevronDown
           size={24}
           strokeWidth={1.5}
@@ -500,7 +578,6 @@ function StatCard({ icon, tone, label, value, suffix = "" }) {
         >
           <img src={icon} alt="" />
         </span>
-
         <span>{label}</span>
       </div>
 
@@ -512,11 +589,61 @@ function StatCard({ icon, tone, label, value, suffix = "" }) {
   );
 }
 
-function SlotEditor({
+function LocationFields({
+  workLocation,
+  setWorkLocation,
+  customWorkLocation,
+  setCustomWorkLocation,
+}) {
+  return (
+    <>
+      <label className="wr-popover-field">
+        <span>Work location</span>
+
+        <select
+          value={workLocation}
+          onChange={(event) => {
+            const value = event.target.value;
+            setWorkLocation(value);
+            if (value !== "Other") setCustomWorkLocation("");
+          }}
+        >
+          <option value="">Choose work location</option>
+
+          {SHIP_LOCATIONS.map((location) => (
+            <option key={location} value={location}>
+              {location}
+            </option>
+          ))}
+
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+      {workLocation === "Other" && (
+        <label className="wr-popover-field">
+          <span>Other location</span>
+          <input
+            type="text"
+            value={customWorkLocation}
+            onChange={(event) => setCustomWorkLocation(event.target.value)}
+            placeholder="e.g. Port office, shipyard, training centre"
+            maxLength={100}
+            autoFocus
+          />
+        </label>
+      )}
+    </>
+  );
+}
+
+function AddSlotEditor({
   manualMode,
   startLabel,
   workLocation,
   setWorkLocation,
+  customWorkLocation,
+  setCustomWorkLocation,
   manualEndIndex,
   setManualEndIndex,
   manualEndOptions,
@@ -530,13 +657,18 @@ function SlotEditor({
   workOpen,
   alignRight,
 }) {
+  const resolvedLocation = resolveWorkLocation(
+    workLocation,
+    customWorkLocation
+  );
+
   const canClockIn =
-    Boolean(workLocation) &&
+    Boolean(resolvedLocation) &&
     !saving &&
     !activeSession;
 
   const canSaveManual =
-    Boolean(workLocation) &&
+    Boolean(resolvedLocation) &&
     manualEndIndex !== "" &&
     !saving;
 
@@ -548,19 +680,18 @@ function SlotEditor({
       onClick={(event) => event.stopPropagation()}
     >
       <div className="wr-slot-popover__menu">
-        <p className="wr-slot-popover__title">Update selected time</p>
+        <p className="wr-slot-popover__title">Add to selected time</p>
 
         <button
           type="button"
           className="wr-slot-action"
           onClick={onOpenWork}
-          disabled={Boolean(activeSession)}
+          disabled={Boolean(activeSession) && !manualMode}
         >
           <span className="wr-slot-action__left">
             <span className="wr-status-square is-work" />
             Work
           </span>
-
           <ChevronRight size={14} />
         </button>
 
@@ -616,15 +747,11 @@ function SlotEditor({
           {manualMode && (
             <label className="wr-popover-field">
               <span>End time</span>
-
               <select
                 value={manualEndIndex}
-                onChange={(event) =>
-                  setManualEndIndex(event.target.value)
-                }
+                onChange={(event) => setManualEndIndex(event.target.value)}
               >
-                <option value="">Select End time</option>
-
+                <option value="">Select end time</option>
                 {manualEndOptions.map((slotIndex) => (
                   <option key={slotIndex} value={slotIndex}>
                     {formatEndTime(slotIndex)}
@@ -634,24 +761,12 @@ function SlotEditor({
             </label>
           )}
 
-          <label className="wr-popover-field">
-            <span>Work location</span>
-
-            <select
-              value={workLocation}
-              onChange={(event) =>
-                setWorkLocation(event.target.value)
-              }
-            >
-              <option value="">Choose ship area</option>
-
-              {SHIP_LOCATIONS.map((location) => (
-                <option key={location} value={location}>
-                  {location}
-                </option>
-              ))}
-            </select>
-          </label>
+          <LocationFields
+            workLocation={workLocation}
+            setWorkLocation={setWorkLocation}
+            customWorkLocation={customWorkLocation}
+            setCustomWorkLocation={setCustomWorkLocation}
+          />
 
           <button
             type="button"
@@ -668,11 +783,476 @@ function SlotEditor({
   );
 }
 
+function RecordedSlotEditor({
+  status,
+  slotLabel,
+  saving,
+  editing,
+  setEditing,
+  deleteConfirm,
+  setDeleteConfirm,
+  onDirectStatus,
+  onDelete,
+  onClose,
+  alignRight,
+}) {
+  const label = STATUS_META[status]?.label || "Recorded time";
+
+  return (
+    <div
+      className={`wr-slot-popover wr-slot-popover--manage${
+        alignRight ? " is-right" : ""
+      }`}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="wr-slot-popover__menu wr-slot-popover__menu--manage">
+        <p className="wr-slot-popover__title">{label} · {slotLabel}</p>
+
+        {!editing && !deleteConfirm && (
+          <>
+            <button
+              type="button"
+              className="wr-slot-action"
+              onClick={() => setEditing(true)}
+              disabled={saving}
+            >
+              <span className="wr-slot-action__left">
+                <Pencil size={14} />
+                Edit
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="wr-slot-action wr-slot-action--delete"
+              onClick={() => setDeleteConfirm(true)}
+              disabled={saving}
+            >
+              <span className="wr-slot-action__left">
+                <Trash2 size={14} />
+                Delete
+              </span>
+            </button>
+          </>
+        )}
+
+        {editing && (
+          <>
+            <p className="wr-slot-popover__hint">Change this 30-minute slot to:</p>
+
+            <button
+              type="button"
+              className="wr-slot-action"
+              onClick={() => onDirectStatus("REST")}
+              disabled={saving || status === "REST"}
+            >
+              <span className="wr-slot-action__left">
+                <span className="wr-status-square is-rest" />
+                Rest
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="wr-slot-action"
+              onClick={() => onDirectStatus("MEAL")}
+              disabled={saving || status === "MEAL"}
+            >
+              <span className="wr-slot-action__left">
+                <span className="wr-status-square is-meal" />
+                Meal/Tea/Break
+              </span>
+            </button>
+
+            <p className="wr-slot-popover__hint is-muted">
+              To record Work here, delete this Rest/Meal slot first.
+            </p>
+
+            <button
+              type="button"
+              className="wr-slot-action wr-slot-action--cancel"
+              onClick={() => setEditing(false)}
+            >
+              <span className="wr-slot-action__left">
+                <X size={14} />
+                Cancel edit
+              </span>
+            </button>
+          </>
+        )}
+
+        {deleteConfirm && (
+          <div className="wr-inline-confirm">
+            <strong>Delete this {label.toLowerCase()} entry?</strong>
+            <span>{slotLabel} will become unrecorded.</span>
+
+            <div className="wr-inline-confirm__actions">
+              <button
+                type="button"
+                className="wr-mini-button is-secondary"
+                onClick={() => setDeleteConfirm(false)}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="wr-mini-button is-danger"
+                onClick={onDelete}
+                disabled={saving}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!deleteConfirm && !editing && (
+          <button
+            type="button"
+            className="wr-slot-action wr-slot-action--cancel"
+            onClick={onClose}
+          >
+            <span className="wr-slot-action__left">
+              <X size={14} />
+              Close
+            </span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function WorkSessionEditor({
+  session,
+  range,
+  editStartIndex,
+  setEditStartIndex,
+  editEndIndex,
+  setEditEndIndex,
+  startOptions,
+  endOptions,
+  workLocation,
+  setWorkLocation,
+  customWorkLocation,
+  setCustomWorkLocation,
+  saving,
+  editing,
+  setEditing,
+  deleteConfirm,
+  setDeleteConfirm,
+  onSave,
+  onDelete,
+  onClose,
+  alignRight,
+}) {
+  const resolvedLocation = resolveWorkLocation(
+    workLocation,
+    customWorkLocation
+  );
+
+  const canSave =
+    Boolean(resolvedLocation) &&
+    editStartIndex !== "" &&
+    editEndIndex !== "" &&
+    Number(editEndIndex) > Number(editStartIndex) &&
+    !saving;
+
+  return (
+    <div
+      className={`wr-slot-popover wr-slot-popover--work-session${
+        alignRight ? " is-right" : ""
+      }`}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="wr-work-session-editor">
+        <div className="wr-work-session-editor__heading">
+          <div>
+            <p className="wr-slot-popover__title">Work session</p>
+            <span>
+              {formatSlotTime(range.startIndex)} – {formatEndTime(range.endIndex)}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className="wr-icon-button"
+            onClick={onClose}
+            aria-label="Close work session editor"
+          >
+            <X size={15} />
+          </button>
+        </div>
+
+        {!editing && !deleteConfirm && (
+          <>
+            <div className="wr-work-session-summary">
+              <span>Location</span>
+              <strong>{session.shipLocation || "—"}</strong>
+            </div>
+
+            <div className="wr-manage-actions">
+              <button
+                type="button"
+                className="wr-manage-button"
+                onClick={() => setEditing(true)}
+                disabled={saving}
+              >
+                <Pencil size={14} />
+                Edit
+              </button>
+
+              <button
+                type="button"
+                className="wr-manage-button is-danger"
+                onClick={() => setDeleteConfirm(true)}
+                disabled={saving}
+              >
+                <Trash2 size={14} />
+                Delete
+              </button>
+            </div>
+          </>
+        )}
+
+        {editing && (
+          <>
+            <label className="wr-popover-field">
+              <span>Start time</span>
+              <select
+                value={editStartIndex}
+                onChange={(event) => setEditStartIndex(event.target.value)}
+              >
+                {startOptions.map((slotIndex) => (
+                  <option key={slotIndex} value={slotIndex}>
+                    {formatSlotTime(slotIndex)}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="wr-popover-field">
+              <span>End time</span>
+              <select
+                value={editEndIndex}
+                onChange={(event) => setEditEndIndex(event.target.value)}
+              >
+                {endOptions.map((slotIndex) => (
+                  <option key={slotIndex} value={slotIndex}>
+                    {formatEndTime(slotIndex)}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <LocationFields
+              workLocation={workLocation}
+              setWorkLocation={setWorkLocation}
+              customWorkLocation={customWorkLocation}
+              setCustomWorkLocation={setCustomWorkLocation}
+            />
+
+            <div className="wr-work-session-editor__footer">
+              <button
+                type="button"
+                className="wr-mini-button is-secondary"
+                onClick={() => setEditing(false)}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="wr-mini-button is-primary"
+                onClick={onSave}
+                disabled={!canSave}
+              >
+                <Save size={13} />
+                Save changes
+              </button>
+            </div>
+          </>
+        )}
+
+        {deleteConfirm && (
+          <div className="wr-inline-confirm wr-inline-confirm--work">
+            <strong>Delete this work session?</strong>
+            <span>
+              {formatSlotTime(range.startIndex)} – {formatEndTime(range.endIndex)} will become unrecorded.
+            </span>
+
+            <div className="wr-inline-confirm__actions">
+              <button
+                type="button"
+                className="wr-mini-button is-secondary"
+                onClick={() => setDeleteConfirm(false)}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="wr-mini-button is-danger"
+                onClick={onDelete}
+                disabled={saving}
+              >
+                Delete session
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DayNote({
+  comment,
+  draft,
+  setDraft,
+  editing,
+  setEditing,
+  deleteConfirm,
+  setDeleteConfirm,
+  saving,
+  onSave,
+  onDelete,
+}) {
+  const hasComment = Boolean(String(comment || "").trim());
+
+  return (
+    <section className="wr-day-note">
+      <div className="wr-day-note__header">
+        <div>
+          <h3>Note for the day</h3>
+          <p>Add information relevant to this day&apos;s work and rest record.</p>
+        </div>
+
+        {hasComment && !editing && !deleteConfirm && (
+          <div className="wr-day-note__header-actions">
+            <button
+              type="button"
+              className="wr-note-action"
+              onClick={() => {
+                setDraft(comment || "");
+                setEditing(true);
+              }}
+              disabled={saving}
+            >
+              <Pencil size={14} />
+              Edit
+            </button>
+
+            <button
+              type="button"
+              className="wr-note-action is-danger"
+              onClick={() => setDeleteConfirm(true)}
+              disabled={saving}
+            >
+              <Trash2 size={14} />
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+
+      {!hasComment && !editing && !deleteConfirm && (
+        <div className="wr-day-note__empty">
+          <span>No note has been added for this date.</span>
+          <button
+            type="button"
+            className="wr-note-add"
+            onClick={() => {
+              setDraft("");
+              setEditing(true);
+            }}
+          >
+            Add note
+          </button>
+        </div>
+      )}
+
+      {hasComment && !editing && !deleteConfirm && (
+        <div className="wr-day-note__saved">{comment}</div>
+      )}
+
+      {editing && (
+        <div className="wr-day-note__editor">
+          <textarea
+            value={draft}
+            onChange={(event) => setDraft(event.target.value.slice(0, 1000))}
+            placeholder="Write a note about work, rest, schedule changes, or anything important from this day..."
+            maxLength={1000}
+            rows={4}
+            autoFocus
+          />
+
+          <div className="wr-day-note__editor-footer">
+            <span>{draft.length}/1000</span>
+
+            <div>
+              <button
+                type="button"
+                className="wr-mini-button is-secondary"
+                onClick={() => {
+                  setDraft(comment || "");
+                  setEditing(false);
+                }}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="wr-mini-button is-primary"
+                onClick={onSave}
+                disabled={!draft.trim() || saving}
+              >
+                <Save size={13} />
+                {hasComment ? "Update note" : "Save note"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirm && (
+        <div className="wr-day-note__confirm">
+          <div>
+            <strong>Delete this note?</strong>
+            <span>This removes the note for the selected date.</span>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              className="wr-mini-button is-secondary"
+              onClick={() => setDeleteConfirm(false)}
+              disabled={saving}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="wr-mini-button is-danger"
+              onClick={onDelete}
+              disabled={saving}
+            >
+              Delete note
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function WorkRestPage() {
   const datePickerRef = useRef(null);
 
-  // Keep the TODAY restriction synced to the user's device/browser clock.
-  // The device timezone therefore controls what counts as "future".
   const [localNow, setLocalNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -707,7 +1287,22 @@ function WorkRestPage() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [workOpen, setWorkOpen] = useState(false);
   const [workLocation, setWorkLocation] = useState("");
+  const [customWorkLocation, setCustomWorkLocation] = useState("");
   const [manualEndIndex, setManualEndIndex] = useState("");
+
+  const [slotStatusEditOpen, setSlotStatusEditOpen] = useState(false);
+  const [slotDeleteConfirm, setSlotDeleteConfirm] = useState(false);
+
+  const [selectedWorkSession, setSelectedWorkSession] = useState(null);
+  const [selectedWorkRange, setSelectedWorkRange] = useState(null);
+  const [workSessionEditing, setWorkSessionEditing] = useState(false);
+  const [workSessionDeleteConfirm, setWorkSessionDeleteConfirm] = useState(false);
+  const [workEditStartIndex, setWorkEditStartIndex] = useState("");
+  const [workEditEndIndex, setWorkEditEndIndex] = useState("");
+
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentEditing, setCommentEditing] = useState(false);
+  const [commentDeleteConfirm, setCommentDeleteConfirm] = useState(false);
 
   const baseHeader = workRestMockData?.header || {};
   const navigation = workRestMockData?.navigation || [];
@@ -718,7 +1313,6 @@ function WorkRestPage() {
     async function loadProfile() {
       try {
         const data = await getMyProfile();
-
         if (!cancelled) setProfile(data);
       } catch (profileError) {
         console.error("Failed to load profile:", profileError);
@@ -750,7 +1344,6 @@ function WorkRestPage() {
         setActiveSession(active || null);
       } catch (loadError) {
         console.error("Failed to load work/rest page:", loadError);
-
         setError(getWorkRestErrorMessage(loadError, "load"));
       } finally {
         if (showLoader) setLoading(false);
@@ -759,15 +1352,41 @@ function WorkRestPage() {
     [selectedDate]
   );
 
-  useEffect(() => {
+  function resetLocationFields() {
+    setWorkLocation("");
+    setCustomWorkLocation("");
+  }
+
+  function closeSlotEditor() {
     setSelectedSlot(null);
     setWorkOpen(false);
-    setWorkLocation("");
+    resetLocationFields();
     setManualEndIndex("");
-    setNotice("");
+    setSlotStatusEditOpen(false);
+    setSlotDeleteConfirm(false);
+    setSelectedWorkSession(null);
+    setSelectedWorkRange(null);
+    setWorkSessionEditing(false);
+    setWorkSessionDeleteConfirm(false);
+    setWorkEditStartIndex("");
+    setWorkEditEndIndex("");
+  }
 
+  useEffect(() => {
+    closeSlotEditor();
+    setNotice("");
+    setCommentEditing(false);
+    setCommentDeleteConfirm(false);
     refreshDateData(true);
+    // closeSlotEditor intentionally uses state setters only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, refreshDateData]);
+
+  useEffect(() => {
+    setCommentDraft(dayData?.commentOfDay || "");
+    setCommentEditing(false);
+    setCommentDeleteConfirm(false);
+  }, [selectedDate, dayData?.commentOfDay]);
 
   useEffect(() => {
     if (!activeSession?.id) return undefined;
@@ -778,7 +1397,6 @@ function WorkRestPage() {
 
     return () => window.clearInterval(intervalId);
   }, [activeSession?.id, refreshDateData]);
-
 
   useEffect(() => {
     if (!datePickerOpen) return undefined;
@@ -795,6 +1413,7 @@ function WorkRestPage() {
     function handleKeyDown(event) {
       if (event.key === "Escape") {
         setDatePickerOpen(false);
+        closeSlotEditor();
       }
     }
 
@@ -813,11 +1432,7 @@ function WorkRestPage() {
   );
 
   const stats = useMemo(
-    () =>
-      normalizeSummary(
-        summaryData || dayData?.summary,
-        blocks
-      ),
+    () => normalizeSummary(summaryData || dayData?.summary, blocks),
     [summaryData, dayData?.summary, blocks]
   );
 
@@ -831,21 +1446,19 @@ function WorkRestPage() {
       ...baseHeader,
       fullName: profile?.fullName || baseHeader.fullName,
       email: profile?.email || baseHeader.email,
-      userInitials: getInitials(
-        profile?.fullName || baseHeader.fullName
-      ),
+      userInitials: getInitials(profile?.fullName || baseHeader.fullName),
     }),
     [baseHeader, profile]
   );
 
   const currentSlotIndex = getCurrentSlotIndex(localNow);
   const isToday = selectedDate === todayKey;
+  const selectedStatus =
+    selectedSlot === null ? null : blocks[selectedSlot];
 
   const manualMode =
     selectedSlot !== null &&
-    (!isToday ||
-      editMode ||
-      selectedSlot !== currentSlotIndex);
+    (!isToday || editMode || selectedSlot !== currentSlotIndex);
 
   const manualEndOptions = useMemo(() => {
     if (selectedSlot === null) return [];
@@ -853,9 +1466,7 @@ function WorkRestPage() {
     let lastPossibleEnd = 48;
 
     if (isToday) {
-      lastPossibleEnd = Math.floor(
-        (localNow.getHours() * 60 + localNow.getMinutes()) / 30
-      );
+      lastPossibleEnd = getCompletedBoundaryIndex(localNow);
     }
 
     if (lastPossibleEnd <= selectedSlot) return [];
@@ -866,11 +1477,73 @@ function WorkRestPage() {
     );
   }, [selectedSlot, isToday, localNow]);
 
-  function closeSlotEditor() {
-    setSelectedSlot(null);
-    setWorkOpen(false);
-    setWorkLocation("");
-    setManualEndIndex("");
+  const workStartOptions = useMemo(() => {
+    if (!selectedWorkRange) return [];
+
+    const endIndex = Number(workEditEndIndex || selectedWorkRange.endIndex);
+    const maxStartToday = isToday
+      ? Math.min(currentSlotIndex, 47)
+      : 47;
+
+    const allowed = new Set();
+
+    for (let index = 0; index <= maxStartToday; index += 1) {
+      if (index < endIndex) allowed.add(index);
+    }
+
+    allowed.add(selectedWorkRange.startIndex);
+
+    return [...allowed]
+      .filter((index) => index < endIndex)
+      .sort((a, b) => a - b);
+  }, [selectedWorkRange, workEditEndIndex, isToday, currentSlotIndex]);
+
+  const workEndOptions = useMemo(() => {
+    if (!selectedWorkRange) return [];
+
+    const startIndex = Number(
+      workEditStartIndex === ""
+        ? selectedWorkRange.startIndex
+        : workEditStartIndex
+    );
+
+    const maxCompletedEnd = isToday
+      ? getCompletedBoundaryIndex(localNow)
+      : 48;
+
+    const allowed = new Set();
+
+    for (let index = startIndex + 1; index <= maxCompletedEnd; index += 1) {
+      allowed.add(index);
+    }
+
+    // Preserve the current inferred range even when a live session ended inside
+    // the current half-hour (for example 09:40 maps visually through 10:00).
+    allowed.add(selectedWorkRange.endIndex);
+
+    return [...allowed]
+      .filter((index) => index > startIndex && index <= 48)
+      .sort((a, b) => a - b);
+  }, [
+    selectedWorkRange,
+    workEditStartIndex,
+    isToday,
+    localNow,
+  ]);
+
+  async function applyDayMutation(updatedDay) {
+    if (!updatedDay) {
+      await refreshDateData(false);
+      return;
+    }
+
+    setDayData(updatedDay);
+
+    if (updatedDay.summary) {
+      setSummaryData(updatedDay.summary);
+    } else {
+      setSummaryData(await getWorkRestSummary(selectedDate));
+    }
   }
 
   function openDatePicker() {
@@ -878,15 +1551,78 @@ function WorkRestPage() {
     closeSlotEditor();
   }
 
+  function prepareWorkSessionForEditing(session, range) {
+    const location = splitLocation(session?.shipLocation);
+
+    setSelectedWorkSession(session);
+    setSelectedWorkRange(range);
+    setWorkEditStartIndex(String(range.startIndex));
+    setWorkEditEndIndex(String(range.endIndex));
+    setWorkLocation(location.choice);
+    setCustomWorkLocation(location.custom);
+    setWorkSessionEditing(false);
+    setWorkSessionDeleteConfirm(false);
+  }
+
   function handleSlotClick(slotIndex, status) {
-    if (saving || status === "WORK") return;
+    if (saving) return;
+
+    const isFuture = isToday && slotIndex > currentSlotIndex;
+    if (isFuture) return;
+
     if (!isToday && !editMode) return;
-    if (isToday && slotIndex > currentSlotIndex) return;
+
+    if (status === "WORK") {
+      if (!editMode) return;
+
+      const session = findWorkSessionForSlot(
+        dayData?.sessions,
+        selectedDate,
+        slotIndex
+      );
+
+      if (!session) {
+        setError(
+          "This Work block could not be matched to its work session. Refresh the page and try again."
+        );
+        return;
+      }
+
+      if (session.status === "ACTIVE" || !session.endedAt) {
+        setError("Clock out of the active work session before editing or deleting it.");
+        return;
+      }
+
+      const range = getSessionSlotRangeForDate(session, selectedDate);
+
+      if (!range) {
+        setError("This work session could not be mapped to the selected day.");
+        return;
+      }
+
+      setSelectedSlot(slotIndex);
+      setWorkOpen(false);
+      setManualEndIndex("");
+      setSlotStatusEditOpen(false);
+      setSlotDeleteConfirm(false);
+      setError("");
+      setNotice("");
+      prepareWorkSessionForEditing(session, range);
+      return;
+    }
+
+    if (status !== "UNRECORDED" && !editMode) return;
 
     setSelectedSlot(slotIndex);
+    setSelectedWorkSession(null);
+    setSelectedWorkRange(null);
+    setWorkSessionEditing(false);
+    setWorkSessionDeleteConfirm(false);
     setWorkOpen(false);
-    setWorkLocation("");
+    resetLocationFields();
     setManualEndIndex("");
+    setSlotStatusEditOpen(false);
+    setSlotDeleteConfirm(false);
     setError("");
     setNotice("");
   }
@@ -904,48 +1640,58 @@ function WorkRestPage() {
         [{ slotIndex: selectedSlot, status }]
       );
 
-      setDayData(updatedDay);
-
-      if (updatedDay?.summary) {
-        setSummaryData(updatedDay.summary);
-      } else {
-        setSummaryData(await getWorkRestSummary(selectedDate));
-      }
-
+      await applyDayMutation(updatedDay);
       setNotice(
         status === "REST"
           ? "Rest time updated."
           : "Meal/Tea/Break updated."
       );
-
       closeSlotEditor();
     } catch (updateError) {
       console.error("Slot update failed:", updateError);
-
       setError(getWorkRestErrorMessage(updateError, "slot"));
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleClockIn() {
-    if (!workLocation || activeSession || saving) return;
+  async function handleDeleteSlot() {
+    if (selectedSlot === null || saving) return;
 
     setSaving(true);
     setError("");
     setNotice("");
 
     try {
-      const session = await clockInToWork(workLocation);
+      const updatedDay = await deleteWorkRestSlot(selectedDate, selectedSlot);
+      await applyDayMutation(updatedDay);
+      setNotice("Recorded time deleted.");
+      closeSlotEditor();
+    } catch (deleteError) {
+      console.error("Slot delete failed:", deleteError);
+      setError(getWorkRestErrorMessage(deleteError, "slot-delete"));
+    } finally {
+      setSaving(false);
+    }
+  }
 
+  async function handleClockIn() {
+    const location = resolveWorkLocation(workLocation, customWorkLocation);
+
+    if (!location || activeSession || saving) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const session = await clockInToWork(location);
       setActiveSession(session);
       setNotice("Clocked in successfully.");
-
       closeSlotEditor();
       await refreshDateData(false);
     } catch (clockInError) {
       console.error("Clock in failed:", clockInError);
-
       setError(getWorkRestErrorMessage(clockInError, "clock-in"));
     } finally {
       setSaving(false);
@@ -953,56 +1699,130 @@ function WorkRestPage() {
   }
 
   async function handleManualWork() {
+    const location = resolveWorkLocation(workLocation, customWorkLocation);
+
     if (
       selectedSlot === null ||
       manualEndIndex === "" ||
-      !workLocation ||
+      !location ||
       saving
     ) {
       return;
     }
 
-    const startedAt = buildLocalSlotDate(
-      selectedDate,
-      selectedSlot
-    );
-
-    const endedAt = buildLocalSlotDate(
-      selectedDate,
-      Number(manualEndIndex)
-    );
+    const startedAt = buildLocalSlotDate(selectedDate, selectedSlot);
+    const endedAt = buildLocalSlotDate(selectedDate, Number(manualEndIndex));
 
     setSaving(true);
     setError("");
     setNotice("");
 
     try {
-      const manualPayload = {
-        // Real instants used by backend validation / overlap checks.
+      const result = await createManualWorkSession({
         startedAt: startedAt.toISOString(),
         endedAt: endedAt.toISOString(),
-        shipLocation: workLocation,
-
-        // Local-grid metadata keeps the selected 30-minute blocks aligned
-        // with what the user clicked on screen.
+        shipLocation: location,
         selectedDate,
         startSlotIndex: selectedSlot,
         endSlotIndex: Number(manualEndIndex),
         timezoneOffsetMinutes: startedAt.getTimezoneOffset(),
-      };
+      });
 
-      console.log("Manual work session payload:", manualPayload);
-
-      await createManualWorkSession(manualPayload);
-
-      setNotice("Missed work session saved.");
-
+      setNotice(result?.message || "Missed work session saved.");
       closeSlotEditor();
-      await refreshDateData(false);
+
+      if (result?.day) {
+        await applyDayMutation(result.day);
+      } else {
+        await refreshDateData(false);
+      }
     } catch (manualError) {
       console.error("Manual work save failed:", manualError);
-
       setError(getWorkRestErrorMessage(manualError, "manual"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleUpdateWorkSession() {
+    if (!selectedWorkSession || !selectedWorkRange || saving) return;
+
+    const location = resolveWorkLocation(workLocation, customWorkLocation);
+    const newStart = Number(workEditStartIndex);
+    const newEnd = Number(workEditEndIndex);
+
+    if (!location || !Number.isInteger(newStart) || !Number.isInteger(newEnd)) {
+      return;
+    }
+
+    if (newEnd <= newStart) {
+      setError("The end time must be later than the start time.");
+      return;
+    }
+
+    const startedAt =
+      newStart === selectedWorkRange.startIndex
+        ? new Date(selectedWorkSession.startedAt)
+        : buildLocalSlotDate(selectedDate, newStart);
+
+    const endedAt =
+      newEnd === selectedWorkRange.endIndex
+        ? new Date(selectedWorkSession.endedAt)
+        : buildLocalSlotDate(selectedDate, newEnd);
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const result = await updateExistingWorkSession(
+        selectedWorkSession.id,
+        {
+          startedAt: startedAt.toISOString(),
+          endedAt: endedAt.toISOString(),
+          shipLocation: location,
+          selectedDate,
+          oldStartSlotIndex: selectedWorkRange.startIndex,
+          oldEndSlotIndex: selectedWorkRange.endIndex,
+          startSlotIndex: newStart,
+          endSlotIndex: newEnd,
+        }
+      );
+
+      await applyDayMutation(result.day);
+      setNotice(result.message || "Work session updated successfully.");
+      closeSlotEditor();
+    } catch (updateError) {
+      console.error("Work session update failed:", updateError);
+      setError(getWorkRestErrorMessage(updateError, "work-edit"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDeleteWorkSession() {
+    if (!selectedWorkSession || !selectedWorkRange || saving) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const result = await deleteExistingWorkSession(
+        selectedWorkSession.id,
+        {
+          selectedDate,
+          startSlotIndex: selectedWorkRange.startIndex,
+          endSlotIndex: selectedWorkRange.endIndex,
+        }
+      );
+
+      await applyDayMutation(result.day);
+      setNotice(result.message || "Work session deleted successfully.");
+      closeSlotEditor();
+    } catch (deleteError) {
+      console.error("Work session delete failed:", deleteError);
+      setError(getWorkRestErrorMessage(deleteError, "work-delete"));
     } finally {
       setSaving(false);
     }
@@ -1017,15 +1837,56 @@ function WorkRestPage() {
 
     try {
       await clockOutOfWork();
-
       setActiveSession(null);
       setNotice("Clocked out successfully.");
-
       await refreshDateData(false);
     } catch (clockOutError) {
       console.error("Clock out failed:", clockOutError);
-
       setError(getWorkRestErrorMessage(clockOutError, "clock-out"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleSaveComment() {
+    const comment = commentDraft.trim();
+
+    if (!comment || saving) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const updatedDay = await updateWorkRestDayComment(selectedDate, comment);
+      await applyDayMutation(updatedDay);
+      setCommentEditing(false);
+      setNotice("Note for the day saved.");
+    } catch (commentError) {
+      console.error("Comment save failed:", commentError);
+      setError(getWorkRestErrorMessage(commentError, "comment"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDeleteComment() {
+    if (saving) return;
+
+    setSaving(true);
+    setError("");
+    setNotice("");
+
+    try {
+      const updatedDay = await deleteWorkRestDayComment(selectedDate);
+      await applyDayMutation(updatedDay);
+      setCommentDraft("");
+      setCommentEditing(false);
+      setCommentDeleteConfirm(false);
+      setNotice("Note for the day deleted.");
+    } catch (commentError) {
+      console.error("Comment delete failed:", commentError);
+      setError(getWorkRestErrorMessage(commentError, "comment-delete"));
     } finally {
       setSaving(false);
     }
@@ -1060,9 +1921,7 @@ function WorkRestPage() {
           <section className="wr-compliance-section">
             <div className="wr-section-heading">
               <h1>MLC 2.3 Compliance Summary</h1>
-              <p>
-                Track your work/rest compliance and review the selected day.
-              </p>
+              <p>Track your work/rest compliance and review the selected day.</p>
             </div>
 
             <div className="wr-stat-grid">
@@ -1073,21 +1932,18 @@ function WorkRestPage() {
                 value={stats.complianceRate}
                 suffix="%"
               />
-
               <StatCard
                 icon={violationsIcon}
                 tone="violations"
                 label="Violations"
                 value={stats.violations}
               />
-
               <StatCard
                 icon={hoursWorkedIcon}
                 tone="hours"
                 label="Hours worked"
                 value={stats.hoursWorked}
               />
-
               <StatCard
                 icon={restRecordedIcon}
                 tone="rest"
@@ -1108,9 +1964,7 @@ function WorkRestPage() {
                 title="Remarks"
                 items={REMARKS}
                 open={remarksOpen}
-                onToggle={() =>
-                  setRemarksOpen((value) => !value)
-                }
+                onToggle={() => setRemarksOpen((value) => !value)}
               />
             </div>
           </section>
@@ -1119,26 +1973,16 @@ function WorkRestPage() {
             <div className="wr-record-header">
               <div>
                 <h2>
-                  Daily Work &amp; Rest Record –{" "}
-                  {formatRecordDate(selectedDate)}
+                  Daily Work &amp; Rest Record – {formatRecordDate(selectedDate)}
                 </h2>
-
-                <p>
-                  Review or update your Work and Rest hours for the
-                  selected date.
-                </p>
+                <p>Review or update your Work and Rest hours for the selected date.</p>
               </div>
 
               <div className="wr-record-controls">
-                <div
-                  className="wr-date-picker-shell"
-                  ref={datePickerRef}
-                >
+                <div className="wr-date-picker-shell" ref={datePickerRef}>
                   <button
                     type="button"
-                    className={`wr-date-control${
-                      datePickerOpen ? " is-open" : ""
-                    }`}
+                    className={`wr-date-control${datePickerOpen ? " is-open" : ""}`}
                     onClick={openDatePicker}
                     aria-expanded={datePickerOpen}
                     aria-haspopup="dialog"
@@ -1172,14 +2016,12 @@ function WorkRestPage() {
 
                 <button
                   type="button"
-                  className={`wr-edit-button${
-                    editMode ? " is-active" : ""
-                  }`}
+                  className={`wr-edit-button${editMode ? " is-active" : ""}`}
                   aria-pressed={editMode}
                   title={
                     editMode
-                      ? "Editing enabled for the selected date"
-                      : "Enable editing for a previous date"
+                      ? "Finish editing the selected date"
+                      : "Edit recorded Work, Rest or Meal entries"
                   }
                   onClick={() => {
                     setDatePickerOpen(false);
@@ -1193,7 +2035,7 @@ function WorkRestPage() {
                     aria-hidden="true"
                     draggable="false"
                   />
-                  <span>Edit</span>
+                  <span>{editMode ? "Done" : "Edit"}</span>
                 </button>
               </div>
             </div>
@@ -1209,17 +2051,17 @@ function WorkRestPage() {
               ))}
             </div>
 
+            {editMode && (
+              <div className="wr-edit-mode-note">
+                Edit mode is on. Select any recorded Work, Rest or Meal block to edit or delete it.
+              </div>
+            )}
+
             {activeSession && selectedDate === todayKey && (
               <div className="wr-active-banner">
                 <div>
-                  <strong>
-                    Currently working at {activeSession.shipLocation}
-                  </strong>
-
-                  <span>
-                    Started at{" "}
-                    {formatSessionTime(activeSession.startedAt)}
-                  </span>
+                  <strong>Currently working at {activeSession.shipLocation}</strong>
+                  <span>Started at {formatSessionTime(activeSession.startedAt)}</span>
                 </div>
 
                 <button
@@ -1233,75 +2075,51 @@ function WorkRestPage() {
               </div>
             )}
 
-            {error && (
-              <div className="wr-message is-error">{error}</div>
-            )}
-
-            {notice && (
-              <div className="wr-message is-success">{notice}</div>
-            )}
+            {error && <div className="wr-message is-error">{error}</div>}
+            {notice && <div className="wr-message is-success">{notice}</div>}
 
             {loading ? (
-              <div className="wr-loading">
-                Loading work/rest record...
-              </div>
+              <div className="wr-loading">Loading work/rest record...</div>
             ) : (
-              <div className="wr-day-sections">
-                {DAY_SECTIONS.map((section) => (
-                  <div
-                    key={section.title}
-                    className="wr-day-section"
-                  >
-                    <h3>{section.title}</h3>
+              <>
+                <div className="wr-day-sections">
+                  {DAY_SECTIONS.map((section) => (
+                    <div key={section.title} className="wr-day-section">
+                      <h3>{section.title}</h3>
 
-                    <div className="wr-time-grid">
-                      {section.slots.map(
-                        (slotIndex, sectionSlotIndex) => {
+                      <div className="wr-time-grid">
+                        {section.slots.map((slotIndex, sectionSlotIndex) => {
                           const status = blocks[slotIndex];
-                          const meta =
-                            STATUS_META[status] ||
-                            STATUS_META.UNRECORDED;
-
-                          const selected =
-                            selectedSlot === slotIndex;
-
-                          const isFuture =
-                            isToday &&
-                            slotIndex > currentSlotIndex;
-
-                          const pastLocked =
-                            !isToday && !editMode;
+                          const meta = STATUS_META[status] || STATUS_META.UNRECORDED;
+                          const selected = selectedSlot === slotIndex;
+                          const isFuture = isToday && slotIndex > currentSlotIndex;
+                          const pastLocked = !isToday && !editMode;
+                          const recordedLocked = status !== "UNRECORDED" && !editMode;
 
                           const disabled =
                             saving ||
-                            status === "WORK" ||
                             isFuture ||
-                            pastLocked;
+                            pastLocked ||
+                            recordedLocked;
 
                           return (
-                            <div
-                              key={slotIndex}
-                              className="wr-slot-anchor"
-                            >
+                            <div key={slotIndex} className="wr-slot-anchor">
                               <button
                                 type="button"
                                 className={`wr-time-slot wr-time-slot--${status.toLowerCase()}${
                                   selected ? " is-selected" : ""
-                                }`}
-                                onClick={() =>
-                                  handleSlotClick(
-                                    slotIndex,
-                                    status
-                                  )
-                                }
+                                }${editMode && status !== "UNRECORDED" ? " is-editable" : ""}`}
+                                onClick={() => handleSlotClick(slotIndex, status)}
                                 disabled={disabled}
                                 title={
-                                  status === "WORK"
-                                    ? "Work time comes from a work session."
+                                  isFuture
+                                    ? "Future time cannot be updated yet."
                                     : pastLocked
                                     ? "Click Edit to update a previous date."
-                                    : isFuture
-                                    ? "Future time cannot be updated yet."
+                                    : recordedLocked
+                                    ? "Click Edit to manage this recorded time."
+                                    : editMode && status !== "UNRECORDED"
+                                    ? `Edit or delete ${meta.label}`
                                     : meta.label
                                 }
                               >
@@ -1312,18 +2130,18 @@ function WorkRestPage() {
                                 {formatSlotTime(slotIndex)}
                               </span>
 
-                              {selected && (
-                                <SlotEditor
+                              {selected && selectedStatus === "UNRECORDED" && (
+                                <AddSlotEditor
                                   manualMode={manualMode}
                                   startLabel={
                                     manualMode
                                       ? formatSlotTime(slotIndex)
-                                      : formatSessionTime(
-                                          new Date()
-                                        )
+                                      : formatSessionTime(new Date())
                                   }
                                   workLocation={workLocation}
                                   setWorkLocation={setWorkLocation}
+                                  customWorkLocation={customWorkLocation}
+                                  setCustomWorkLocation={setCustomWorkLocation}
                                   manualEndIndex={manualEndIndex}
                                   setManualEndIndex={setManualEndIndex}
                                   manualEndOptions={manualEndOptions}
@@ -1341,14 +2159,73 @@ function WorkRestPage() {
                                   alignRight={sectionSlotIndex >= 8}
                                 />
                               )}
+
+                              {selected &&
+                                (selectedStatus === "REST" || selectedStatus === "MEAL") && (
+                                  <RecordedSlotEditor
+                                    status={selectedStatus}
+                                    slotLabel={formatSlotTime(slotIndex)}
+                                    saving={saving}
+                                    editing={slotStatusEditOpen}
+                                    setEditing={setSlotStatusEditOpen}
+                                    deleteConfirm={slotDeleteConfirm}
+                                    setDeleteConfirm={setSlotDeleteConfirm}
+                                    onDirectStatus={handleDirectStatus}
+                                    onDelete={handleDeleteSlot}
+                                    onClose={closeSlotEditor}
+                                    alignRight={sectionSlotIndex >= 8}
+                                  />
+                                )}
+
+                              {selected &&
+                                selectedStatus === "WORK" &&
+                                selectedWorkSession &&
+                                selectedWorkRange && (
+                                  <WorkSessionEditor
+                                    session={selectedWorkSession}
+                                    range={selectedWorkRange}
+                                    editStartIndex={workEditStartIndex}
+                                    setEditStartIndex={setWorkEditStartIndex}
+                                    editEndIndex={workEditEndIndex}
+                                    setEditEndIndex={setWorkEditEndIndex}
+                                    startOptions={workStartOptions}
+                                    endOptions={workEndOptions}
+                                    workLocation={workLocation}
+                                    setWorkLocation={setWorkLocation}
+                                    customWorkLocation={customWorkLocation}
+                                    setCustomWorkLocation={setCustomWorkLocation}
+                                    saving={saving}
+                                    editing={workSessionEditing}
+                                    setEditing={setWorkSessionEditing}
+                                    deleteConfirm={workSessionDeleteConfirm}
+                                    setDeleteConfirm={setWorkSessionDeleteConfirm}
+                                    onSave={handleUpdateWorkSession}
+                                    onDelete={handleDeleteWorkSession}
+                                    onClose={closeSlotEditor}
+                                    alignRight={sectionSlotIndex >= 8}
+                                  />
+                                )}
                             </div>
                           );
-                        }
-                      )}
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+
+                <DayNote
+                  comment={dayData?.commentOfDay || ""}
+                  draft={commentDraft}
+                  setDraft={setCommentDraft}
+                  editing={commentEditing}
+                  setEditing={setCommentEditing}
+                  deleteConfirm={commentDeleteConfirm}
+                  setDeleteConfirm={setCommentDeleteConfirm}
+                  saving={saving}
+                  onSave={handleSaveComment}
+                  onDelete={handleDeleteComment}
+                />
+              </>
             )}
           </section>
         </div>

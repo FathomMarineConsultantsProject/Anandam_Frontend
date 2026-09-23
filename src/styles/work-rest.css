@@ -1380,3 +1380,563 @@
     border-left: 0;
   }
 }
+
+/* ========================================================================== */
+/* 2026-09 Work/Rest CRUD additions                                           */
+/* ========================================================================== */
+
+/* The active Edit button now uses "Done", so do not constrain the label. */
+.wr-edit-button span {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.wr-edit-mode-note {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 12px;
+  color: #5f463f;
+  background: #fbf6f4;
+  border: 1px solid #ead8d2;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+}
+
+.wr-time-slot.is-editable {
+  cursor: pointer;
+}
+
+.wr-time-slot.is-editable:hover:not(:disabled) {
+  box-shadow: 0 0 0 3px rgba(113, 46, 30, 0.11);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Shared form controls                                                       */
+/* -------------------------------------------------------------------------- */
+
+.wr-popover-field select,
+.wr-popover-field input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  color: #20283a;
+  background: #ffffff;
+  border: 1px solid #d5d7da;
+  border-radius: 7px;
+  outline: none;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.wr-popover-field input::placeholder {
+  color: #a7a9b0;
+}
+
+.wr-popover-field select:focus,
+.wr-popover-field input:focus {
+  border-color: #9b695c;
+  box-shadow: 0 0 0 2px rgba(113, 46, 30, 0.08);
+}
+
+.wr-slot-popover__hint {
+  margin: 4px 7px 5px !important;
+  color: #60657c;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 15px;
+  white-space: normal;
+}
+
+.wr-slot-popover__hint.is-muted {
+  margin-top: 8px !important;
+  color: #8a8f9c;
+}
+
+.wr-slot-action--delete {
+  color: #b42318;
+}
+
+.wr-slot-action--delete:hover:not(:disabled) {
+  background: #fff4f4;
+}
+
+.wr-slot-popover--manage {
+  min-width: 220px;
+}
+
+.wr-slot-popover__menu--manage {
+  width: 220px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Inline delete confirmations                                                */
+/* -------------------------------------------------------------------------- */
+
+.wr-inline-confirm {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 7px;
+  padding: 8px 7px 2px;
+}
+
+.wr-inline-confirm strong {
+  color: #20283a;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.wr-inline-confirm > span {
+  color: #737887;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 15px;
+}
+
+.wr-inline-confirm__actions,
+.wr-work-session-editor__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.wr-mini-button {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 15px;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease,
+    color 150ms ease, opacity 150ms ease;
+}
+
+.wr-mini-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.wr-mini-button.is-secondary {
+  color: #4c5365;
+  background: #ffffff;
+  border-color: #d5d7da;
+}
+
+.wr-mini-button.is-secondary:hover:not(:disabled) {
+  background: #f8f8f8;
+}
+
+.wr-mini-button.is-primary {
+  color: #ffffff;
+  background: #712e1e;
+  border-color: #712e1e;
+}
+
+.wr-mini-button.is-primary:hover:not(:disabled) {
+  background: #5f2518;
+  border-color: #5f2518;
+}
+
+.wr-mini-button.is-danger {
+  color: #ffffff;
+  background: #b42318;
+  border-color: #b42318;
+}
+
+.wr-mini-button.is-danger:hover:not(:disabled) {
+  background: #912018;
+  border-color: #912018;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Existing work-session editor                                               */
+/* -------------------------------------------------------------------------- */
+
+.wr-slot-popover--work-session {
+  width: 320px;
+  min-width: 320px;
+}
+
+.wr-work-session-editor {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.wr-work-session-editor__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wr-work-session-editor__heading > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wr-work-session-editor__heading .wr-slot-popover__title {
+  padding: 0;
+}
+
+.wr-work-session-editor__heading > div > span {
+  color: #60657c;
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.wr-icon-button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  place-items: center;
+  padding: 0;
+  color: #60657c;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.wr-icon-button:hover {
+  color: #20283a;
+  background: #f5f5f5;
+}
+
+.wr-work-session-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: #faf9f7;
+  border: 1px solid #ece7e2;
+  border-radius: 7px;
+}
+
+.wr-work-session-summary span {
+  color: #8a8f9c;
+  font-size: 10.5px;
+  line-height: 14px;
+}
+
+.wr-work-session-summary strong {
+  overflow: hidden;
+  color: #20283a;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wr-manage-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wr-manage-button {
+  display: inline-flex;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  color: #712e1e;
+  background: #ffffff;
+  border: 1px solid #c9a59c;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.wr-manage-button:hover:not(:disabled) {
+  background: #fbf6f4;
+}
+
+.wr-manage-button.is-danger {
+  color: #b42318;
+  border-color: #e7b2ad;
+}
+
+.wr-manage-button.is-danger:hover:not(:disabled) {
+  background: #fff4f4;
+}
+
+.wr-manage-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.wr-inline-confirm--work {
+  padding: 8px 0 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Note for the day                                                           */
+/* -------------------------------------------------------------------------- */
+
+.wr-day-note {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e6e2de;
+}
+
+.wr-day-note__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.wr-day-note__header > div:first-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wr-day-note__header h3,
+.wr-day-note__header p {
+  margin: 0;
+}
+
+.wr-day-note__header h3 {
+  color: #0c1421;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 19px;
+}
+
+.wr-day-note__header p {
+  color: #60657c;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+}
+
+.wr-day-note__header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.wr-note-action,
+.wr-note-add {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 11px;
+  color: #712e1e;
+  background: #ffffff;
+  border: 1px solid #d8bdb6;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.wr-note-action:hover:not(:disabled),
+.wr-note-add:hover:not(:disabled) {
+  background: #fbf6f4;
+}
+
+.wr-note-action.is-danger {
+  color: #b42318;
+  border-color: #edc5c1;
+}
+
+.wr-note-action.is-danger:hover:not(:disabled) {
+  background: #fff4f4;
+}
+
+.wr-note-action:disabled,
+.wr-note-add:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.wr-day-note__empty,
+.wr-day-note__saved,
+.wr-day-note__editor,
+.wr-day-note__confirm {
+  width: 100%;
+  border: 1px solid #e1ddd8;
+  border-radius: 10px;
+}
+
+.wr-day-note__empty {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 14px;
+  color: #8a8f9c;
+  background: #fdfcfb;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.wr-day-note__saved {
+  min-height: 74px;
+  padding: 14px 16px;
+  color: #313957;
+  background: #fdfcfb;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.wr-day-note__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: #ffffff;
+}
+
+.wr-day-note__editor textarea {
+  width: 100%;
+  min-height: 98px;
+  resize: vertical;
+  padding: 11px 12px;
+  color: #20283a;
+  background: #ffffff;
+  border: 1px solid #d5d7da;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.wr-day-note__editor textarea::placeholder {
+  color: #a8abb3;
+}
+
+.wr-day-note__editor textarea:focus {
+  border-color: #9b695c;
+  box-shadow: 0 0 0 2px rgba(113, 46, 30, 0.08);
+}
+
+.wr-day-note__editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wr-day-note__editor-footer > span {
+  color: #9a9da5;
+  font-size: 10.5px;
+  line-height: 14px;
+}
+
+.wr-day-note__editor-footer > div,
+.wr-day-note__confirm > div:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.wr-day-note__confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 14px;
+  background: #fffafa;
+  border-color: #f0cfcc;
+}
+
+.wr-day-note__confirm > div:first-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wr-day-note__confirm strong {
+  color: #7a271a;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.wr-day-note__confirm span {
+  color: #7d6360;
+  font-size: 11px;
+  line-height: 15px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive additions                                                       */
+/* -------------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .wr-slot-popover--work-session,
+  .wr-slot-popover--manage {
+    width: min(320px, calc(100vw - 44px));
+    min-width: min(320px, calc(100vw - 44px));
+  }
+
+  .wr-slot-popover__menu--manage {
+    width: 100%;
+  }
+
+  .wr-day-note__header,
+  .wr-day-note__empty,
+  .wr-day-note__confirm,
+  .wr-day-note__editor-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wr-day-note__header-actions,
+  .wr-day-note__editor-footer > div,
+  .wr-day-note__confirm > div:last-child {
+    width: 100%;
+  }
+
+  .wr-day-note__header-actions > button,
+  .wr-day-note__editor-footer > div > button,
+  .wr-day-note__confirm > div:last-child > button {
+    flex: 1 1 0;
+  }
+
+  .wr-note-add {
+    width: 100%;
+  }
+}
