@@ -1,152 +1,1131 @@
+/* =========================================================
+   EMERGENCY PAGE
+   ========================================================= */
+
+.emergency-page,
+.emergency-page *,
+.emergency-page *::before,
+.emergency-page *::after {
+  box-sizing: border-box;
+}
+
 .emergency-page {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+  min-height: calc(100svh - 87px);
+
+  margin: 0;
+
+  padding:
+    0
+    0
+    120px;
+
+  color: #0c1421;
+  background: #fcfaf7;
+
+  font-family:
+    "Roboto",
+    Arial,
+    sans-serif;
+}
+
+.emergency-page h1,
+.emergency-page h2,
+.emergency-page p {
+  margin: 0;
+}
+
+.emergency-page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.emergency-page button,
+.emergency-page a {
+  font: inherit;
+}
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.emergency-page__heading {
   display: flex;
+
+  width: 100%;
+  min-height: 50px;
+
   flex-direction: column;
-  gap: 14px;
-}
-
-.emergency-card {
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-  padding: 14px;
-}
-
-.emergency-card-head {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
 
-.emergency-card-title {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.emergency-card-title-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-}
-
-.emergency-icon {
-  width: 16px;
-  height: 16px;
-  color: #374151;
-  fill: none;
-  display: block;
-}
-
-.emergency-card-title-text {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.emergency-card-subtitle {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.35;
-}
-
-.emergency-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #6b7280;
-  white-space: nowrap;
-  margin-top: 2px;
-}
-
-.emergency-status-row {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.emergency-status-left {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.emergency-status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: #ef4444;
-}
-
-.emergency-quick-grid {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.emergency-quick-btn {
-  height: 56px;
-  border-radius: 10px;
-  background: #ef4444;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-}
-
-.emergency-quick-btn-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 4px;
 }
 
-.emergency-quick-btn-icon {
-  width: 20px;
-  height: 20px;
-  color: #ffffff;
-  fill: none;
-  display: block;
+.emergency-page__heading h1 {
+  color: #0c1421;
+
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 28px;
 }
 
-.emergency-quick-btn-label {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.1;
-  text-align: center;
+.emergency-page__heading p {
+  color: #60657c;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
 }
 
-.emergency-quick-btn:hover {
-  background: #dc2626;
-}
+/* =========================================================
+   IMMEDIATE DANGER
+   ========================================================= */
 
-.emergency-quick-btn:active {
-  transform: translateY(0.5px);
-}
+.emergency-danger-card {
+  display: flex;
 
-.emergency-empty-state {
-  margin-top: 12px;
   width: 100%;
-  text-align: center;
-  color: #9ca3af;
-  font-size: 13px;
+  min-height: 116px;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 23px;
+
+  margin-top: 23px;
+
+  padding:
+    32px
+    20px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 20px;
 }
 
-@media (max-width: 640px) {
-  .emergency-quick-grid {
-    grid-template-columns: 1fr;
+.emergency-danger-card__copy {
+  display: flex;
+
+  min-width: 0;
+
+  flex: 1 1 auto;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.emergency-danger-card__copy h2 {
+  color: #0c1421;
+
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 23px;
+}
+
+.emergency-danger-card__copy p {
+  color: #8f9399;
+
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+}
+
+/* =========================================================
+   CONTACT EMERGENCY TEAM
+   ========================================================= */
+
+.emergency-primary-action {
+  display: inline-flex;
+
+  width: 226px;
+  min-width: 226px;
+
+  height: 40px;
+
+  flex: 0 0 226px;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding:
+    0
+    18px;
+
+  color: #ffffff !important;
+  background: #712e1e;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+
+  letter-spacing: 0.01em;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.emergency-primary-action__icon {
+  width: 16px;
+  height: 16px;
+
+  flex: 0 0 16px;
+
+  color: #ffffff;
+}
+
+.emergency-primary-action:hover {
+  background: #602618;
+
+  box-shadow:
+    0 5px 15px
+    rgba(113, 46, 30, 0.16);
+
+  transform:
+    translateY(-1px);
+}
+
+/* =========================================================
+   EMERGENCY SUPPORT SECTION
+   ========================================================= */
+
+.emergency-support-section {
+  width: 100%;
+
+  margin-top: 23px;
+
+  padding:
+    14px
+    18px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 20px;
+}
+
+.emergency-section-title {
+  color: #0c1421;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+/* =========================================================
+   SUPPORT GRID
+   ========================================================= */
+
+.emergency-support-grid {
+  display: grid;
+
+  width: 100%;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    16px
+    14px;
+
+  margin-top: 16px;
+}
+
+/* =========================================================
+   SUPPORT ITEM
+   ========================================================= */
+
+.emergency-support-item {
+  display: flex;
+
+  width: 100%;
+  min-width: 0;
+
+  height: 67px;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding:
+    14px
+    18px;
+
+  color: #0c1421;
+  background: #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 20px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.emergency-support-item:hover {
+  border-color: #cac2bd;
+
+  box-shadow:
+    0 4px 13px
+    rgba(32, 40, 58, 0.05);
+
+  transform:
+    translateY(-1px);
+}
+
+/* =========================================================
+   SUPPORT ICONS
+   ========================================================= */
+
+.emergency-support-item__icon {
+  display: inline-flex;
+
+  width: 37px;
+  height: 37px;
+
+  flex: 0 0 37px;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 100px;
+}
+
+.emergency-support-item__icon--medical {
+  color: #b4443c;
+  background: #fbeded;
+}
+
+.emergency-support-item__icon--mental {
+  color: #4d806c;
+  background: #eaf4ee;
+}
+
+.emergency-support-item__icon--maritime {
+  color: #3d668e;
+  background: #eaf2f9;
+}
+
+.emergency-support-item__icon--crisis {
+  color: #a87431;
+  background: #fbf2e4;
+}
+
+/* =========================================================
+   SUPPORT COPY
+   ========================================================= */
+
+.emergency-support-item__copy {
+  display: flex;
+
+  min-width: 0;
+
+  flex: 1 1 auto;
+
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 4px;
+}
+
+.emergency-support-item__title {
+  overflow: hidden;
+
+  color: #0c1421;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emergency-support-item__details {
+  display: flex;
+
+  min-width: 0;
+
+  align-items: center;
+
+  gap: 5px;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+}
+
+.emergency-support-item__number {
+  flex: 0 0 auto;
+
+  color: #777b83;
+
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 14px;
+}
+
+.emergency-support-item__separator {
+  color: #a3a6ab;
+
+  font-size: 10px;
+}
+
+.emergency-support-item__meta {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #93979e;
+
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 14px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emergency-support-item__call {
+  flex: 0 0 auto;
+
+  margin-left: auto;
+
+  color: #667085;
+}
+
+/* =========================================================
+   STAY IN TOUCH
+   ========================================================= */
+
+.emergency-contact-section {
+  width: 100%;
+
+  margin-top: 23px;
+
+  padding: 20px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 22px;
+}
+
+.emergency-contact-section > h2 {
+  color: #0c1421;
+
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 23px;
+}
+
+.emergency-contact-grid {
+  display: grid;
+
+  width: 100%;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 14px;
+
+  margin-top: 14px;
+}
+
+/* =========================================================
+   CONTACT CARD
+   ========================================================= */
+
+.emergency-contact-card {
+  display: flex;
+
+  width: 100%;
+  min-width: 0;
+
+  height: 67px;
+
+  align-items: center;
+
+  gap: 16px;
+
+  padding:
+    14px
+    18px;
+
+  color: #0c1421;
+  background: #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9 !important;
+
+  border-radius: 20px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  appearance: none;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.emergency-contact-card:hover {
+  border-color:
+    #cac2bd !important;
+
+  box-shadow:
+    0 4px 13px
+    rgba(32, 40, 58, 0.05);
+
+  transform:
+    translateY(-1px);
+}
+
+/* =========================================================
+   CONTACT ICON BASE
+   ========================================================= */
+
+.emergency-contact-icon {
+  position: relative;
+
+  display: inline-flex;
+
+  width: 37px;
+  height: 37px;
+
+  min-width: 37px;
+  min-height: 37px;
+
+  flex: 0 0 37px;
+
+  align-items: center;
+  justify-content: center;
+
+  overflow: visible;
+
+  color: #ffffff;
+
+  border-radius: 100px;
+}
+
+/* =========================================================
+   WHATSAPP
+   IMPORTANT: GREEN MUST ALWAYS EXIST
+   ========================================================= */
+
+.emergency-contact-icon--whatsapp {
+  color: #ffffff;
+
+  background:
+    #25d366;
+}
+
+/* =========================================================
+   EMAIL
+   ========================================================= */
+
+.emergency-contact-icon--email {
+  color: #ffffff;
+
+  background:
+    #258bd3;
+}
+
+/* =========================================================
+   BOTIM
+   IMPORTANT: BLUE MUST ALWAYS EXIST
+   ========================================================= */
+
+.emergency-contact-icon--botim {
+  color: #ffffff;
+
+  background:
+    #001fe7;
+}
+
+/* =========================================================
+   ACTUAL LOGO ASSET
+
+   Asset goes INSIDE coloured circle.
+
+   Do not let transparent PNG remove the background.
+   ========================================================= */
+
+.emergency-contact-icon__asset {
+  display: block;
+
+  width: 23px;
+  height: 23px;
+
+  max-width: 23px;
+  max-height: 23px;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   BOTIM FALLBACK
+
+   Even if asset filename cannot be detected,
+   user still sees proper blue BOTIM icon.
+   ========================================================= */
+
+.emergency-botim-fallback {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 25px;
+  height: 25px;
+
+  color: #ffffff;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 24px;
+
+  transform:
+    translateY(-1px);
+}
+
+/* =========================================================
+   UNREAD RED DOT
+   ========================================================= */
+
+.emergency-contact-icon__badge {
+  position: absolute;
+
+  z-index: 3;
+
+  top: -2px;
+  right: -2px;
+
+  width: 10px;
+  height: 10px;
+
+  background: #b75858;
+
+  border:
+    1.5px solid
+    #ffffff;
+
+  border-radius: 50%;
+}
+
+/* =========================================================
+   CONTACT CARD TEXT
+   ========================================================= */
+
+.emergency-contact-card__body {
+  display: flex;
+
+  min-width: 0;
+
+  flex: 1 1 auto;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.emergency-contact-card__label {
+  color: #0c1421;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+
+  white-space: nowrap;
+}
+
+.emergency-contact-card__unread {
+  color: #232323;
+
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 12px;
+
+  white-space: nowrap;
+}
+
+.emergency-contact-card__arrow {
+  display: inline-flex;
+
+  width: 26px;
+  height: 26px;
+
+  flex: 0 0 26px;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-left: auto;
+
+  color: #0e0e0e;
+
+  border-radius: 100px;
+}
+
+/* =========================================================
+   AI CHAT BUTTON
+   ========================================================= */
+
+.emergency-ai-button {
+  position: fixed;
+
+  z-index: 35;
+
+  right: 28px;
+  bottom: 32px;
+
+  display: flex;
+
+  width: 93px;
+  height: 93px;
+
+  min-width: 93px;
+  min-height: 93px;
+
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  padding: 0;
+
+  background: transparent;
+
+  border: 0;
+
+  border-radius: 136px;
+
+  box-shadow:
+    0 4px 4px
+    rgba(0, 0, 0, 0.08);
+
+  cursor: pointer;
+
+  appearance: none;
+
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
+}
+
+.emergency-ai-button:hover {
+  transform:
+    translateY(-2px)
+    scale(1.025);
+
+  filter:
+    drop-shadow(
+      0 5px 8px
+      rgba(113, 46, 30, 0.14)
+    );
+}
+
+.emergency-ai-button:active {
+  transform:
+    scale(0.98);
+}
+
+/* actual AI asset */
+
+.emergency-ai-button__image {
+  display: block;
+
+  width: 93px;
+  height: 93px;
+
+  min-width: 93px;
+  min-height: 93px;
+
+  object-fit: contain;
+
+  border-radius: 136px;
+
+  pointer-events: none;
+}
+
+/* fallback if AI filename cannot be found */
+
+.emergency-ai-button__fallback {
+  display: flex;
+
+  width: 93px;
+  height: 93px;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #712e1e;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      #fff5ec 0%,
+      #f5dfd1 70%,
+      #ebcbb8 100%
+    );
+
+  border:
+    1px solid
+    rgba(
+      113,
+      46,
+      30,
+      0.18
+    );
+
+  border-radius: 50%;
+}
+
+/* =========================================================
+   NOTICE
+   ========================================================= */
+
+.emergency-notice {
+  position: fixed;
+
+  z-index: 45;
+
+  right: 28px;
+  bottom: 137px;
+
+  display: flex;
+
+  width:
+    min(
+      370px,
+      calc(100vw - 32px)
+    );
+
+  align-items: flex-start;
+
+  gap: 14px;
+
+  padding: 16px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.98
+    );
+
+  border:
+    1px solid
+    #ddd2cb;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 14px 35px
+    rgba(
+      32,
+      40,
+      58,
+      0.13
+    );
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+
+  animation:
+    emergency-notice-in
+    180ms
+    ease-out;
+}
+
+.emergency-notice__copy {
+  display: flex;
+
+  min-width: 0;
+
+  flex: 1 1 auto;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.emergency-notice__copy strong {
+  color: #0c1421;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.emergency-notice__copy span {
+  color: #667085;
+
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+}
+
+.emergency-notice__close {
+  display: inline-flex;
+
+  width: 28px;
+  height: 28px;
+
+  flex: 0 0 28px;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  color: #667085;
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 7px;
+
+  cursor: pointer;
+}
+
+.emergency-notice__close:hover {
+  color: #712e1e;
+
+  background: #f8f0ec;
+}
+
+@keyframes emergency-notice-in {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(8px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
   }
 }
 
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+.emergency-primary-action:focus-visible,
+.emergency-support-item:focus-visible,
+.emergency-contact-card:focus-visible,
+.emergency-ai-button:focus-visible,
+.emergency-notice__close:focus-visible {
+  outline:
+    3px solid
+    rgba(
+      184,
+      138,
+      50,
+      0.28
+    );
+
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .emergency-danger-card {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .emergency-contact-grid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .emergency-page {
+    padding-bottom: 130px;
+  }
+
+  .emergency-page__heading h1 {
+    font-size: 22px;
+    line-height: 26px;
+  }
+
+  .emergency-danger-card {
+    margin-top: 18px;
+
+    padding: 22px;
+
+    border-radius: 16px;
+  }
+
+  .emergency-danger-card__copy p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .emergency-primary-action {
+    width: 100%;
+    min-width: 0;
+
+    flex:
+      0
+      0
+      40px;
+  }
+
+  .emergency-support-section,
+  .emergency-contact-section {
+    margin-top: 16px;
+
+    border-radius: 16px;
+  }
+
+  .emergency-support-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .emergency-support-item {
+    height: auto;
+
+    min-height: 67px;
+  }
+
+  .emergency-ai-button {
+    right: 18px;
+    bottom: 94px;
+
+    width: 68px;
+    height: 68px;
+
+    min-width: 68px;
+    min-height: 68px;
+  }
+
+  .emergency-ai-button__image,
+  .emergency-ai-button__fallback {
+    width: 68px;
+    height: 68px;
+
+    min-width: 68px;
+    min-height: 68px;
+  }
+
+  .emergency-notice {
+    right: 16px;
+    bottom: 174px;
+    left: 16px;
+
+    width: auto;
+  }
+}
+
+@media (max-width: 460px) {
+  .emergency-support-item {
+    padding:
+      12px
+      14px;
+  }
+
+  .emergency-support-item__call {
+    display: none;
+  }
+
+  .emergency-support-item__number,
+  .emergency-support-item__meta {
+    font-size: 10px;
+  }
+
+  .emergency-contact-card {
+    padding:
+      12px
+      14px;
+  }
+
+  .emergency-contact-card__unread {
+    display: none;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion:
+    reduce
+) {
+  .emergency-page *,
+  .emergency-page *::before,
+  .emergency-page *::after {
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+}
