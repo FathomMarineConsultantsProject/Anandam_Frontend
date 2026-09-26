@@ -1,16 +1,16 @@
 import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
 } from "react";
 
 import {
-  Clock3,
-  Music2,
-  Volume2,
-  VolumeX,
+    Clock3,
+    Music2,
+    Volume2,
+    VolumeX,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -18,1783 +18,1832 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 
 import {
-  getBreathingTracks,
+    getBreathingTracks,
 } from "../api/breathingApi";
 
 import "../styles/breathing.css";
 
 /* =========================================================
-   ASSETS
-   Everything inside:
-   src/assets/breathing/
+   ASSET LOADER
    ========================================================= */
 
 const breathingAssetModules =
-  import.meta.glob(
-    "../assets/breathing/*.{png,jpg,jpeg,webp,svg}",
-    {
-      eager: true,
-      import: "default",
-    }
-  );
+    import.meta.glob(
+        "../assets/breathing/*.{png,jpg,jpeg,webp,svg}",
+        {
+            eager: true,
+            import: "default",
+        }
+    );
 
 const breathingAssetEntries =
-  Object.entries(
-    breathingAssetModules
-  );
+    Object.entries(
+        breathingAssetModules
+    );
 
 function findBreathingAsset(
-  keywords = [],
-  fallbackIndex = -1
+    keywords = []
 ) {
-  for (
-    const keyword of keywords
-  ) {
-    const match =
-      breathingAssetEntries.find(
-        ([path]) =>
-          path
-            .toLowerCase()
-            .includes(
-              keyword.toLowerCase()
-            )
-      );
+    for (const keyword of keywords) {
+        const normalized =
+            String(keyword)
+                .toLowerCase()
+                .trim();
 
-    if (match) {
-      return match[1];
+        const found =
+            breathingAssetEntries.find(
+                ([path]) =>
+                    path
+                        .toLowerCase()
+                        .includes(normalized)
+            );
+
+        if (found) {
+            return found[1];
+        }
     }
-  }
 
-  if (
-    fallbackIndex >= 0 &&
-    breathingAssetEntries[
-      fallbackIndex
-    ]
-  ) {
-    return breathingAssetEntries[
-      fallbackIndex
-    ][1];
-  }
-
-  return "";
+    return "";
 }
 
-/*
-  These search your breathing folder automatically.
-
-  The keywords mean you don't need exact filenames,
-  as long as your files contain words like:
-  ready, lung, mouth, complete etc.
-*/
+/* =========================================================
+   MAIN PAGE ILLUSTRATIONS
+   ========================================================= */
 
 const SETUP_IMAGE =
-  findBreathingAsset(
-    [
-      "meditation",
-      "breathing-main",
-      "breathing main",
-      "start",
-      "woman",
-    ],
-    0
-  );
+    findBreathingAsset([
+        "frame 2147240207",
+    ]);
 
 const READY_IMAGE =
-  findBreathingAsset(
-    [
-      "ready",
-      "question",
-      "thinking",
-    ],
-    1
-  );
-
-const MOUTH_IMAGE =
-  findBreathingAsset([
-    "mouth",
-    "nose",
-    "face",
-  ]);
-
-const LUNGS_IMAGE =
-  findBreathingAsset([
-    "lung",
-    "lungs",
-  ]);
-
-const BREATHING_COMBINED_IMAGE =
-  findBreathingAsset([
-    "breath",
-    "anatomy",
-    "inhale",
-  ]);
+    findBreathingAsset([
+        "group 1597885772",
+    ]);
 
 const COMPLETE_IMAGE =
-  findBreathingAsset(
-    [
-      "complete",
-      "completed",
-      "last",
-      "done",
-    ],
-    breathingAssetEntries.length -
-      1
-  );
+    findBreathingAsset([
+        "andum- last 1",
+        "andum- last",
+    ]);
+
+/* =========================================================
+   IMPORTANT:
+   ONLY ONE LUNG IMAGE
+
+   No HOLD lung.
+   No EXHALE lung.
+
+   One image behaves like a physical lung.
+   ========================================================= */
+
+const LUNG_IMAGE =
+    findBreathingAsset([
+        "lungs - breath in",
+        "lungs - breathin",
+    ]);
+
+/* =========================================================
+   MOUTH STATES
+   ========================================================= */
+
+const MOUTH_IMAGES = {
+    inhale:
+        findBreathingAsset([
+            "property 1=inhaling",
+        ]),
+
+    hold:
+        findBreathingAsset([
+            "property 1=hold",
+        ]),
+
+    exhale:
+        findBreathingAsset([
+            "property 1=exhaling",
+        ]),
+};
 
 /* =========================================================
    SESSION DURATIONS
    ========================================================= */
 
 const SESSION_DURATIONS = [
-  {
-    value: 2,
-    label: "2 minutes",
-  },
-  {
-    value: 5,
-    label: "5 minutes",
-  },
-  {
-    value: 10,
-    label: "10 minutes",
-  },
-  {
-    value: 15,
-    label: "15 minutes",
-  },
+    {
+        value: 2,
+        label: "2 minutes",
+    },
+    {
+        value: 5,
+        label: "5 minutes",
+    },
+    {
+        value: 10,
+        label: "10 minutes",
+    },
+    {
+        value: 15,
+        label: "15 minutes",
+    },
 ];
 
 /* =========================================================
-   BREATHING RHYTHM
+   BREATH CYCLE
 
-   Calm breathing:
-   4 sec inhale
-   2 sec hold
-   6 sec exhale
-   2 sec hold
-
-   The visual animation is calculated using exactly
-   these same timings.
+   Inhale:  4 sec
+   Hold:    2 sec
+   Exhale:  6 sec
+   Hold:    2 sec
    ========================================================= */
 
 const BREATH_PHASES = [
-  {
-    id: "inhale",
+    {
+        id: "inhale",
 
-    label: "BREATHE IN",
+        label:
+            "BREATHE IN",
 
-    durationMs: 4000,
+        mouth:
+            "inhale",
 
-    fromScale: 0.88,
+        durationMs:
+            4000,
 
-    toScale: 1.13,
-  },
+        scaleFrom:
+            0.88,
 
-  {
-    id: "hold-in",
+        scaleTo:
+            1.06,
+    },
 
-    label: "HOLD",
+    {
+        id: "hold-in",
 
-    durationMs: 2000,
+        label:
+            "HOLD",
 
-    fromScale: 1.13,
+        mouth:
+            "hold",
 
-    toScale: 1.13,
-  },
+        durationMs:
+            2000,
 
-  {
-    id: "exhale",
+        scaleFrom:
+            1.06,
 
-    label: "BREATHE OUT",
+        scaleTo:
+            1.06,
+    },
 
-    durationMs: 6000,
+    {
+        id: "exhale",
 
-    fromScale: 1.13,
+        label:
+            "BREATHE OUT",
 
-    toScale: 0.88,
-  },
+        mouth:
+            "exhale",
 
-  {
-    id: "hold-out",
+        durationMs:
+            6000,
 
-    label: "HOLD",
+        scaleFrom:
+            1.06,
 
-    durationMs: 2000,
+        scaleTo:
+            0.88,
+    },
 
-    fromScale: 0.88,
+    {
+        id: "hold-out",
 
-    toScale: 0.88,
-  },
+        label:
+            "HOLD",
+
+        mouth:
+            "hold",
+
+        durationMs:
+            2000,
+
+        scaleFrom:
+            0.88,
+
+        scaleTo:
+            0.88,
+    },
 ];
 
 /* =========================================================
-   MUSIC DISPLAY NAMES
-
-   Your BE currently saves generic names like:
-   Breathing Background 01.
-
-   FE presents cleaner user-facing names.
+   MUSIC NAMES
    ========================================================= */
 
 const FRIENDLY_TRACK_NAMES = {
-  "breathing-background-01":
-    "Soft piano",
+    "breathing-background-01":
+        "Soft piano",
 
-  "breathing-background-02":
-    "Ocean rain",
+    "breathing-background-02":
+        "Ocean rain",
 
-  "breathing-background-03":
-    "Gentle music",
+    "breathing-background-03":
+        "Gentle music",
 
-  "breathing-background-04":
-    "Forest music",
+    "breathing-background-04":
+        "Forest music",
 
-  "breathing-background-05":
-    "Bird chirping",
+    "breathing-background-05":
+        "Bird chirping",
 };
 
 function getTrackDisplayName(
-  track,
-  index
+    track,
+    index
 ) {
-  if (!track) {
-    return "";
-  }
+    if (!track) {
+        return "";
+    }
 
-  if (
-    FRIENDLY_TRACK_NAMES[
-      track.slug
-    ]
-  ) {
-    return FRIENDLY_TRACK_NAMES[
-      track.slug
+    const mapped =
+        FRIENDLY_TRACK_NAMES[
+        track.slug
+        ];
+
+    if (mapped) {
+        return mapped;
+    }
+
+    const fallback = [
+        "Soft piano",
+        "Ocean rain",
+        "Gentle music",
+        "Forest music",
+        "Bird chirping",
     ];
-  }
 
-  const fallbackNames = [
-    "Soft piano",
-    "Ocean rain",
-    "Gentle music",
-    "Forest music",
-    "Bird chirping",
-  ];
-
-  return (
-    fallbackNames[index] ||
-    track.title ||
-    "Calming music"
-  );
+    return (
+        fallback[index] ||
+        track.title ||
+        "Calming music"
+    );
 }
 
 /* =========================================================
-   HELPERS
+   ANIMATION HELPERS
    ========================================================= */
 
 function clamp(
-  value,
-  minimum,
-  maximum
+    value,
+    min,
+    max
 ) {
-  return Math.min(
-    maximum,
-    Math.max(
-      minimum,
-      value
-    )
-  );
-}
-
-function smoothProgress(value) {
-  const progress =
-    clamp(value, 0, 1);
-
-  /*
-    Smooth sine interpolation.
-    Avoids sharp animation starts/stops.
-  */
-
-  return (
-    0.5 -
-    Math.cos(
-      progress * Math.PI
-    ) /
-      2
-  );
-}
-
-function interpolate(
-  start,
-  end,
-  progress
-) {
-  return (
-    start +
-    (end - start) *
-      progress
-  );
-}
-
-function formatRemainingTime(
-  milliseconds
-) {
-  const totalSeconds =
-    Math.max(
-      0,
-      Math.ceil(
-        milliseconds / 1000
-      )
+    return Math.min(
+        max,
+        Math.max(
+            min,
+            value
+        )
     );
+}
 
-  const minutes =
-    Math.floor(
-      totalSeconds / 60
+/*
+  Smootherstep gives very gentle acceleration
+  and deceleration.
+
+  Much softer than linear or basic ease-in-out.
+*/
+
+function smootherStep(
+    value
+) {
+    const t =
+        clamp(
+            value,
+            0,
+            1
+        );
+
+    return (
+        t *
+        t *
+        t *
+        (
+            t *
+            (
+                t * 6 - 15
+            ) +
+            10
+        )
     );
+}
 
-  const seconds =
-    totalSeconds % 60;
+function lerp(
+    from,
+    to,
+    progress
+) {
+    return (
+        from +
+        (to - from) *
+        progress
+    );
+}
 
-  return `${minutes}:${String(
-    seconds
-  ).padStart(2, "0")}`;
+function formatTime(
+    milliseconds
+) {
+    const total =
+        Math.max(
+            0,
+            Math.ceil(
+                milliseconds /
+                1000
+            )
+        );
+
+    const minutes =
+        Math.floor(
+            total / 60
+        );
+
+    const seconds =
+        total % 60;
+
+    return `${minutes}:${String(
+        seconds
+    ).padStart(2, "0")}`;
 }
 
 function formatCompletedTime(
-  seconds
+    seconds
 ) {
-  const safeSeconds =
-    Math.max(
-      0,
-      Math.round(seconds)
-    );
+    const safe =
+        Math.max(
+            0,
+            Math.round(
+                seconds
+            )
+        );
 
-  const minutes =
-    Math.floor(
-      safeSeconds / 60
-    );
+    const minutes =
+        Math.floor(
+            safe / 60
+        );
 
-  const remainder =
-    safeSeconds % 60;
+    const remainder =
+        safe % 60;
 
-  if (
-    remainder === 0 &&
-    minutes > 0
-  ) {
-    return `${minutes} ${
-      minutes === 1
-        ? "minute"
-        : "minutes"
-    } completed`;
-  }
+    if (
+        minutes > 0 &&
+        remainder === 0
+    ) {
+        return `${minutes} ${minutes === 1
+            ? "minute"
+            : "minutes"
+            } completed`;
+    }
 
-  if (minutes > 0) {
-    return `${minutes}m ${remainder}s completed`;
-  }
+    if (minutes > 0) {
+        return `${minutes}m ${remainder}s completed`;
+    }
 
-  return `${remainder}s completed`;
+    return `${remainder}s completed`;
 }
 
 /* =========================================================
-   COMPONENT
+   PAGE
    ========================================================= */
 
 function BreathingPage() {
-  const navigate =
-    useNavigate();
+    const navigate =
+        useNavigate();
 
-  /* -------------------------------------------------------
-     BACKEND MUSIC
-     ------------------------------------------------------- */
+    /* =======================================================
+       MUSIC
+       ======================================================= */
 
-  const [
-    tracks,
-    setTracks,
-  ] = useState([]);
+    const [
+        tracks,
+        setTracks,
+    ] = useState([]);
 
-  const [
-    tracksLoading,
-    setTracksLoading,
-  ] = useState(true);
+    const [
+        tracksLoading,
+        setTracksLoading,
+    ] = useState(true);
 
-  const [
-    trackError,
-    setTrackError,
-  ] = useState("");
+    const [
+        tracksError,
+        setTracksError,
+    ] = useState("");
 
-  /* -------------------------------------------------------
-     FLOW
-     setup
-     ready
-     active
-     complete
-     ------------------------------------------------------- */
+    /* =======================================================
+       FLOW
+       ======================================================= */
 
-  const [
-    screen,
-    setScreen,
-  ] = useState("setup");
-
-  const [
-    durationMinutes,
-    setDurationMinutes,
-  ] = useState(2);
-
-  const [
-    selectedTrackId,
-    setSelectedTrackId,
-  ] = useState("");
-
-  const [
-    isPaused,
-    setIsPaused,
-  ] = useState(false);
-
-  const [
-    isMuted,
-    setIsMuted,
-  ] = useState(false);
-
-  const [
-    phaseLabel,
-    setPhaseLabel,
-  ] = useState(
-    BREATH_PHASES[0].label
-  );
-
-  const [
-    phaseCountdown,
-    setPhaseCountdown,
-  ] = useState(4);
-
-  const [
-    remainingDisplay,
-    setRemainingDisplay,
-  ] = useState(
-    2 * 60 * 1000
-  );
-
-  const [
-    completedSeconds,
-    setCompletedSeconds,
-  ] = useState(0);
-
-  /* -------------------------------------------------------
-     BREATHING ENGINE REFS
-     ------------------------------------------------------- */
-
-  const animationFrameRef =
-    useRef(null);
-
-  const lastFrameTimeRef =
-    useRef(null);
-
-  const lastUiUpdateRef =
-    useRef(0);
-
-  const remainingMsRef =
-    useRef(0);
-
-  const elapsedMsRef =
-    useRef(0);
-
-  const phaseIndexRef =
-    useRef(0);
-
-  const phaseElapsedRef =
-    useRef(0);
-
-  const pausedRef =
-    useRef(false);
-
-  /* -------------------------------------------------------
-     VISUAL REFS
-     ------------------------------------------------------- */
-
-  const lungsRef =
-    useRef(null);
-
-  const mouthRef =
-    useRef(null);
-
-  const combinedRef =
-    useRef(null);
-
-  /* -------------------------------------------------------
-     AUDIO
-     ------------------------------------------------------- */
-
-  const audioRef =
-    useRef(null);
-
-  const youtubeIframeRef =
-    useRef(null);
-
-  /* =======================================================
-     LOAD MUSIC FROM BACKEND
-     ======================================================= */
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadTracks() {
-      try {
-        setTracksLoading(true);
-        setTrackError("");
-
-        const result =
-          await getBreathingTracks();
-
-        if (cancelled) {
-          return;
-        }
-
-        setTracks(
-          Array.isArray(result)
-            ? result
-            : []
-        );
-      } catch (error) {
-        console.error(
-          "Failed to load breathing music:",
-          error
-        );
-
-        if (!cancelled) {
-          setTrackError(
-            "Music couldn't be loaded. You can still use the breathing exercise without music."
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setTracksLoading(
-            false
-          );
-        }
-      }
-    }
-
-    loadTracks();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  /* =======================================================
-     NORMALIZED MUSIC
-     ======================================================= */
-
-  const musicTracks =
-    useMemo(() => {
-      return tracks.map(
-        (track, index) => ({
-          ...track,
-
-          displayName:
-            getTrackDisplayName(
-              track,
-              index
-            ),
-        })
-      );
-    }, [tracks]);
-
-  const selectedTrack =
-    useMemo(() => {
-      return (
-        musicTracks.find(
-          (track) =>
-            track.id ===
-            selectedTrackId
-        ) || null
-      );
-    }, [
-      musicTracks,
-      selectedTrackId,
-    ]);
-
-  /* =======================================================
-     YOUTUBE COMMAND
-     ======================================================= */
-
-  const sendYouTubeCommand =
-    useCallback(
-      (command, args = []) => {
-        const frame =
-          youtubeIframeRef
-            .current;
-
-        if (
-          !frame ||
-          !frame.contentWindow
-        ) {
-          return;
-        }
-
-        frame.contentWindow.postMessage(
-          JSON.stringify({
-            event: "command",
-
-            func: command,
-
-            args,
-          }),
-          "*"
-        );
-      },
-      []
+    const [
+        screen,
+        setScreen,
+    ] = useState(
+        "setup"
     );
 
-  /* =======================================================
-     MUSIC PLAY
-     ======================================================= */
+    /* =======================================================
+       SETTINGS
+       ======================================================= */
 
-  const playMusic =
-    useCallback(() => {
-      if (!selectedTrack) {
-        return;
-      }
-
-      if (
-        selectedTrack.audioUrl &&
-        audioRef.current
-      ) {
-        audioRef.current.volume =
-          isMuted ? 0 : 0.42;
-
-        audioRef.current
-          .play()
-          .catch(() => {
-            // Browser may block until
-            // another user interaction.
-          });
-
-        return;
-      }
-
-      if (
-        selectedTrack
-          .youtubeVideoId
-      ) {
-        sendYouTubeCommand(
-          isMuted
-            ? "mute"
-            : "unMute"
-        );
-
-        sendYouTubeCommand(
-          "setVolume",
-          [42]
-        );
-
-        sendYouTubeCommand(
-          "playVideo"
-        );
-      }
-    }, [
-      selectedTrack,
-      isMuted,
-      sendYouTubeCommand,
-    ]);
-
-  /* =======================================================
-     MUSIC PAUSE
-     ======================================================= */
-
-  const pauseMusic =
-    useCallback(() => {
-      if (
-        audioRef.current
-      ) {
-        audioRef.current.pause();
-      }
-
-      sendYouTubeCommand(
-        "pauseVideo"
-      );
-    }, [sendYouTubeCommand]);
-
-  /* =======================================================
-     MUSIC STOP
-     ======================================================= */
-
-  const stopMusic =
-    useCallback(() => {
-      if (
-        audioRef.current
-      ) {
-        audioRef.current.pause();
-
-        audioRef.current.currentTime =
-          0;
-      }
-
-      sendYouTubeCommand(
-        "stopVideo"
-      );
-    }, [sendYouTubeCommand]);
-
-  /* =======================================================
-     MUTING
-     ======================================================= */
-
-  useEffect(() => {
-    if (
-      audioRef.current
-    ) {
-      audioRef.current.volume =
-        isMuted ? 0 : 0.42;
-    }
-
-    if (isMuted) {
-      sendYouTubeCommand(
-        "mute"
-      );
-    } else {
-      sendYouTubeCommand(
-        "unMute"
-      );
-
-      sendYouTubeCommand(
-        "setVolume",
-        [42]
-      );
-    }
-  }, [
-    isMuted,
-    sendYouTubeCommand,
-  ]);
-
-  /* =======================================================
-     KEEP PAUSE REF CURRENT
-     ======================================================= */
-
-  useEffect(() => {
-    pausedRef.current =
-      isPaused;
-  }, [isPaused]);
-
-  /* =======================================================
-     RESET VISUAL
-     ======================================================= */
-
-  const resetBreathingVisual =
-    useCallback(() => {
-      if (
-        lungsRef.current
-      ) {
-        lungsRef.current.style.transform =
-          "scale(0.88)";
-      }
-
-      if (
-        mouthRef.current
-      ) {
-        mouthRef.current.style.transform =
-          "scale(0.98)";
-      }
-
-      if (
-        combinedRef.current
-      ) {
-        combinedRef.current.style.transform =
-          "scale(0.88)";
-      }
-    }, []);
-
-  /* =======================================================
-     UPDATE VISUAL
-
-     This is what keeps lungs and mouth synchronized
-     to the exact breathing phase duration.
-     ======================================================= */
-
-  const updateBreathingVisual =
-    useCallback(() => {
-      const phase =
-        BREATH_PHASES[
-          phaseIndexRef.current
-        ];
-
-      const progress =
-        phase.durationMs > 0
-          ? phaseElapsedRef
-              .current /
-            phase.durationMs
-          : 1;
-
-      const eased =
-        smoothProgress(
-          progress
-        );
-
-      const lungScale =
-        interpolate(
-          phase.fromScale,
-          phase.toScale,
-          eased
-        );
-
-      /*
-        Mouth / upper airway moves much more subtly.
-
-        This prevents the face image from looking
-        unnaturally inflated.
-      */
-
-      const mouthScale =
-        interpolate(
-          phase.id ===
-            "inhale"
-            ? 0.98
-            : phase.id ===
-                "exhale"
-              ? 1.025
-              : phase.fromScale >
-                    1
-                ? 1.025
-                : 0.98,
-
-          phase.id ===
-            "inhale"
-            ? 1.025
-            : phase.id ===
-                "exhale"
-              ? 0.98
-              : phase.toScale >
-                    1
-                ? 1.025
-                : 0.98,
-
-          eased
-        );
-
-      if (
-        lungsRef.current
-      ) {
-        lungsRef.current.style.transform =
-          `scale(${lungScale})`;
-      }
-
-      if (
-        mouthRef.current
-      ) {
-        mouthRef.current.style.transform =
-          `scale(${mouthScale})`;
-      }
-
-      if (
-        combinedRef.current
-      ) {
-        combinedRef.current.style.transform =
-          `scale(${lungScale})`;
-      }
-    }, []);
-
-  /* =======================================================
-     COMPLETE SESSION
-     ======================================================= */
-
-  const completeSession =
-    useCallback(
-      (manual = false) => {
-        const elapsedSeconds =
-          elapsedMsRef.current /
-          1000;
-
-        setCompletedSeconds(
-          manual
-            ? elapsedSeconds
-            : durationMinutes *
-                60
-        );
-
-        stopMusic();
-
-        setIsPaused(false);
-
-        pausedRef.current =
-          false;
-
-        setScreen(
-          "complete"
-        );
-
-        resetBreathingVisual();
-      },
-      [
+    const [
         durationMinutes,
-        resetBreathingVisual,
-        stopMusic,
-      ]
+        setDurationMinutes,
+    ] = useState(2);
+
+    const [
+        selectedTrackId,
+        setSelectedTrackId,
+    ] = useState("");
+
+    /* =======================================================
+       SESSION UI
+       ======================================================= */
+
+    const [
+        phaseLabel,
+        setPhaseLabel,
+    ] = useState(
+        "BREATHE IN"
     );
 
-  /* =======================================================
-     BREATHING ENGINE
-     ======================================================= */
+    const [
+        mouthState,
+        setMouthState,
+    ] = useState(
+        "inhale"
+    );
 
-  useEffect(() => {
-    if (
-      screen !== "active"
-    ) {
-      return undefined;
-    }
+    const [
+        phaseCountdown,
+        setPhaseCountdown,
+    ] = useState(4);
 
-    function updateUi() {
-      const phase =
-        BREATH_PHASES[
-          phaseIndexRef.current
-        ];
+    const [
+        remainingDisplay,
+        setRemainingDisplay,
+    ] = useState(
+        120000
+    );
 
-      const phaseRemaining =
-        Math.max(
-          1,
-          Math.ceil(
-            (
-              phase.durationMs -
-              phaseElapsedRef
-                .current
-            ) /
-              1000
-          )
-        );
+    const [
+        isPaused,
+        setIsPaused,
+    ] = useState(false);
 
-      setPhaseLabel(
-        phase.label
-      );
+    const [
+        isMuted,
+        setIsMuted,
+    ] = useState(false);
 
-      setPhaseCountdown(
-        phaseRemaining
-      );
+    const [
+        completedSeconds,
+        setCompletedSeconds,
+    ] = useState(0);
 
-      setRemainingDisplay(
-        remainingMsRef.current
-      );
-    }
+    /* =======================================================
+       BREATH ENGINE
+       ======================================================= */
 
-    function tick(timestamp) {
-      if (
-        lastFrameTimeRef.current ===
-        null
-      ) {
-        lastFrameTimeRef.current =
-          timestamp;
-      }
+    const rafRef =
+        useRef(null);
 
-      const delta =
-        Math.min(
-          100,
-          timestamp -
-            lastFrameTimeRef
-              .current
-        );
+    const previousFrameRef =
+        useRef(null);
 
-      lastFrameTimeRef.current =
-        timestamp;
+    const remainingMsRef =
+        useRef(0);
 
-      if (
-        !pausedRef.current
-      ) {
-        remainingMsRef.current -=
-          delta;
+    const elapsedMsRef =
+        useRef(0);
 
-        elapsedMsRef.current +=
-          delta;
+    const phaseIndexRef =
+        useRef(0);
 
-        phaseElapsedRef.current +=
-          delta;
+    const phaseElapsedRef =
+        useRef(0);
 
-        let currentPhase =
-          BREATH_PHASES[
-            phaseIndexRef.current
-          ];
+    const pausedRef =
+        useRef(false);
 
-        while (
-          phaseElapsedRef.current >=
-          currentPhase.durationMs
-        ) {
-          phaseElapsedRef.current -=
-            currentPhase.durationMs;
+    const lastSecondRef =
+        useRef(null);
 
-          phaseIndexRef.current =
-            (
-              phaseIndexRef.current +
-              1
-            ) %
-            BREATH_PHASES.length;
+    /* =======================================================
+       ONE LUNG IMAGE REF
+       ======================================================= */
 
-          currentPhase =
-            BREATH_PHASES[
-              phaseIndexRef.current
-            ];
+    const lungRef =
+        useRef(null);
+
+    /* =======================================================
+       AUDIO
+       ======================================================= */
+
+    const audioRef =
+        useRef(null);
+
+    const youtubeIframeRef =
+        useRef(null);
+
+    /* =======================================================
+       LOAD MUSIC
+       ======================================================= */
+
+    useEffect(() => {
+        let cancelled =
+            false;
+
+        async function loadTracks() {
+            try {
+                setTracksLoading(
+                    true
+                );
+
+                setTracksError(
+                    ""
+                );
+
+                const result =
+                    await getBreathingTracks();
+
+                if (cancelled) {
+                    return;
+                }
+
+                setTracks(
+                    Array.isArray(
+                        result
+                    )
+                        ? result
+                        : []
+                );
+            } catch (error) {
+                console.error(
+                    "Breathing tracks error:",
+                    error
+                );
+
+                if (!cancelled) {
+                    setTracksError(
+                        "Music could not be loaded. You can still use the breathing exercise without music."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setTracksLoading(
+                        false
+                    );
+                }
+            }
         }
 
-        updateBreathingVisual();
+        loadTracks();
 
+        return () => {
+            cancelled =
+                true;
+        };
+    }, []);
+
+    /* =======================================================
+       NORMALIZED MUSIC
+       ======================================================= */
+
+    const musicTracks =
+        useMemo(() => {
+            return tracks.map(
+                (
+                    track,
+                    index
+                ) => ({
+                    ...track,
+
+                    displayName:
+                        getTrackDisplayName(
+                            track,
+                            index
+                        ),
+                })
+            );
+        }, [tracks]);
+
+    const selectedTrack =
+        useMemo(() => {
+            return (
+                musicTracks.find(
+                    (track) =>
+                        track.id ===
+                        selectedTrackId
+                ) || null
+            );
+        }, [
+            musicTracks,
+            selectedTrackId,
+        ]);
+
+    /* =======================================================
+       YOUTUBE URL
+       ======================================================= */
+
+    const youtubeEmbedUrl =
+        useMemo(() => {
+            const id =
+                selectedTrack
+                    ?.youtubeVideoId;
+
+            if (!id) {
+                return "";
+            }
+
+            return (
+                `https://www.youtube.com/embed/${id}` +
+                `?enablejsapi=1` +
+                `&controls=0` +
+                `&playsinline=1` +
+                `&rel=0` +
+                `&loop=1` +
+                `&playlist=${id}`
+            );
+        }, [
+            selectedTrack,
+        ]);
+
+    /* =======================================================
+       YOUTUBE COMMAND
+       ======================================================= */
+
+    const sendYouTubeCommand =
+        useCallback(
+            (
+                command,
+                args = []
+            ) => {
+                const frame =
+                    youtubeIframeRef.current;
+
+                if (
+                    !frame ||
+                    !frame.contentWindow
+                ) {
+                    return;
+                }
+
+                frame.contentWindow.postMessage(
+                    JSON.stringify({
+                        event:
+                            "command",
+
+                        func:
+                            command,
+
+                        args,
+                    }),
+                    "*"
+                );
+            },
+            []
+        );
+
+    /* =======================================================
+       MUSIC PLAY
+       ======================================================= */
+
+    const playMusic =
+        useCallback(() => {
+            if (!selectedTrack) {
+                return;
+            }
+
+            if (
+                selectedTrack.audioUrl &&
+                audioRef.current
+            ) {
+                audioRef.current.volume =
+                    isMuted
+                        ? 0
+                        : 0.38;
+
+                audioRef.current
+                    .play()
+                    .catch(() => { });
+
+                return;
+            }
+
+            if (
+                selectedTrack
+                    .youtubeVideoId
+            ) {
+                sendYouTubeCommand(
+                    isMuted
+                        ? "mute"
+                        : "unMute"
+                );
+
+                sendYouTubeCommand(
+                    "setVolume",
+                    [38]
+                );
+
+                sendYouTubeCommand(
+                    "playVideo"
+                );
+            }
+        }, [
+            selectedTrack,
+            isMuted,
+            sendYouTubeCommand,
+        ]);
+
+    const pauseMusic =
+        useCallback(() => {
+            if (
+                audioRef.current
+            ) {
+                audioRef.current.pause();
+            }
+
+            sendYouTubeCommand(
+                "pauseVideo"
+            );
+        }, [
+            sendYouTubeCommand,
+        ]);
+
+    const stopMusic =
+        useCallback(() => {
+            if (
+                audioRef.current
+            ) {
+                audioRef.current.pause();
+
+                audioRef.current.currentTime =
+                    0;
+            }
+
+            sendYouTubeCommand(
+                "stopVideo"
+            );
+        }, [
+            sendYouTubeCommand,
+        ]);
+
+    /* =======================================================
+       MUTE
+       ======================================================= */
+
+    useEffect(() => {
         if (
-          timestamp -
-            lastUiUpdateRef.current >=
-          100
+            audioRef.current
         ) {
-          lastUiUpdateRef.current =
-            timestamp;
-
-          updateUi();
+            audioRef.current.volume =
+                isMuted
+                    ? 0
+                    : 0.38;
         }
 
+        if (isMuted) {
+            sendYouTubeCommand(
+                "mute"
+            );
+        } else {
+            sendYouTubeCommand(
+                "unMute"
+            );
+
+            sendYouTubeCommand(
+                "setVolume",
+                [38]
+            );
+        }
+    }, [
+        isMuted,
+        sendYouTubeCommand,
+    ]);
+
+    /* =======================================================
+       PAUSE REF
+       ======================================================= */
+
+    useEffect(() => {
+        pausedRef.current =
+            isPaused;
+    }, [isPaused]);
+
+    /* =======================================================
+       APPLY ONE-LUNG SCALE
+       ======================================================= */
+
+    const updateLungScale =
+        useCallback(() => {
+            const phase =
+                BREATH_PHASES[
+                phaseIndexRef.current
+                ];
+
+            const rawProgress =
+                clamp(
+                    phaseElapsedRef.current /
+                    phase.durationMs,
+                    0,
+                    1
+                );
+
+            const smooth =
+                smootherStep(
+                    rawProgress
+                );
+
+            const scale =
+                lerp(
+                    phase.scaleFrom,
+                    phase.scaleTo,
+                    smooth
+                );
+
+            if (
+                lungRef.current
+            ) {
+                lungRef.current.style.transform =
+                    `translateZ(0) scale(${scale})`;
+            }
+        }, []);
+
+    /* =======================================================
+       RESET LUNG
+       ======================================================= */
+
+    const resetLung =
+        useCallback(() => {
+            if (
+                lungRef.current
+            ) {
+                lungRef.current.style.transform =
+                    "translateZ(0) scale(0.88)";
+            }
+        }, []);
+
+    /* =======================================================
+       FINISH
+       ======================================================= */
+
+    const finishSession =
+        useCallback(
+            (manual = false) => {
+                const actualSeconds =
+                    elapsedMsRef.current /
+                    1000;
+
+                setCompletedSeconds(
+                    manual
+                        ? actualSeconds
+                        : durationMinutes *
+                        60
+                );
+
+                stopMusic();
+
+                pausedRef.current =
+                    false;
+
+                setIsPaused(
+                    false
+                );
+
+                setScreen(
+                    "complete"
+                );
+            },
+            [
+                durationMinutes,
+                stopMusic,
+            ]
+        );
+
+    /* =======================================================
+       BREATHING LOOP
+       ======================================================= */
+
+    useEffect(() => {
         if (
-          remainingMsRef.current <=
-          0
+            screen !== "active"
         ) {
-          remainingMsRef.current =
+            return undefined;
+        }
+
+        function updateText() {
+            const phase =
+                BREATH_PHASES[
+                phaseIndexRef.current
+                ];
+
+            const phaseRemaining =
+                Math.max(
+                    0,
+                    phase.durationMs -
+                    phaseElapsedRef.current
+                );
+
+            const phaseSeconds =
+                Math.max(
+                    1,
+                    Math.ceil(
+                        phaseRemaining /
+                        1000
+                    )
+                );
+
+            /*
+              Only trigger React when the shown second changes.
+      
+              The lung animation remains pure requestAnimationFrame.
+            */
+
+            if (
+                phaseSeconds !==
+                lastSecondRef.current
+            ) {
+                lastSecondRef.current =
+                    phaseSeconds;
+
+                setPhaseCountdown(
+                    phaseSeconds
+                );
+
+                setRemainingDisplay(
+                    Math.max(
+                        0,
+                        remainingMsRef.current
+                    )
+                );
+            }
+        }
+
+        function loop(timestamp) {
+            if (
+                previousFrameRef.current ===
+                null
+            ) {
+                previousFrameRef.current =
+                    timestamp;
+            }
+
+            let delta =
+                timestamp -
+                previousFrameRef.current;
+
+            /*
+              Avoid giant animation jumps
+              if browser temporarily stalls.
+            */
+
+            delta =
+                Math.min(
+                    delta,
+                    32
+                );
+
+            previousFrameRef.current =
+                timestamp;
+
+            if (
+                !pausedRef.current
+            ) {
+                remainingMsRef.current -=
+                    delta;
+
+                elapsedMsRef.current +=
+                    delta;
+
+                phaseElapsedRef.current +=
+                    delta;
+
+                let phase =
+                    BREATH_PHASES[
+                    phaseIndexRef.current
+                    ];
+
+                if (
+                    phaseElapsedRef.current >=
+                    phase.durationMs
+                ) {
+                    phaseElapsedRef.current -=
+                        phase.durationMs;
+
+                    phaseIndexRef.current =
+                        (
+                            phaseIndexRef.current +
+                            1
+                        ) %
+                        BREATH_PHASES.length;
+
+                    phase =
+                        BREATH_PHASES[
+                        phaseIndexRef.current
+                        ];
+
+                    /*
+                      Change mouth illustration only once,
+                      exactly at the phase change.
+          
+                      CSS handles smooth crossfade.
+                    */
+
+                    setMouthState(
+                        phase.mouth
+                    );
+
+                    setPhaseLabel(
+                        phase.label
+                    );
+
+                    lastSecondRef.current =
+                        null;
+                }
+
+                /*
+                  One lung.
+                  One transform.
+                  Every frame.
+                */
+
+                updateLungScale();
+
+                updateText();
+
+                if (
+                    remainingMsRef.current <=
+                    0
+                ) {
+                    remainingMsRef.current =
+                        0;
+
+                    setRemainingDisplay(
+                        0
+                    );
+
+                    finishSession(
+                        false
+                    );
+
+                    return;
+                }
+            }
+
+            rafRef.current =
+                window.requestAnimationFrame(
+                    loop
+                );
+        }
+
+        rafRef.current =
+            window.requestAnimationFrame(
+                loop
+            );
+
+        return () => {
+            if (
+                rafRef.current
+            ) {
+                window.cancelAnimationFrame(
+                    rafRef.current
+                );
+            }
+
+            rafRef.current =
+                null;
+
+            previousFrameRef.current =
+                null;
+        };
+    }, [
+        screen,
+        updateLungScale,
+        finishSession,
+    ]);
+
+    /* =======================================================
+       PREPARE
+       ======================================================= */
+
+    function prepareSession() {
+        const total =
+            durationMinutes *
+            60 *
+            1000;
+
+        remainingMsRef.current =
+            total;
+
+        elapsedMsRef.current =
             0;
 
-          setRemainingDisplay(
-            0
-          );
+        phaseIndexRef.current =
+            0;
 
-          completeSession(
+        phaseElapsedRef.current =
+            0;
+
+        previousFrameRef.current =
+            null;
+
+        lastSecondRef.current =
+            null;
+
+        setRemainingDisplay(
+            total
+        );
+
+        setPhaseLabel(
+            "BREATHE IN"
+        );
+
+        setMouthState(
+            "inhale"
+        );
+
+        setPhaseCountdown(
+            4
+        );
+
+        setScreen(
+            "ready"
+        );
+    }
+
+    /* =======================================================
+       START
+       ======================================================= */
+
+    function startSession() {
+        const total =
+            durationMinutes *
+            60 *
+            1000;
+
+        remainingMsRef.current =
+            total;
+
+        elapsedMsRef.current =
+            0;
+
+        phaseIndexRef.current =
+            0;
+
+        phaseElapsedRef.current =
+            0;
+
+        previousFrameRef.current =
+            null;
+
+        lastSecondRef.current =
+            null;
+
+        pausedRef.current =
+            false;
+
+        setIsPaused(
             false
-          );
+        );
 
-          return;
-        }
-      }
+        setRemainingDisplay(
+            total
+        );
 
-      animationFrameRef.current =
+        setPhaseLabel(
+            "BREATHE IN"
+        );
+
+        setMouthState(
+            "inhale"
+        );
+
+        setPhaseCountdown(
+            4
+        );
+
+        setScreen(
+            "active"
+        );
+
         window.requestAnimationFrame(
-          tick
+            () => {
+                resetLung();
+
+                updateLungScale();
+            }
+        );
+
+        window.setTimeout(
+            () => {
+                playMusic();
+            },
+            100
         );
     }
 
-    animationFrameRef.current =
-      window.requestAnimationFrame(
-        tick
-      );
+    /* =======================================================
+       PAUSE
+       ======================================================= */
 
-    return () => {
-      if (
-        animationFrameRef.current
-      ) {
-        window.cancelAnimationFrame(
-          animationFrameRef.current
+    function togglePause() {
+        if (isPaused) {
+            pausedRef.current =
+                false;
+
+            previousFrameRef.current =
+                null;
+
+            setIsPaused(
+                false
+            );
+
+            playMusic();
+        } else {
+            pausedRef.current =
+                true;
+
+            setIsPaused(
+                true
+            );
+
+            pauseMusic();
+        }
+    }
+
+    function endSession() {
+        finishSession(
+            true
         );
-      }
-
-      animationFrameRef.current =
-        null;
-
-      lastFrameTimeRef.current =
-        null;
-    };
-  }, [
-    screen,
-    completeSession,
-    updateBreathingVisual,
-  ]);
-
-  /* =======================================================
-     SETUP -> READY
-     ======================================================= */
-
-  function handlePrepareSession() {
-    const totalMs =
-      durationMinutes *
-      60 *
-      1000;
-
-    remainingMsRef.current =
-      totalMs;
-
-    elapsedMsRef.current =
-      0;
-
-    phaseIndexRef.current =
-      0;
-
-    phaseElapsedRef.current =
-      0;
-
-    setRemainingDisplay(
-      totalMs
-    );
-
-    setPhaseLabel(
-      BREATH_PHASES[0].label
-    );
-
-    setPhaseCountdown(
-      Math.ceil(
-        BREATH_PHASES[0]
-          .durationMs /
-          1000
-      )
-    );
-
-    resetBreathingVisual();
-
-    setScreen("ready");
-  }
-
-  /* =======================================================
-     READY -> START
-     ======================================================= */
-
-  function handleStartSession() {
-    const totalMs =
-      durationMinutes *
-      60 *
-      1000;
-
-    remainingMsRef.current =
-      totalMs;
-
-    elapsedMsRef.current =
-      0;
-
-    phaseIndexRef.current =
-      0;
-
-    phaseElapsedRef.current =
-      0;
-
-    lastFrameTimeRef.current =
-      null;
-
-    setRemainingDisplay(
-      totalMs
-    );
-
-    setIsPaused(false);
-
-    pausedRef.current =
-      false;
-
-    setScreen("active");
-
-    /*
-      User click allows browser audio playback.
-    */
-
-    window.setTimeout(
-      () => {
-        playMusic();
-      },
-      80
-    );
-  }
-
-  /* =======================================================
-     PAUSE / RESUME
-     ======================================================= */
-
-  function handlePauseResume() {
-    if (isPaused) {
-      setIsPaused(false);
-
-      pausedRef.current =
-        false;
-
-      playMusic();
-    } else {
-      setIsPaused(true);
-
-      pausedRef.current =
-        true;
-
-      pauseMusic();
-    }
-  }
-
-  /* =======================================================
-     END EARLY
-     ======================================================= */
-
-  function handleEndSession() {
-    completeSession(true);
-  }
-
-  /* =======================================================
-     DONE
-     ======================================================= */
-
-  function handleDone() {
-    stopMusic();
-
-    navigate("/dashboard");
-  }
-
-  /* =======================================================
-     AGAIN
-     ======================================================= */
-
-  function handleAnotherSession() {
-    stopMusic();
-
-    setIsPaused(false);
-
-    setScreen("setup");
-
-    setCompletedSeconds(0);
-
-    remainingMsRef.current =
-      durationMinutes *
-      60 *
-      1000;
-
-    resetBreathingVisual();
-  }
-
-  /* =======================================================
-     YOUTUBE SOURCE
-     ======================================================= */
-
-  const youtubeEmbedUrl =
-    useMemo(() => {
-      if (
-        !selectedTrack
-          ?.youtubeVideoId
-      ) {
-        return "";
-      }
-
-      const id =
-        selectedTrack
-          .youtubeVideoId;
-
-      return (
-        `https://www.youtube.com/embed/${id}` +
-        `?enablejsapi=1` +
-        `&controls=0` +
-        `&playsinline=1` +
-        `&rel=0` +
-        `&loop=1` +
-        `&playlist=${id}`
-      );
-    }, [selectedTrack]);
-
-  /* =======================================================
-     ANATOMY VISUAL
-     ======================================================= */
-
-  function renderBreathingVisual() {
-    if (
-      MOUTH_IMAGE &&
-      LUNGS_IMAGE
-    ) {
-      return (
-        <div className="breathing-anatomy">
-          <img
-            ref={mouthRef}
-            src={MOUTH_IMAGE}
-            alt=""
-            aria-hidden="true"
-            className="breathing-anatomy__mouth"
-          />
-
-          <img
-            ref={lungsRef}
-            src={LUNGS_IMAGE}
-            alt=""
-            aria-hidden="true"
-            className="breathing-anatomy__lungs"
-          />
-        </div>
-      );
     }
 
-    if (
-      BREATHING_COMBINED_IMAGE
-    ) {
-      return (
-        <img
-          ref={combinedRef}
-          src={
-            BREATHING_COMBINED_IMAGE
-          }
-          alt=""
-          aria-hidden="true"
-          className="breathing-anatomy__combined"
-        />
-      );
+    function done() {
+        stopMusic();
+
+        navigate(
+            "/dashboard"
+        );
     }
+
+    function anotherSession() {
+        stopMusic();
+
+        setScreen(
+            "setup"
+        );
+
+        setIsPaused(
+            false
+        );
+
+        setCompletedSeconds(
+            0
+        );
+    }
+
+    /* =======================================================
+       JSX
+       ======================================================= */
 
     return (
-      <div
-        ref={combinedRef}
-        className="breathing-anatomy__fallback"
-        aria-hidden="true"
-      >
-        <div className="breathing-anatomy__fallback-lung breathing-anatomy__fallback-lung--left" />
-        <div className="breathing-anatomy__fallback-lung breathing-anatomy__fallback-lung--right" />
-      </div>
-    );
-  }
+        <AppLayout>
+            <main className="breathing-page">
 
-  /* =======================================================
-     PAGE
-     ======================================================= */
+                {/* AUDIO */}
 
-  return (
-    <AppLayout>
-      <main className="breathing-page">
+                {selectedTrack?.audioUrl ? (
+                    <audio
+                        ref={audioRef}
+                        src={
+                            selectedTrack.audioUrl
+                        }
+                        preload="auto"
+                        loop
+                    />
+                ) : null}
 
-        {/* ===============================================
-            BACKGROUND AUDIO SOURCES
-            =============================================== */}
+                {/* YOUTUBE BACKGROUND AUDIO */}
 
-        {selectedTrack?.audioUrl ? (
-          <audio
-            ref={audioRef}
-            src={
-              selectedTrack.audioUrl
-            }
-            loop
-            preload="auto"
-          />
-        ) : null}
+                {youtubeEmbedUrl &&
+                    screen !== "setup" ? (
+                    <iframe
+                        ref={
+                            youtubeIframeRef
+                        }
+                        title="Breathing background music"
+                        src={
+                            youtubeEmbedUrl
+                        }
+                        className="breathing-youtube-player"
+                        allow="autoplay; encrypted-media"
+                        onLoad={() => {
+                            if (
+                                screen === "active" &&
+                                !pausedRef.current
+                            ) {
+                                playMusic();
+                            }
+                        }}
+                    />
+                ) : null}
 
-        {youtubeEmbedUrl &&
-        screen !== "setup" ? (
-          <iframe
-            ref={
-              youtubeIframeRef
-            }
-            title="Breathing background music"
-            src={
-              youtubeEmbedUrl
-            }
-            className="breathing-youtube-audio"
-            allow="autoplay; encrypted-media"
-            onLoad={() => {
-              if (
-                screen ===
-                  "active" &&
-                !pausedRef.current
-              ) {
-                playMusic();
-              }
-            }}
-          />
-        ) : null}
-
-        {/* ===============================================
+                {/* =================================================
             SETUP
-            =============================================== */}
+            ================================================= */}
 
-        {screen === "setup" ? (
-          <section className="breathing-setup">
+                {screen === "setup" ? (
+                    <section className="breathing-setup">
 
-            <header className="breathing-setup__header">
-              <h1>
-                Breathing exercise
-              </h1>
+                        <header className="breathing-setup__header">
+                            <h1>
+                                Breathing exercise
+                            </h1>
 
-              <p>
-                Take a moment to slow
-                down and reset.
-              </p>
-            </header>
+                            <p>
+                                Take a moment to slow down and reset.
+                            </p>
+                        </header>
 
-            <div className="breathing-setup__illustration-wrap">
-              {SETUP_IMAGE ? (
-                <img
-                  src={SETUP_IMAGE}
-                  alt=""
-                  aria-hidden="true"
-                  className="breathing-setup__illustration"
-                />
-              ) : (
-                <div className="breathing-image-placeholder" />
-              )}
-            </div>
+                        <div className="breathing-setup__image-area">
 
-            <section className="breathing-form">
+                            {SETUP_IMAGE ? (
+                                <img
+                                    src={SETUP_IMAGE}
+                                    alt=""
+                                    draggable="false"
+                                    aria-hidden="true"
+                                    className="breathing-setup__image"
+                                />
+                            ) : null}
 
-              <h2>
-                Find your rhythm
-              </h2>
+                        </div>
 
-              <label className="breathing-field">
-                <span>
-                  Session Duration
-                </span>
+                        <div className="breathing-form">
 
-                <select
-                  value={
-                    durationMinutes
-                  }
-                  onChange={(
-                    event
-                  ) => {
-                    setDurationMinutes(
-                      Number(
-                        event
-                          .target
-                          .value
-                      )
-                    );
-                  }}
-                >
-                  {SESSION_DURATIONS.map(
-                    (option) => (
-                      <option
-                        key={
-                          option.value
-                        }
-                        value={
-                          option.value
-                        }
-                      >
-                        {
-                          option.label
-                        }
-                      </option>
-                    )
-                  )}
-                </select>
-              </label>
+                            <h2>
+                                Find your rhythm
+                            </h2>
 
-              <label className="breathing-field">
-                <span>
-                  Background Music
-                </span>
+                            <label className="breathing-field">
+                                <span>
+                                    Session Duration
+                                </span>
 
-                <select
-                  value={
-                    selectedTrackId
-                  }
-                  disabled={
-                    tracksLoading
-                  }
-                  onChange={(
-                    event
-                  ) =>
-                    setSelectedTrackId(
-                      event.target
-                        .value
-                    )
-                  }
-                >
-                  <option value="">
-                    {tracksLoading
-                      ? "Loading music..."
-                      : "Off"}
-                  </option>
+                                <select
+                                    value={
+                                        durationMinutes
+                                    }
+                                    onChange={(event) =>
+                                        setDurationMinutes(
+                                            Number(
+                                                event.target.value
+                                            )
+                                        )
+                                    }
+                                >
+                                    {SESSION_DURATIONS.map(
+                                        (option) => (
+                                            <option
+                                                key={
+                                                    option.value
+                                                }
+                                                value={
+                                                    option.value
+                                                }
+                                            >
+                                                {
+                                                    option.label
+                                                }
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                            </label>
 
-                  {musicTracks.map(
-                    (track) => (
-                      <option
-                        key={
-                          track.id
-                        }
-                        value={
-                          track.id
-                        }
-                      >
-                        {
-                          track.displayName
-                        }
-                      </option>
-                    )
-                  )}
-                </select>
-              </label>
+                            <label className="breathing-field">
+                                <span>
+                                    Background Music
+                                </span>
 
-              {trackError ? (
-                <p className="breathing-form__error">
-                  {trackError}
-                </p>
-              ) : null}
+                                <select
+                                    value={
+                                        selectedTrackId
+                                    }
+                                    disabled={
+                                        tracksLoading
+                                    }
+                                    onChange={(event) =>
+                                        setSelectedTrackId(
+                                            event.target.value
+                                        )
+                                    }
+                                >
+                                    <option value="">
+                                        {tracksLoading
+                                            ? "Loading music..."
+                                            : "Off"}
+                                    </option>
 
-              <button
-                type="button"
-                className="breathing-primary-button"
-                onClick={
-                  handlePrepareSession
-                }
-              >
-                Begin session
-              </button>
+                                    {musicTracks.map(
+                                        (track) => (
+                                            <option
+                                                key={
+                                                    track.id
+                                                }
+                                                value={
+                                                    track.id
+                                                }
+                                            >
+                                                {
+                                                    track.displayName
+                                                }
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                            </label>
 
-            </section>
+                            {tracksError ? (
+                                <p className="breathing-form__error">
+                                    {tracksError}
+                                </p>
+                            ) : null}
 
-          </section>
-        ) : null}
+                            <button
+                                type="button"
+                                className="breathing-primary-button"
+                                onClick={
+                                    prepareSession
+                                }
+                            >
+                                Begin session
+                            </button>
 
-        {/* ===============================================
+                        </div>
+
+                    </section>
+                ) : null}
+
+                {/* =================================================
             READY
-            =============================================== */}
+            ================================================= */}
 
-        {screen === "ready" ? (
-          <section className="breathing-session-panel">
+                {screen === "ready" ? (
+                    <section className="breathing-session-shell">
 
-            <div className="breathing-ready">
+                        <div className="breathing-ready">
 
-              <div className="breathing-ready__content">
+                            <div className="breathing-ready__center">
 
-                {READY_IMAGE ? (
-                  <img
-                    src={
-                      READY_IMAGE
-                    }
-                    alt=""
-                    aria-hidden="true"
-                    className="breathing-ready__image"
-                  />
+                                {READY_IMAGE ? (
+                                    <img
+                                        src={
+                                            READY_IMAGE
+                                        }
+                                        alt=""
+                                        aria-hidden="true"
+                                        draggable="false"
+                                        className="breathing-ready__image"
+                                    />
+                                ) : null}
+
+                                <h1>
+                                    Ready to begin the session?
+                                </h1>
+
+                                <button
+                                    type="button"
+                                    className="breathing-primary-button"
+                                    onClick={
+                                        startSession
+                                    }
+                                >
+                                    Start Session
+                                </button>
+
+                            </div>
+
+                            <p className="breathing-safety-note">
+                                Breathe gently. Don’t force the inhale,
+                                hold, or exhale. If it feels uncomfortable,
+                                return to your natural breathing.
+                            </p>
+
+                        </div>
+
+                    </section>
                 ) : null}
 
-                <h1>
-                  Ready to begin the
-                  session?
-                </h1>
+                {/* =================================================
+            ACTIVE
+            ================================================= */}
 
-                <button
-                  type="button"
-                  className="breathing-primary-button"
-                  onClick={
-                    handleStartSession
-                  }
-                >
-                  Start Session
-                </button>
+                {screen === "active" ? (
+                    <section className="breathing-session-shell">
 
-              </div>
+                        <div className="breathing-active">
 
-              <p className="breathing-safety-note">
-                Breathe gently. Don’t
-                force the inhale, hold,
-                or exhale. If it feels
-                uncomfortable, return to
-                your natural breathing.
-              </p>
+                            <div className="breathing-active__center">
 
-            </div>
+                                {/* =========================================
+                    ANATOMY
+                    ========================================= */}
 
-          </section>
-        ) : null}
+                                <div className="breathing-anatomy">
 
-        {/* ===============================================
-            ACTIVE SESSION
-            =============================================== */}
+                                    {/* MOUTH / NOSE */}
 
-        {screen === "active" ? (
-          <section className="breathing-session-panel">
+                                    <div className="breathing-mouth-frame">
 
-            <div className="breathing-active">
+                                        {Object.entries(MOUTH_IMAGES).map(([state, image]) => {
+                                            if (!image) {
+                                                return null;
+                                            }
 
-              <div className="breathing-active__main">
+                                            return (
+                                                <img
+                                                    key={state}
+                                                    src={image}
+                                                    alt=""
+                                                    aria-hidden="true"
+                                                    draggable="false"
+                                                    className={`breathing-mouth-image breathing-mouth-image--${state}${mouthState === state ? " is-active" : ""
+                                                        }`}
+                                                />
+                                            );
+                                        })}
 
-                <div className="breathing-active__visual">
-                  {renderBreathingVisual()}
-                </div>
+                                    </div>
 
-                <div className="breathing-phase">
-                  <h1>
-                    {phaseLabel}
-                  </h1>
 
-                  <span>
-                    {phaseCountdown}
-                  </span>
-                </div>
+                                    {/* ADD NECK + SHOULDERS HERE */}
 
-                <p className="breathing-remaining">
-                  {formatRemainingTime(
-                    remainingDisplay
-                  )}{" "}
-                  Remaining
-                </p>
+                                    <div
+                                        className="breathing-neck-shoulders"
+                                        aria-hidden="true"
+                                    >
+                                        <svg
+                                            viewBox="0 0 260 120"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            {/* LEFT NECK INTO SHOULDER */}
+                                            <path
+                                                d="
+          M112 5
+          C111 26 108 45 100 58
+          C91 72 74 76 55 84
+          C37 91 24 101 14 115
+        "
+                                            />
 
-                <div className="breathing-controls">
+                                            {/* RIGHT NECK INTO SHOULDER */}
+                                            <path
+                                                d="
+          M148 5
+          C149 26 152 45 160 58
+          C169 72 186 76 205 84
+          C223 91 236 101 246 115
+        "
+                                            />
+                                        </svg>
+                                    </div>
 
-                  <button
-                    type="button"
-                    className="breathing-secondary-button"
-                    onClick={
-                      handleEndSession
-                    }
-                  >
-                    End Session
-                  </button>
 
-                  <button
-                    type="button"
-                    className="breathing-primary-button breathing-control-button"
-                    onClick={
-                      handlePauseResume
-                    }
-                  >
-                    {isPaused
-                      ? "Resume Session"
-                      : "Pause Session"}
-                  </button>
+                                    {/* ONE LUNG IMAGE */}
 
-                </div>
+                                    <div className="breathing-lung-frame">
 
-                {selectedTrack ? (
-                  <div className="breathing-now-playing">
+                                        {LUNG_IMAGE ? (
+                                            <img
+                                                ref={lungRef}
+                                                src={LUNG_IMAGE}
+                                                alt=""
+                                                aria-hidden="true"
+                                                draggable="false"
+                                                className="breathing-single-lung"
+                                            />
+                                        ) : null}
 
-                    <span className="breathing-now-playing__icon">
-                      <Music2
-                        size={18}
-                        strokeWidth={
-                          1.7
-                        }
-                      />
-                    </span>
+                                    </div>
 
-                    <span className="breathing-now-playing__copy">
-                      <small>
-                        NOW PLAYING
-                      </small>
+                                </div>
 
-                      <strong>
-                        {
-                          selectedTrack.displayName
-                        }
-                      </strong>
-                    </span>
+                                {/* PHASE */}
 
-                    <span className="breathing-now-playing__bars">
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                    </span>
+                                <div className="breathing-phase">
 
-                    <button
-                      type="button"
-                      className="breathing-volume-button"
-                      onClick={() =>
-                        setIsMuted(
-                          (
-                            current
-                          ) =>
-                            !current
-                        )
-                      }
-                      aria-label={
-                        isMuted
-                          ? "Unmute background music"
-                          : "Mute background music"
-                      }
-                    >
-                      {isMuted ? (
-                        <VolumeX
-                          size={
-                            18
-                          }
-                        />
-                      ) : (
-                        <Volume2
-                          size={
-                            18
-                          }
-                        />
-                      )}
-                    </button>
+                                    <h1>
+                                        {phaseLabel}
+                                    </h1>
 
-                  </div>
+                                    <span>
+                                        {
+                                            phaseCountdown
+                                        }
+                                    </span>
+
+                                </div>
+
+                                {/* REMAINING */}
+
+                                <p className="breathing-remaining">
+                                    {formatTime(
+                                        remainingDisplay
+                                    )}{" "}
+                                    Remaining
+                                </p>
+
+                                {/* CONTROLS */}
+
+                                <div className="breathing-controls">
+
+                                    <button
+                                        type="button"
+                                        className="breathing-secondary-button"
+                                        onClick={
+                                            endSession
+                                        }
+                                    >
+                                        End Session
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="breathing-primary-button"
+                                        onClick={
+                                            togglePause
+                                        }
+                                    >
+                                        {isPaused
+                                            ? "Resume Session"
+                                            : "Pause Session"}
+                                    </button>
+
+                                </div>
+
+                                {/* MUSIC */}
+
+                                {selectedTrack ? (
+                                    <div className="breathing-now-playing">
+
+                                        <span className="breathing-now-playing__icon">
+                                            <Music2
+                                                size={
+                                                    17
+                                                }
+                                                strokeWidth={
+                                                    1.7
+                                                }
+                                            />
+                                        </span>
+
+                                        <span className="breathing-now-playing__copy">
+
+                                            <small>
+                                                NOW PLAYING
+                                            </small>
+
+                                            <strong>
+                                                {
+                                                    selectedTrack.displayName
+                                                }
+                                            </strong>
+
+                                        </span>
+
+                                        <span
+                                            className={`breathing-now-playing__bars${isPaused
+                                                ? " is-paused"
+                                                : ""
+                                                }`}
+                                        >
+                                            <i />
+                                            <i />
+                                            <i />
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            className="breathing-volume-button"
+                                            onClick={() =>
+                                                setIsMuted(
+                                                    (current) =>
+                                                        !current
+                                                )
+                                            }
+                                        >
+                                            {isMuted ? (
+                                                <VolumeX
+                                                    size={
+                                                        17
+                                                    }
+                                                />
+                                            ) : (
+                                                <Volume2
+                                                    size={
+                                                        17
+                                                    }
+                                                />
+                                            )}
+                                        </button>
+
+                                    </div>
+                                ) : null}
+
+                            </div>
+
+                            <p className="breathing-safety-note">
+                                Breathe gently. Don’t force the inhale,
+                                hold, or exhale. If it feels uncomfortable,
+                                return to your natural breathing.
+                            </p>
+
+                        </div>
+
+                    </section>
                 ) : null}
 
-              </div>
-
-              <p className="breathing-safety-note">
-                Breathe gently. Don’t
-                force the inhale, hold,
-                or exhale. If it feels
-                uncomfortable, return to
-                your natural breathing.
-              </p>
-
-            </div>
-
-          </section>
-        ) : null}
-
-        {/* ===============================================
+                {/* =================================================
             COMPLETE
-            =============================================== */}
+            ================================================= */}
 
-        {screen ===
-        "complete" ? (
-          <section className="breathing-complete">
+                {screen === "complete" ? (
+                    <section className="breathing-complete">
 
-            <div className="breathing-complete__content">
+                        <div className="breathing-complete__center">
 
-              {COMPLETE_IMAGE ? (
-                <img
-                  src={
-                    COMPLETE_IMAGE
-                  }
-                  alt=""
-                  aria-hidden="true"
-                  className="breathing-complete__image"
-                />
-              ) : null}
+                            {COMPLETE_IMAGE ? (
+                                <img
+                                    src={
+                                        COMPLETE_IMAGE
+                                    }
+                                    alt=""
+                                    aria-hidden="true"
+                                    draggable="false"
+                                    className="breathing-complete__image"
+                                />
+                            ) : null}
 
-              <div className="breathing-complete__message">
+                            <h1>
+                                Breathing session complete
+                            </h1>
 
-                <h1>
-                  Breathing session
-                  complete
-                </h1>
+                            <p className="breathing-complete__description">
+                                You made time to pause and breathe.
+                                Take a moment before moving on.
+                            </p>
 
-                <p>
-                  You made time to pause
-                  and breathe. Take a
-                  moment before moving on.
-                </p>
+                            <div className="breathing-complete__duration">
 
-                <div className="breathing-complete__duration">
-                  <Clock3
-                    size={16}
-                    strokeWidth={
-                      1.6
-                    }
-                  />
+                                <Clock3
+                                    size={
+                                        16
+                                    }
+                                />
 
-                  <span>
-                    {formatCompletedTime(
-                      completedSeconds
-                    )}
-                  </span>
-                </div>
+                                <span>
+                                    {formatCompletedTime(
+                                        completedSeconds
+                                    )}
+                                </span>
 
-              </div>
+                            </div>
 
-              <div className="breathing-complete__actions">
+                            <div className="breathing-complete__divider" />
 
-                <button
-                  type="button"
-                  className="breathing-primary-button breathing-complete__done"
-                  onClick={
-                    handleDone
-                  }
-                >
-                  Done
-                </button>
+                            <button
+                                type="button"
+                                className="breathing-primary-button breathing-complete__done"
+                                onClick={
+                                    done
+                                }
+                            >
+                                Done
+                            </button>
 
-                <button
-                  type="button"
-                  className="breathing-text-button"
-                  onClick={
-                    handleAnotherSession
-                  }
-                >
-                  Begin another session
-                </button>
+                            <button
+                                type="button"
+                                className="breathing-text-button"
+                                onClick={
+                                    anotherSession
+                                }
+                            >
+                                Begin another session
+                            </button>
 
-              </div>
+                        </div>
 
-            </div>
+                    </section>
+                ) : null}
 
-          </section>
-        ) : null}
-
-      </main>
-    </AppLayout>
-  );
+            </main>
+        </AppLayout>
+    );
 }
 
 export default BreathingPage;

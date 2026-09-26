@@ -1,5 +1,5 @@
 /* =========================================================
-   ANANDAM BREATHING
+   ANANDAM BREATHING PAGE
    ========================================================= */
 
 .breathing-page,
@@ -15,16 +15,12 @@
   width: 100%;
   min-width: 0;
 
-  min-height:
-    calc(100svh - 87px);
+  min-height: calc(100svh - 87px);
 
   margin: 0;
   padding: 0;
 
-  overflow: hidden;
-
   color: #0c1421;
-
   background: #fcfaf7;
 
   font-family:
@@ -45,51 +41,10 @@
 }
 
 /* =========================================================
-   BUTTONS
+   COMMON BUTTONS
    ========================================================= */
 
-.breathing-primary-button {
-  display: inline-flex;
-
-  min-width: 140px;
-  height: 40px;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 0 24px;
-
-  color: #ffffff;
-  background: #712e1e;
-
-  border: 1px solid #712e1e;
-  border-radius: 7px;
-
-  font-size: 14px;
-  font-weight: 400;
-
-  cursor: pointer;
-
-  transition:
-    background 160ms ease,
-    transform 160ms ease,
-    box-shadow 160ms ease;
-}
-
-.breathing-primary-button:hover {
-  background: #602617;
-
-  box-shadow:
-    0 6px 18px
-    rgba(113, 46, 30, 0.13);
-
-  transform: translateY(-1px);
-}
-
-.breathing-primary-button:active {
-  transform: translateY(0);
-}
-
+.breathing-primary-button,
 .breathing-secondary-button {
   display: inline-flex;
 
@@ -99,17 +54,49 @@
   align-items: center;
   justify-content: center;
 
-  padding: 0 24px;
+  padding: 0 22px;
 
+  border-radius: 7px;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.breathing-primary-button {
+  color: #ffffff;
+  background: #712e1e;
+
+  border: 1px solid #712e1e;
+}
+
+.breathing-primary-button:hover {
+  background: #602617;
+
+  border-color: #602617;
+
+  box-shadow:
+    0 5px 14px
+    rgba(113, 46, 30, 0.13);
+
+  transform: translateY(-1px);
+}
+
+.breathing-secondary-button {
   color: #712e1e;
   background: #ffffff;
 
   border: 1px solid #712e1e;
-  border-radius: 7px;
-
-  font-size: 14px;
-
-  cursor: pointer;
 }
 
 .breathing-secondary-button:hover {
@@ -117,7 +104,7 @@
 }
 
 .breathing-text-button {
-  padding: 6px 10px;
+  padding: 5px 9px;
 
   color: #712e1e;
   background: transparent;
@@ -142,17 +129,15 @@
 
   width: 100%;
 
-  min-height:
-    calc(100svh - 87px);
+  min-height: calc(100svh - 87px);
 
   flex-direction: column;
-
   align-items: center;
 
   padding:
-    58px
+    34px
     40px
-    72px;
+    46px;
 
   background: #ffffff;
 }
@@ -163,7 +148,7 @@
   flex-direction: column;
   align-items: center;
 
-  gap: 5px;
+  gap: 4px;
 
   text-align: center;
 }
@@ -183,57 +168,48 @@
   line-height: 18px;
 }
 
-.breathing-setup__illustration-wrap {
+/* =========================================================
+   SETUP ILLUSTRATION
+   ========================================================= */
+
+.breathing-setup__image-area {
   display: flex;
 
   width: 100%;
-  height: 330px;
+  height: 225px;
 
   align-items: center;
   justify-content: center;
 
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
-.breathing-setup__illustration {
+.breathing-setup__image {
   display: block;
 
-  width: min(340px, 74vw);
-  max-height: 320px;
+  width: 210px;
+  height: 210px;
 
   object-fit: contain;
 }
 
-.breathing-image-placeholder {
-  width: 280px;
-  height: 280px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      #fff4d6,
-      #f4e2b9
-    );
-}
-
 /* =========================================================
-   FORM
+   SETUP FORM
    ========================================================= */
 
 .breathing-form {
   display: flex;
 
-  width: min(600px, 100%);
+  width: min(
+    600px,
+    100%
+  );
 
   flex-direction: column;
 
-  align-items: stretch;
+  gap: 18px;
 
-  gap: 28px;
-
-  margin-top: -4px;
+  margin-top: 6px;
 }
 
 .breathing-form h2 {
@@ -241,6 +217,7 @@
 
   font-size: 21px;
   font-weight: 500;
+  line-height: 25px;
 
   text-align: center;
 }
@@ -252,7 +229,7 @@
 
   flex-direction: column;
 
-  gap: 8px;
+  gap: 7px;
 }
 
 .breathing-field > span {
@@ -268,14 +245,18 @@
 
   padding:
     0
-    44px
+    42px
     0
     16px;
 
   color: #667085;
+
   background: #fafafa;
 
-  border: 1px solid #d1d3d6;
+  border:
+    1px solid
+    #d1d3d6;
+
   border-radius: 8px;
 
   outline: none;
@@ -284,28 +265,28 @@
 }
 
 .breathing-field select:hover {
-  border-color: #b8b9bc;
+  border-color: #b9babd;
 }
 
 .breathing-field select:focus {
-  border-color: #9f796f;
+  border-color: #a77f75;
 
   box-shadow:
-    0 0 0 2px
-    rgba(113, 46, 30, 0.08);
+    0 0 0 3px
+    rgba(113, 46, 30, 0.07);
 }
 
 .breathing-form
   .breathing-primary-button {
   align-self: center;
 
-  margin-top: 10px;
+  margin-top: 4px;
 }
 
 .breathing-form__error {
-  margin-top: -14px !important;
+  margin-top: -8px !important;
 
-  color: #8c4a3b;
+  color: #8e4637;
 
   font-size: 12px;
   line-height: 17px;
@@ -314,53 +295,51 @@
 }
 
 /* =========================================================
-   READY / ACTIVE FRAME
+   SESSION SHELL
    ========================================================= */
 
-.breathing-session-panel {
+.breathing-session-shell {
   width: 100%;
 
-  min-height:
-    calc(100svh - 87px);
-
-  padding: 0;
+  min-height: calc(100svh - 87px);
 
   background: #fcfaf7;
 }
 
-.breathing-ready,
-.breathing-active {
-  position: relative;
+/* =========================================================
+   READY SCREEN
+   ========================================================= */
 
+.breathing-ready {
   display: flex;
 
   width: 100%;
 
-  min-height:
-    calc(100svh - 87px);
+  min-height: calc(100svh - 87px);
 
   flex-direction: column;
 
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 
   padding:
-    70px
+    38px
     40px
-    54px;
+    26px;
 
   background: #ffffff;
 
-  border: 1px solid #d9d9d9;
+  border:
+    1px solid
+    #d9d9d9;
+
   border-radius: 20px;
 }
 
-/* =========================================================
-   READY
-   ========================================================= */
-
-.breathing-ready__content {
+.breathing-ready__center {
   display: flex;
+
+  width: 100%;
 
   flex: 1 1 auto;
 
@@ -369,7 +348,7 @@
   align-items: center;
   justify-content: center;
 
-  gap: 26px;
+  gap: 18px;
 
   text-align: center;
 }
@@ -377,8 +356,8 @@
 .breathing-ready__image {
   display: block;
 
-  width: min(290px, 60vw);
-  height: 260px;
+  width: 190px;
+  height: 180px;
 
   object-fit: contain;
 }
@@ -386,27 +365,59 @@
 .breathing-ready h1 {
   color: #111111;
 
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 500;
-  line-height: 29px;
+  line-height: 28px;
 }
+
+/* =========================================================
+   SAFETY NOTE
+   ========================================================= */
 
 .breathing-safety-note {
   width: 100%;
 
+  margin-top: 16px !important;
+
   color: #5d616b;
 
-  font-size: 15px;
-  line-height: 21px;
+  font-size: 14px;
+  line-height: 19px;
 
   text-align: center;
 }
 
 /* =========================================================
-   ACTIVE
+   ACTIVE SESSION
    ========================================================= */
 
-.breathing-active__main {
+.breathing-active {
+  display: flex;
+
+  width: 100%;
+
+  min-height: calc(100svh - 87px);
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding:
+    18px
+    40px
+    24px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 20px;
+}
+
+.breathing-active__center {
   display: flex;
 
   width: 100%;
@@ -417,141 +428,432 @@
 
   align-items: center;
   justify-content: center;
-}
 
-.breathing-active__visual {
-  display: flex;
-
-  width: 290px;
-  height: 350px;
-
-  align-items: center;
-  justify-content: center;
-
-  margin-bottom: 4px;
+  gap: 8px;
 }
 
 /* =========================================================
-   BREATHING ANATOMY
+   ANATOMY MASTER CANVAS
+
+   IMPORTANT:
+
+   Fixed dimensions prevent the exported PNGs from
+   physically moving the surrounding UI when states change.
    ========================================================= */
 
 .breathing-anatomy {
+  position: relative;
+
+  width: 190px;
+  height: 238px;
+
+  flex: 0 0 238px;
+
+  margin:
+    0
+    auto
+    2px;
+}
+
+/* =========================================================
+   MOUTH / NOSE FRAME
+
+   Every mouth state occupies EXACTLY the same canvas.
+   No scaling.
+   No layout shifts.
+   ========================================================= */
+
+.breathing-mouth-frame {
+  position: absolute;
+
+  z-index: 3;
+
+  top: 0;
+  left: 50%;
+
+  width: 88px;
+  height: 84px;
+
+  transform:
+    translateX(-50%);
+
+  overflow: visible;
+}
+
+.breathing-mouth-layer {
+  position: absolute;
+
+  inset: 0;
+
+  display: block;
+
+  width: 88px;
+  height: 84px;
+
+  object-fit: contain;
+
+  object-position:
+    center
+    bottom;
+
+  opacity: 0;
+
+  /*
+    IMPORTANT:
+    JavaScript updates opacity at animation-frame rate.
+
+    Do not add an additional CSS opacity transition because
+    it would lag behind our breathing engine.
+  */
+
+  transition: none;
+
+  transform: none;
+
+  will-change: opacity;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================================================
+   LUNG FRAME
+
+   The lung PNG already contains the airway/trachea.
+   Therefore there is NO artificial CSS connector anymore.
+   ========================================================= */
+
+.breathing-lung-frame {
+  position: absolute;
+
+  z-index: 2;
+
+  top: 68px;
+  left: 50%;
+
   display: flex;
 
-  width: 220px;
-  height: 330px;
-
-  flex-direction: column;
+  width: 190px;
+  height: 170px;
 
   align-items: center;
   justify-content: center;
 
-  gap: 5px;
-}
-
-.breathing-anatomy__mouth {
-  display: block;
-
-  width: 96px;
-  height: 120px;
-
-  object-fit: contain;
-
-  transform: scale(0.98);
-
-  transform-origin:
-    center bottom;
-
-  will-change: transform;
-}
-
-.breathing-anatomy__lungs {
-  display: block;
-
-  width: 190px;
-  height: 190px;
-
-  object-fit: contain;
-
-  transform: scale(0.88);
-
-  transform-origin: center;
-
-  will-change: transform;
-}
-
-.breathing-anatomy__combined {
-  display: block;
-
-  width: 225px;
-  height: 330px;
-
-  object-fit: contain;
-
-  transform: scale(0.88);
-
-  transform-origin: center;
-
-  will-change: transform;
-}
-
-.breathing-anatomy__fallback {
-  position: relative;
-
-  width: 180px;
-  height: 150px;
-
-  transform: scale(0.88);
-
-  transform-origin: center;
-
-  will-change: transform;
-}
-
-.breathing-anatomy__fallback::before {
-  position: absolute;
-
-  top: -90px;
-  left: 50%;
-
-  width: 4px;
-  height: 95px;
-
-  background: #777777;
-
-  content: "";
-
   transform:
     translateX(-50%);
-}
 
-.breathing-anatomy__fallback-lung {
-  position: absolute;
-
-  top: 0;
-
-  width: 75px;
-  height: 130px;
-
-  background: #f58ab7;
-}
-
-.breathing-anatomy__fallback-lung--left {
-  left: 5px;
-
-  border-radius:
-    60% 30% 55% 45%;
-}
-
-.breathing-anatomy__fallback-lung--right {
-  right: 5px;
-
-  border-radius:
-    30% 60% 45% 55%;
+  overflow: visible;
 }
 
 /* =========================================================
-   PHASE
+   LUNG SCALE WRAPPER
+
+   Only this wrapper scales.
+   Individual lung images do not.
+
+   This prevents the images from fighting one another.
+   ========================================================= */
+
+.breathing-lung-scale {
+  position: relative;
+
+  width: 175px;
+  height: 165px;
+
+  transform: scale(0.91);
+
+  transform-origin:
+    50%
+    64%;
+
+  /*
+    No CSS transition.
+    requestAnimationFrame controls scale directly.
+  */
+
+  transition: none;
+
+  will-change: transform;
+}
+
+.breathing-lung-layer {
+  position: absolute;
+
+  inset: 0;
+
+  display: block;
+
+  width: 175px;
+  height: 165px;
+
+  object-fit: contain;
+
+  object-position:
+    center
+    center;
+
+  opacity: 0;
+
+  transition: none;
+
+  transform: none;
+
+  will-change: opacity;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================================================
+   ACTIVE BREATHING ANATOMY
+   Mouth → neck → trachea/lungs
+   ========================================================= */
+
+.breathing-anatomy {
+  position: relative;
+
+  width: 220px;
+  height: 270px;
+
+  flex: 0 0 270px;
+
+  margin: 0 auto 4px;
+
+  overflow: visible;
+}
+
+
+/* =========================================================
+   MOUTH / NOSE
+
+   Kept higher so it does not collide with the neck
+   or trachea.
+   ========================================================= */
+
+.breathing-mouth-frame {
+  position: absolute;
+
+  z-index: 5;
+
+  top: -4px;
+  left: 50%;
+
+  width: 92px;
+  height: 58px;
+
+  transform: translateX(-50%);
+
+  overflow: visible;
+}
+
+
+/*
+  Three mouth illustrations stay in exactly
+  the same position.
+
+  Only opacity changes.
+  No scale.
+*/
+
+.breathing-mouth-image {
+  position: absolute;
+
+  inset: 0;
+
+  width: 92px;
+  height: 68px;
+
+  display: block;
+
+  object-fit: contain;
+  object-position: center center;
+
+  opacity: 0;
+
+  transform: none;
+
+  transition:
+    opacity 650ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+
+  will-change: opacity;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.breathing-mouth-image.is-active {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   OUTER NECK + SHOULDERS
+   ========================================================= */
+
+.breathing-neck-shoulders {
+  position: absolute;
+
+  z-index: 3;
+
+  top: 54px;
+  left: 50%;
+
+  width: 250px;
+  height: 118px;
+
+  transform: translateX(-50%);
+
+  pointer-events: none;
+}
+
+.breathing-neck-shoulders svg {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+}
+
+.breathing-neck-shoulders path {
+  fill: none;
+
+  stroke: #5f5956;
+  stroke-width: 1.25;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  opacity: 0.78;
+
+  vector-effect: non-scaling-stroke;
+}
+
+
+/* =========================================================
+   LUNG FRAME
+
+   Starts below neck.
+
+   The frame itself never moves.
+   ========================================================= */
+
+.breathing-lung-frame {
+  position: absolute;
+
+  z-index: 2;
+
+  top: 105px;
+  left: 50%;
+
+  display: flex;
+
+  width: 210px;
+  height: 165px;
+
+  align-items: flex-start;
+  justify-content: center;
+
+  transform: translateX(-50%);
+
+  overflow: visible;
+}
+
+
+/* =========================================================
+   SINGLE LUNG IMAGE
+
+   ONE image only.
+
+   JS scales this image:
+   inhale  -> larger
+   hold    -> stays large
+   exhale  -> smaller
+   hold    -> stays small
+
+   The scale origin is near the TOP so the airway
+   connection stays visually attached to the neck.
+   ========================================================= */
+
+.breathing-single-lung {
+  display: block;
+
+  width: 178px;
+  height: 160px;
+
+  object-fit: contain;
+  object-position: center top;
+
+  transform:
+    translateZ(0)
+    scale(0.88);
+
+  /*
+    VERY IMPORTANT:
+    JS requestAnimationFrame controls the motion.
+
+    Do not add CSS transition here.
+  */
+  transition: none;
+
+  /*
+    Anchor the breathing motion near the top/trachea.
+
+    This stops the entire lung illustration from
+    floating up/down.
+  */
+  transform-origin: 50% 12%;
+
+  will-change: transform;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* =========================================================
+   OPTIONAL VISUAL SOFTENING
+
+   Helps the neck visually merge into the trachea.
+   ========================================================= */
+
+/* .breathing-lung-frame::before {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  top: -8px;
+  left: 50%;
+
+  width: 34px;
+  height: 25px;
+
+  transform: translateX(-50%);
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.55),
+      rgba(255, 255, 255, 0)
+    );
+
+  pointer-events: none;
+} */
+
+/* =========================================================
+   BREATHING LABEL
    ========================================================= */
 
 .breathing-phase {
@@ -561,39 +863,46 @@
 
   align-items: center;
 
-  gap: 7px;
+  gap: 2px;
 
-  margin-top: 2px;
+  margin-top: 0;
 }
 
 .breathing-phase h1 {
-  min-width: 290px;
+  min-width: 250px;
 
   color: #5d616b;
 
-  font-size: 34px;
+  font-size: 29px;
   font-weight: 500;
-  line-height: 40px;
-
-  text-align: center;
+  line-height: 34px;
 
   letter-spacing: 0.01em;
+
+  text-align: center;
 }
 
 .breathing-phase span {
   color: #111111;
 
-  font-size: 26px;
-  line-height: 30px;
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 28px;
 }
 
+/* =========================================================
+   REMAINING TIME
+   ========================================================= */
+
 .breathing-remaining {
-  margin-top: 58px !important;
+  margin-top: 11px !important;
 
   color: #5d616b;
 
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 15px;
+  line-height: 19px;
+
+  text-align: center;
 }
 
 /* =========================================================
@@ -606,13 +915,13 @@
   align-items: center;
   justify-content: center;
 
-  gap: 16px;
+  gap: 12px;
 
-  margin-top: 22px;
+  margin-top: 7px;
 }
 
-.breathing-control-button {
-  min-width: 144px;
+.breathing-controls button {
+  min-width: 138px;
 }
 
 /* =========================================================
@@ -622,45 +931,49 @@
 .breathing-now-playing {
   display: flex;
 
-  min-width: 235px;
-  min-height: 58px;
+  width: 238px;
+  height: 52px;
 
   align-items: center;
 
-  gap: 12px;
+  gap: 8px;
 
-  margin-top: 26px;
+  margin-top: 9px;
 
   padding:
-    8px
-    13px;
+    6px
+    10px;
 
   background: #ffffff;
 
-  border: 1px solid #eeeeee;
+  border:
+    1px solid
+    #eeeeee;
+
   border-radius: 999px;
 
   box-shadow:
-    0 3px 8px
-    rgba(32, 40, 58, 0.06);
+    0 3px 9px
+    rgba(32, 40, 58, 0.07);
 }
 
 .breathing-now-playing__icon {
   display: flex;
 
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
 
-  flex: 0 0 40px;
+  flex: 0 0 35px;
 
   align-items: center;
   justify-content: center;
 
   color: #b88a32;
 
-  background: #ffffff;
+  border:
+    1px solid
+    #eadcb9;
 
-  border: 1px solid #eadcb9;
   border-radius: 50%;
 }
 
@@ -673,14 +986,14 @@
 
   flex-direction: column;
 
-  gap: 2px;
+  gap: 1px;
 }
 
 .breathing-now-playing__copy small {
   color: #767c91;
 
-  font-size: 9px;
-  line-height: 11px;
+  font-size: 8px;
+  line-height: 10px;
 }
 
 .breathing-now-playing__copy strong {
@@ -688,19 +1001,27 @@
 
   color: #20283a;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
+  line-height: 15px;
 
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
+
+/* =========================================================
+   MUSIC BARS
+   ========================================================= */
 
 .breathing-now-playing__bars {
   display: flex;
 
-  height: 18px;
+  width: 17px;
+  height: 15px;
 
   align-items: flex-end;
+  justify-content: center;
 
   gap: 2px;
 }
@@ -712,45 +1033,43 @@
 
   background: #c89e4b;
 
-  border-radius: 3px;
+  border-radius: 4px;
 
   animation:
-    breathing-audio-wave
-    850ms
+    breathing-music-bar
+    900ms
     ease-in-out
     infinite alternate;
 }
 
 .breathing-now-playing__bars
   i:nth-child(1) {
-  height: 7px;
+  height: 6px;
 }
 
 .breathing-now-playing__bars
   i:nth-child(2) {
-  height: 15px;
+  height: 13px;
 
-  animation-delay: 140ms;
+  animation-delay: 130ms;
 }
 
 .breathing-now-playing__bars
   i:nth-child(3) {
-  height: 10px;
+  height: 8px;
 
-  animation-delay: 280ms;
+  animation-delay: 260ms;
 }
 
-.breathing-now-playing__bars
-  i:nth-child(4) {
-  height: 5px;
-
-  animation-delay: 420ms;
+.breathing-now-playing__bars.is-paused
+  i {
+  animation-play-state: paused;
 }
 
-@keyframes breathing-audio-wave {
+@keyframes breathing-music-bar {
   from {
     transform:
-      scaleY(0.45);
+      scaleY(0.48);
   }
 
   to {
@@ -759,13 +1078,17 @@
   }
 }
 
+/* =========================================================
+   VOLUME
+   ========================================================= */
+
 .breathing-volume-button {
   display: grid;
 
-  width: 30px;
-  height: 30px;
+  width: 27px;
+  height: 27px;
 
-  flex: 0 0 30px;
+  flex: 0 0 27px;
 
   place-items: center;
 
@@ -787,13 +1110,12 @@
 }
 
 /* =========================================================
-   YOUTUBE BACKGROUND PLAYER
+   YOUTUBE AUDIO
 
-   It remains embedded in the Anandam page.
-   It never redirects the user to YouTube.
+   Kept technically inside the page but visually hidden.
    ========================================================= */
 
-.breathing-youtube-audio {
+.breathing-youtube-player {
   position: fixed;
 
   z-index: -1;
@@ -804,7 +1126,7 @@
   width: 2px;
   height: 2px;
 
-  opacity: 0.01;
+  opacity: 0.001;
 
   border: 0;
 
@@ -812,7 +1134,7 @@
 }
 
 /* =========================================================
-   COMPLETE
+   COMPLETE SCREEN
    ========================================================= */
 
 .breathing-complete {
@@ -820,20 +1142,19 @@
 
   width: 100%;
 
-  min-height:
-    calc(100svh - 87px);
+  min-height: calc(100svh - 87px);
 
   align-items: center;
   justify-content: center;
 
   padding:
-    50px
+    32px
     40px;
 
   background: #ffffff;
 }
 
-.breathing-complete__content {
+.breathing-complete__center {
   display: flex;
 
   width: 100%;
@@ -848,25 +1169,15 @@
 .breathing-complete__image {
   display: block;
 
-  width: min(292px, 70vw);
-  height: 251px;
+  width: 190px;
+  height: 165px;
 
   object-fit: contain;
 }
 
-.breathing-complete__message {
-  display: flex;
+.breathing-complete h1 {
+  margin-top: 18px;
 
-  flex-direction: column;
-
-  align-items: center;
-
-  gap: 11px;
-
-  margin-top: 32px;
-}
-
-.breathing-complete__message h1 {
   color: #111111;
 
   font-size: 20px;
@@ -874,59 +1185,62 @@
   line-height: 24px;
 }
 
-.breathing-complete__message p {
+.breathing-complete__description {
+  margin-top: 7px !important;
+
   color: #777b83;
 
-  font-size: 18px;
-  line-height: 24px;
+  font-size: 16px;
+  line-height: 22px;
 }
 
 .breathing-complete__duration {
   display: inline-flex;
 
-  min-height: 42px;
+  min-height: 40px;
 
   align-items: center;
   justify-content: center;
 
-  gap: 10px;
+  gap: 8px;
 
-  margin-top: 12px;
+  margin-top: 13px;
 
   padding:
     0
-    18px;
+    16px;
 
   color: #93661f;
-
   background: #fffaf0;
 
-  border: 1px solid #e7c98f;
+  border:
+    1px solid
+    #e7c98f;
+
   border-radius: 999px;
 
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
-.breathing-complete__actions {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  gap: 18px;
-
+.breathing-complete__divider {
   width: 100%;
+  height: 1px;
 
-  margin-top: 34px;
-  padding-top: 35px;
+  margin-top: 25px;
 
-  border-top: 1px solid #eeeeee;
+  background: #eeeeee;
 }
 
 .breathing-complete__done {
-  width: 146px;
+  width: 145px;
+
+  margin-top: 25px;
+}
+
+.breathing-complete
+  .breathing-text-button {
+  margin-top: 10px;
 }
 
 /* =========================================================
@@ -952,38 +1266,41 @@
 @media (max-width: 900px) {
   .breathing-setup {
     padding:
-      42px
+      30px
       26px
-      60px;
+      42px;
   }
 
-  .breathing-ready,
+  .breathing-ready {
+    padding:
+      32px
+      28px
+      24px;
+  }
+
   .breathing-active {
     padding:
-      50px
+      18px
       28px
-      42px;
+      22px;
   }
 }
 
 @media (max-width: 650px) {
   .breathing-setup {
     padding:
-      32px
+      26px
       18px
-      48px;
+      36px;
   }
 
-  .breathing-setup__illustration-wrap {
-    height: 270px;
+  .breathing-setup__image-area {
+    height: 195px;
   }
 
-  .breathing-setup__illustration {
-    max-height: 250px;
-  }
-
-  .breathing-form {
-    gap: 22px;
+  .breathing-setup__image {
+    width: 180px;
+    height: 180px;
   }
 
   .breathing-ready,
@@ -992,45 +1309,63 @@
       calc(100svh - 74px);
 
     padding:
-      36px
+      26px
       18px
-      30px;
+      21px;
 
     border-radius: 14px;
   }
 
-  .breathing-active__visual {
-    width: 240px;
-    height: 300px;
+  .breathing-ready__image {
+    width: 165px;
+    height: 155px;
   }
 
-  .breathing-anatomy__combined {
-    width: 195px;
-    height: 285px;
+  .breathing-anatomy {
+    width: 170px;
+    height: 215px;
+
+    flex-basis: 215px;
   }
 
-  .breathing-anatomy__lungs {
-    width: 160px;
+  .breathing-mouth-frame {
+    width: 76px;
+    height: 73px;
+  }
+
+  .breathing-mouth-layer {
+    width: 76px;
+    height: 73px;
+  }
+
+  .breathing-lung-frame {
+    top: 58px;
+
+    width: 170px;
+    height: 157px;
+  }
+
+  .breathing-lung-scale,
+  .breathing-lung-layer {
+    width: 155px;
+    height: 150px;
   }
 
   .breathing-phase h1 {
     min-width: 0;
 
-    font-size: 27px;
-    line-height: 33px;
+    font-size: 25px;
+    line-height: 30px;
   }
 
   .breathing-phase span {
-    font-size: 23px;
-  }
-
-  .breathing-remaining {
-    margin-top:
-      38px !important;
+    font-size: 21px;
   }
 
   .breathing-controls {
     width: 100%;
+
+    gap: 9px;
   }
 
   .breathing-controls button {
@@ -1039,23 +1374,33 @@
     flex: 1 1 0;
   }
 
+  .breathing-now-playing {
+    width: 220px;
+  }
+
   .breathing-safety-note {
     font-size: 13px;
+    line-height: 18px;
   }
 
   .breathing-complete {
     padding:
-      30px
+      27px
       18px;
   }
 
-  .breathing-complete__message p {
+  .breathing-complete__image {
+    width: 170px;
+    height: 145px;
+  }
+
+  .breathing-complete__description {
     font-size: 15px;
   }
 }
 
 /* =========================================================
-   ACCESSIBILITY
+   REDUCED MOTION
    ========================================================= */
 
 @media (
@@ -1065,11 +1410,5 @@
   .breathing-now-playing__bars
     i {
     animation: none;
-  }
-
-  .breathing-page *,
-  .breathing-page *::before,
-  .breathing-page *::after {
-    scroll-behavior: auto !important;
   }
 }
