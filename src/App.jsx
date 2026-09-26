@@ -14,6 +14,7 @@ import EmergencyPage from "./pages/EmergencyPage";    // ← NEW
 import ProfilePage from "./pages/ProfilePage";
 import { getStoredToken } from "./utils/storage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import BreathingPage from "./pages/BreathingPage";
 
 
 function RequireAuth({ children }) {
@@ -69,7 +70,7 @@ function App() {
         />
 
 
-{/* main mood checkin page, accessed from the sidebar or dashboard
+        {/* main mood checkin page, accessed from the sidebar or dashboard
  */}
         <Route
           path="/mood"
@@ -123,6 +124,15 @@ function App() {
           element={
             <RequireAuth>
               <ProfilePage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/breathing"
+          element={
+            <RequireAuth>
+              <BreathingPage />
             </RequireAuth>
           }
         />

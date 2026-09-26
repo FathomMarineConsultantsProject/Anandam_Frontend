@@ -1,0 +1,1075 @@
+/* =========================================================
+   ANANDAM BREATHING
+   ========================================================= */
+
+.breathing-page,
+.breathing-page *,
+.breathing-page *::before,
+.breathing-page *::after {
+  box-sizing: border-box;
+}
+
+.breathing-page {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  min-height:
+    calc(100svh - 87px);
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  color: #0c1421;
+
+  background: #fcfaf7;
+
+  font-family:
+    "Roboto",
+    Arial,
+    sans-serif;
+}
+
+.breathing-page h1,
+.breathing-page h2,
+.breathing-page p {
+  margin: 0;
+}
+
+.breathing-page button,
+.breathing-page select {
+  font: inherit;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.breathing-primary-button {
+  display: inline-flex;
+
+  min-width: 140px;
+  height: 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 24px;
+
+  color: #ffffff;
+  background: #712e1e;
+
+  border: 1px solid #712e1e;
+  border-radius: 7px;
+
+  font-size: 14px;
+  font-weight: 400;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.breathing-primary-button:hover {
+  background: #602617;
+
+  box-shadow:
+    0 6px 18px
+    rgba(113, 46, 30, 0.13);
+
+  transform: translateY(-1px);
+}
+
+.breathing-primary-button:active {
+  transform: translateY(0);
+}
+
+.breathing-secondary-button {
+  display: inline-flex;
+
+  min-width: 140px;
+  height: 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 24px;
+
+  color: #712e1e;
+  background: #ffffff;
+
+  border: 1px solid #712e1e;
+  border-radius: 7px;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.breathing-secondary-button:hover {
+  background: #fff8f4;
+}
+
+.breathing-text-button {
+  padding: 6px 10px;
+
+  color: #712e1e;
+  background: transparent;
+
+  border: 0;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.breathing-text-button:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   SETUP
+   ========================================================= */
+
+.breathing-setup {
+  display: flex;
+
+  width: 100%;
+
+  min-height:
+    calc(100svh - 87px);
+
+  flex-direction: column;
+
+  align-items: center;
+
+  padding:
+    58px
+    40px
+    72px;
+
+  background: #ffffff;
+}
+
+.breathing-setup__header {
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+
+  gap: 5px;
+
+  text-align: center;
+}
+
+.breathing-setup__header h1 {
+  color: #0c1421;
+
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 29px;
+}
+
+.breathing-setup__header p {
+  color: #60657c;
+
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.breathing-setup__illustration-wrap {
+  display: flex;
+
+  width: 100%;
+  height: 330px;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 18px;
+}
+
+.breathing-setup__illustration {
+  display: block;
+
+  width: min(340px, 74vw);
+  max-height: 320px;
+
+  object-fit: contain;
+}
+
+.breathing-image-placeholder {
+  width: 280px;
+  height: 280px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #fff4d6,
+      #f4e2b9
+    );
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.breathing-form {
+  display: flex;
+
+  width: min(600px, 100%);
+
+  flex-direction: column;
+
+  align-items: stretch;
+
+  gap: 28px;
+
+  margin-top: -4px;
+}
+
+.breathing-form h2 {
+  color: #111111;
+
+  font-size: 21px;
+  font-weight: 500;
+
+  text-align: center;
+}
+
+.breathing-field {
+  display: flex;
+
+  width: 100%;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.breathing-field > span {
+  color: #0c1421;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.breathing-field select {
+  width: 100%;
+  height: 44px;
+
+  padding:
+    0
+    44px
+    0
+    16px;
+
+  color: #667085;
+  background: #fafafa;
+
+  border: 1px solid #d1d3d6;
+  border-radius: 8px;
+
+  outline: none;
+
+  cursor: pointer;
+}
+
+.breathing-field select:hover {
+  border-color: #b8b9bc;
+}
+
+.breathing-field select:focus {
+  border-color: #9f796f;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(113, 46, 30, 0.08);
+}
+
+.breathing-form
+  .breathing-primary-button {
+  align-self: center;
+
+  margin-top: 10px;
+}
+
+.breathing-form__error {
+  margin-top: -14px !important;
+
+  color: #8c4a3b;
+
+  font-size: 12px;
+  line-height: 17px;
+
+  text-align: center;
+}
+
+/* =========================================================
+   READY / ACTIVE FRAME
+   ========================================================= */
+
+.breathing-session-panel {
+  width: 100%;
+
+  min-height:
+    calc(100svh - 87px);
+
+  padding: 0;
+
+  background: #fcfaf7;
+}
+
+.breathing-ready,
+.breathing-active {
+  position: relative;
+
+  display: flex;
+
+  width: 100%;
+
+  min-height:
+    calc(100svh - 87px);
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    70px
+    40px
+    54px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+/* =========================================================
+   READY
+   ========================================================= */
+
+.breathing-ready__content {
+  display: flex;
+
+  flex: 1 1 auto;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 26px;
+
+  text-align: center;
+}
+
+.breathing-ready__image {
+  display: block;
+
+  width: min(290px, 60vw);
+  height: 260px;
+
+  object-fit: contain;
+}
+
+.breathing-ready h1 {
+  color: #111111;
+
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 29px;
+}
+
+.breathing-safety-note {
+  width: 100%;
+
+  color: #5d616b;
+
+  font-size: 15px;
+  line-height: 21px;
+
+  text-align: center;
+}
+
+/* =========================================================
+   ACTIVE
+   ========================================================= */
+
+.breathing-active__main {
+  display: flex;
+
+  width: 100%;
+
+  flex: 1 1 auto;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.breathing-active__visual {
+  display: flex;
+
+  width: 290px;
+  height: 350px;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 4px;
+}
+
+/* =========================================================
+   BREATHING ANATOMY
+   ========================================================= */
+
+.breathing-anatomy {
+  display: flex;
+
+  width: 220px;
+  height: 330px;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+}
+
+.breathing-anatomy__mouth {
+  display: block;
+
+  width: 96px;
+  height: 120px;
+
+  object-fit: contain;
+
+  transform: scale(0.98);
+
+  transform-origin:
+    center bottom;
+
+  will-change: transform;
+}
+
+.breathing-anatomy__lungs {
+  display: block;
+
+  width: 190px;
+  height: 190px;
+
+  object-fit: contain;
+
+  transform: scale(0.88);
+
+  transform-origin: center;
+
+  will-change: transform;
+}
+
+.breathing-anatomy__combined {
+  display: block;
+
+  width: 225px;
+  height: 330px;
+
+  object-fit: contain;
+
+  transform: scale(0.88);
+
+  transform-origin: center;
+
+  will-change: transform;
+}
+
+.breathing-anatomy__fallback {
+  position: relative;
+
+  width: 180px;
+  height: 150px;
+
+  transform: scale(0.88);
+
+  transform-origin: center;
+
+  will-change: transform;
+}
+
+.breathing-anatomy__fallback::before {
+  position: absolute;
+
+  top: -90px;
+  left: 50%;
+
+  width: 4px;
+  height: 95px;
+
+  background: #777777;
+
+  content: "";
+
+  transform:
+    translateX(-50%);
+}
+
+.breathing-anatomy__fallback-lung {
+  position: absolute;
+
+  top: 0;
+
+  width: 75px;
+  height: 130px;
+
+  background: #f58ab7;
+}
+
+.breathing-anatomy__fallback-lung--left {
+  left: 5px;
+
+  border-radius:
+    60% 30% 55% 45%;
+}
+
+.breathing-anatomy__fallback-lung--right {
+  right: 5px;
+
+  border-radius:
+    30% 60% 45% 55%;
+}
+
+/* =========================================================
+   PHASE
+   ========================================================= */
+
+.breathing-phase {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 2px;
+}
+
+.breathing-phase h1 {
+  min-width: 290px;
+
+  color: #5d616b;
+
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 40px;
+
+  text-align: center;
+
+  letter-spacing: 0.01em;
+}
+
+.breathing-phase span {
+  color: #111111;
+
+  font-size: 26px;
+  line-height: 30px;
+}
+
+.breathing-remaining {
+  margin-top: 58px !important;
+
+  color: #5d616b;
+
+  font-size: 16px;
+  line-height: 20px;
+}
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+.breathing-controls {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 16px;
+
+  margin-top: 22px;
+}
+
+.breathing-control-button {
+  min-width: 144px;
+}
+
+/* =========================================================
+   NOW PLAYING
+   ========================================================= */
+
+.breathing-now-playing {
+  display: flex;
+
+  min-width: 235px;
+  min-height: 58px;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 26px;
+
+  padding:
+    8px
+    13px;
+
+  background: #ffffff;
+
+  border: 1px solid #eeeeee;
+  border-radius: 999px;
+
+  box-shadow:
+    0 3px 8px
+    rgba(32, 40, 58, 0.06);
+}
+
+.breathing-now-playing__icon {
+  display: flex;
+
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #b88a32;
+
+  background: #ffffff;
+
+  border: 1px solid #eadcb9;
+  border-radius: 50%;
+}
+
+.breathing-now-playing__copy {
+  display: flex;
+
+  min-width: 0;
+
+  flex: 1 1 auto;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.breathing-now-playing__copy small {
+  color: #767c91;
+
+  font-size: 9px;
+  line-height: 11px;
+}
+
+.breathing-now-playing__copy strong {
+  overflow: hidden;
+
+  color: #20283a;
+
+  font-size: 13px;
+  font-weight: 400;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breathing-now-playing__bars {
+  display: flex;
+
+  height: 18px;
+
+  align-items: flex-end;
+
+  gap: 2px;
+}
+
+.breathing-now-playing__bars i {
+  display: block;
+
+  width: 3px;
+
+  background: #c89e4b;
+
+  border-radius: 3px;
+
+  animation:
+    breathing-audio-wave
+    850ms
+    ease-in-out
+    infinite alternate;
+}
+
+.breathing-now-playing__bars
+  i:nth-child(1) {
+  height: 7px;
+}
+
+.breathing-now-playing__bars
+  i:nth-child(2) {
+  height: 15px;
+
+  animation-delay: 140ms;
+}
+
+.breathing-now-playing__bars
+  i:nth-child(3) {
+  height: 10px;
+
+  animation-delay: 280ms;
+}
+
+.breathing-now-playing__bars
+  i:nth-child(4) {
+  height: 5px;
+
+  animation-delay: 420ms;
+}
+
+@keyframes breathing-audio-wave {
+  from {
+    transform:
+      scaleY(0.45);
+  }
+
+  to {
+    transform:
+      scaleY(1);
+  }
+}
+
+.breathing-volume-button {
+  display: grid;
+
+  width: 30px;
+  height: 30px;
+
+  flex: 0 0 30px;
+
+  place-items: center;
+
+  padding: 0;
+
+  color: #667085;
+  background: transparent;
+
+  border: 0;
+  border-radius: 50%;
+
+  cursor: pointer;
+}
+
+.breathing-volume-button:hover {
+  color: #712e1e;
+
+  background: #faf4f1;
+}
+
+/* =========================================================
+   YOUTUBE BACKGROUND PLAYER
+
+   It remains embedded in the Anandam page.
+   It never redirects the user to YouTube.
+   ========================================================= */
+
+.breathing-youtube-audio {
+  position: fixed;
+
+  z-index: -1;
+
+  right: 0;
+  bottom: 0;
+
+  width: 2px;
+  height: 2px;
+
+  opacity: 0.01;
+
+  border: 0;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   COMPLETE
+   ========================================================= */
+
+.breathing-complete {
+  display: flex;
+
+  width: 100%;
+
+  min-height:
+    calc(100svh - 87px);
+
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    50px
+    40px;
+
+  background: #ffffff;
+}
+
+.breathing-complete__content {
+  display: flex;
+
+  width: 100%;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  text-align: center;
+}
+
+.breathing-complete__image {
+  display: block;
+
+  width: min(292px, 70vw);
+  height: 251px;
+
+  object-fit: contain;
+}
+
+.breathing-complete__message {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 11px;
+
+  margin-top: 32px;
+}
+
+.breathing-complete__message h1 {
+  color: #111111;
+
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.breathing-complete__message p {
+  color: #777b83;
+
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.breathing-complete__duration {
+  display: inline-flex;
+
+  min-height: 42px;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 12px;
+
+  padding:
+    0
+    18px;
+
+  color: #93661f;
+
+  background: #fffaf0;
+
+  border: 1px solid #e7c98f;
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.breathing-complete__actions {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 18px;
+
+  width: 100%;
+
+  margin-top: 34px;
+  padding-top: 35px;
+
+  border-top: 1px solid #eeeeee;
+}
+
+.breathing-complete__done {
+  width: 146px;
+}
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+.breathing-primary-button:focus-visible,
+.breathing-secondary-button:focus-visible,
+.breathing-text-button:focus-visible,
+.breathing-volume-button:focus-visible,
+.breathing-field select:focus-visible {
+  outline:
+    3px solid
+    rgba(184, 138, 50, 0.26);
+
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .breathing-setup {
+    padding:
+      42px
+      26px
+      60px;
+  }
+
+  .breathing-ready,
+  .breathing-active {
+    padding:
+      50px
+      28px
+      42px;
+  }
+}
+
+@media (max-width: 650px) {
+  .breathing-setup {
+    padding:
+      32px
+      18px
+      48px;
+  }
+
+  .breathing-setup__illustration-wrap {
+    height: 270px;
+  }
+
+  .breathing-setup__illustration {
+    max-height: 250px;
+  }
+
+  .breathing-form {
+    gap: 22px;
+  }
+
+  .breathing-ready,
+  .breathing-active {
+    min-height:
+      calc(100svh - 74px);
+
+    padding:
+      36px
+      18px
+      30px;
+
+    border-radius: 14px;
+  }
+
+  .breathing-active__visual {
+    width: 240px;
+    height: 300px;
+  }
+
+  .breathing-anatomy__combined {
+    width: 195px;
+    height: 285px;
+  }
+
+  .breathing-anatomy__lungs {
+    width: 160px;
+  }
+
+  .breathing-phase h1 {
+    min-width: 0;
+
+    font-size: 27px;
+    line-height: 33px;
+  }
+
+  .breathing-phase span {
+    font-size: 23px;
+  }
+
+  .breathing-remaining {
+    margin-top:
+      38px !important;
+  }
+
+  .breathing-controls {
+    width: 100%;
+  }
+
+  .breathing-controls button {
+    min-width: 0;
+
+    flex: 1 1 0;
+  }
+
+  .breathing-safety-note {
+    font-size: 13px;
+  }
+
+  .breathing-complete {
+    padding:
+      30px
+      18px;
+  }
+
+  .breathing-complete__message p {
+    font-size: 15px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (
+  prefers-reduced-motion:
+    reduce
+) {
+  .breathing-now-playing__bars
+    i {
+    animation: none;
+  }
+
+  .breathing-page *,
+  .breathing-page *::before,
+  .breathing-page *::after {
+    scroll-behavior: auto !important;
+  }
+}

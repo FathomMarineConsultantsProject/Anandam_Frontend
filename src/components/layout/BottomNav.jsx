@@ -13,7 +13,10 @@ const NAV_ITEMS = [
     label: "Home",
     icon: homeIcon,
     path: "/dashboard",
-    matchPaths: ["/dashboard"],
+    matchPaths: [
+  "/dashboard",
+  "/app/breathing",
+],
   },
   {
     id: "day",

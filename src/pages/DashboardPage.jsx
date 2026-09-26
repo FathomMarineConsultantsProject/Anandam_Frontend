@@ -86,10 +86,10 @@ const TOOLKIT_ITEMS = [
   {
     id: "breathing",
     title: "Breathing",
-    subtitle: "4 guided exercises",
+    subtitle: "Guided breathing & calming music",
     icon: breathingIcon,
     background: "#F7EFFF",
-    route: null,
+    route: "/app/breathing",
   },
   {
     id: "sleep",
@@ -338,11 +338,10 @@ function ToolkitCard({
   return (
     <button
       type="button"
-      className={`dashboard-tool-card ${
-        clickable
+      className={`dashboard-tool-card ${clickable
           ? "dashboard-tool-card--clickable"
           : ""
-      }`}
+        }`}
       style={{
         background: item.background,
       }}
@@ -804,8 +803,8 @@ function DashboardPage() {
                 {loading
                   ? "—"
                   : formatMoodScore(
-                      wellness.moodScore
-                    )}
+                    wellness.moodScore
+                  )}
               </strong>
             </article>
 
@@ -827,8 +826,8 @@ function DashboardPage() {
                 {loading
                   ? "—"
                   : formatEnergyLevel(
-                      wellness.energyLevel
-                    )}
+                    wellness.energyLevel
+                  )}
               </strong>
             </article>
 
