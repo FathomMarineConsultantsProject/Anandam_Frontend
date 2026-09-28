@@ -1,0 +1,1146 @@
+/* ========================================================================== */
+/* ANANDAM — BRAIN GAMES                                                      */
+/*                                                                            */
+/* AppLayout already owns the universal header + left navigation geometry.    */
+/* Do not add another header/sidebar offset in this file.                      */
+/* ========================================================================== */
+
+.brain-games-page,
+.brain-games-page *,
+.brain-games-page *::before,
+.brain-games-page *::after {
+  box-sizing: border-box;
+}
+
+.brain-games-page {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  color: #0c1421;
+  background: transparent;
+  font-family: "Roboto", Arial, sans-serif;
+}
+
+.brain-games-page button {
+  font: inherit;
+}
+
+.brain-page-heading,
+.brain-game-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0 0 12px;
+}
+
+.brain-page-heading h1,
+.brain-game-heading h1,
+.brain-page-heading p,
+.brain-game-heading p {
+  margin: 0;
+}
+
+.brain-page-heading h1,
+.brain-game-heading h1 {
+  color: #0c1421;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.brain-page-heading p,
+.brain-game-heading p {
+  color: #60657c;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.brain-game-heading {
+  position: relative;
+  padding-top: 0;
+}
+
+.brain-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  padding: 0;
+  color: #667085;
+  background: transparent;
+  border: 0;
+  font-size: 12px;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.brain-back-button:hover {
+  color: #712e1e;
+}
+
+/* ========================================================================== */
+/* BUTTONS                                                                    */
+/* ========================================================================== */
+
+.brain-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.brain-button:active {
+  transform: translateY(1px);
+}
+
+.brain-button--primary {
+  color: #ffffff;
+  background: #712e1e;
+  border: 1px solid #712e1e;
+}
+
+.brain-button--primary:hover {
+  background: #5e2518;
+  border-color: #5e2518;
+}
+
+.brain-button--outline {
+  color: #712e1e;
+  background: #ffffff;
+  border: 1px solid #712e1e;
+}
+
+.brain-button--outline:hover {
+  background: #fbf4f1;
+}
+
+/* ========================================================================== */
+/* BRAIN GAMES LANDING                                                        */
+/* ========================================================================== */
+
+.brain-games-home__content {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.brain-game-card {
+  display: flex;
+  min-width: 0;
+  min-height: 292px;
+  flex-direction: column;
+  padding: 24px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+.brain-game-card--featured {
+  min-height: 298px;
+}
+
+.brain-game-card__media {
+  width: 100%;
+  height: 168px;
+  overflow: hidden;
+  background: #f4f4f4;
+  border-radius: 20px;
+}
+
+.brain-game-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brain-game-card__footer {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 16px;
+}
+
+.brain-game-card__copy {
+  min-width: 0;
+}
+
+.brain-game-card__copy h2,
+.brain-game-card__copy p {
+  margin: 0;
+}
+
+.brain-game-card__copy h2 {
+  color: #0c1421;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 21px;
+}
+
+.brain-game-card__copy p {
+  margin-top: 8px;
+  color: #60657c;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.brain-game-card__play {
+  min-width: 130px;
+  flex: 0 0 auto;
+}
+
+.brain-games-home__secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* ========================================================================== */
+/* GAME SHELLS                                                                */
+/* ========================================================================== */
+
+.brain-game-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.sudoku-shell,
+.sliding-shell,
+.tictactoe-shell {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+}
+
+/* ========================================================================== */
+/* SUDOKU                                                                     */
+/* ========================================================================== */
+
+.sudoku-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 430px;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 20px;
+}
+
+.sudoku-board {
+  display: grid;
+  width: 100%;
+  max-width: min(470px, calc(100svh - 235px));
+  aspect-ratio: 1;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-template-rows: repeat(9, minmax(0, 1fr));
+  justify-self: center;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1.5px solid #8a3b29;
+}
+
+.sudoku-cell {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  place-items: center;
+  padding: 0;
+  color: #0c1421;
+  background: #ffffff;
+  border: 0;
+  border-right: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  font-size: clamp(14px, 1.15vw, 18px);
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.sudoku-cell:nth-child(3n) {
+  border-right: 1.5px solid #8a3b29;
+}
+
+.sudoku-cell:nth-child(9n) {
+  border-right: 0;
+}
+
+.sudoku-cell:nth-child(n + 19):nth-child(-n + 27),
+.sudoku-cell:nth-child(n + 46):nth-child(-n + 54) {
+  border-bottom: 1.5px solid #8a3b29;
+}
+
+.sudoku-cell:nth-child(n + 73) {
+  border-bottom: 0;
+}
+
+.sudoku-cell.is-given {
+  color: #111111;
+  font-weight: 500;
+}
+
+.sudoku-cell.is-related {
+  background: #fcf8f2;
+}
+
+.sudoku-cell.is-same-number {
+  background: #f6eadf;
+}
+
+.sudoku-cell.is-selected {
+  z-index: 2;
+  background: #f0dece;
+  box-shadow: inset 0 0 0 2px rgba(113, 46, 30, 0.44);
+}
+
+.sudoku-cell.is-wrong {
+  color: #c64747;
+}
+
+.sudoku-controls {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-self: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #777777;
+  border-radius: 20px;
+}
+
+.sudoku-controls__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sudoku-difficulty {
+  display: inline-flex;
+  min-width: 0;
+  padding: 4px;
+  background: #f8f3eb;
+  border-radius: 10px;
+}
+
+.sudoku-difficulty button {
+  min-height: 36px;
+  padding: 0 12px;
+  color: #667085;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sudoku-difficulty button.is-active {
+  color: #ffffff;
+  background: #712e1e;
+}
+
+.sudoku-new-button {
+  min-width: 124px;
+}
+
+.sudoku-utility-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.brain-utility-button {
+  display: flex;
+  min-width: 0;
+  min-height: 56px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+  color: #343a46;
+  background: #ffffff;
+  border: 1px solid #777777;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.brain-utility-button:hover:not(:disabled) {
+  background: #fcf8f4;
+  border-color: #712e1e;
+}
+
+.brain-utility-button:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.sudoku-number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sudoku-number-pad button {
+  display: grid;
+  height: 68px;
+  min-height: 68px;
+  place-items: center;
+  color: #111111;
+  background: #f8f3eb;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  font-size: clamp(18px, 1.35vw, 22px);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.sudoku-number-pad button:hover {
+  color: #712e1e;
+  background: #f3e7dc;
+}
+
+.sudoku-clear-button {
+  align-self: center;
+  padding: 4px 8px;
+  color: #712e1e;
+  background: transparent;
+  border: 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sudoku-clear-button:disabled {
+  color: #b9b9b9;
+  cursor: default;
+}
+
+/* ========================================================================== */
+/* TIC TAC TOE                                                                */
+/* ========================================================================== */
+
+.tictactoe-shell {
+  min-height: 0;
+  padding: 20px 32px 24px;
+}
+
+.tictactoe-notice {
+  display: flex;
+  width: min(1024px, 100%);
+  min-height: 42px;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  color: #2f3237;
+  background: #f8f3eb;
+  border: 1px solid #b88a32;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.tictactoe-notice svg {
+  flex: 0 0 auto;
+  color: #b88a32;
+}
+
+.tictactoe-game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.tictactoe-turn {
+  display: flex;
+  min-height: 60px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #343a46;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.tictactoe-turn img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.tictactoe-board {
+  display: grid;
+  width: min(420px, 48vw, calc(100svh - 350px));
+  aspect-ratio: 1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  padding: 7px;
+  background: #7299d1;
+  border-radius: 16px;
+}
+
+.tictactoe-cell {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border: 0;
+  border-radius: 11px;
+  cursor: pointer;
+}
+
+.tictactoe-cell:hover:not(:disabled) {
+  background: #f9fbff;
+}
+
+.tictactoe-cell:disabled {
+  cursor: default;
+}
+
+.tictactoe-cell img {
+  width: 46%;
+  height: 46%;
+  object-fit: contain;
+  animation: brain-mark-in 180ms ease-out;
+}
+
+.tictactoe-cell img.is-circle {
+  width: 50%;
+  height: 50%;
+}
+
+@keyframes brain-mark-in {
+  from {
+    opacity: 0;
+    transform: scale(0.78);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ========================================================================== */
+/* SLIDING PUZZLE                                                             */
+/* ========================================================================== */
+
+.sliding-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.9fr);
+  gap: 14px;
+  min-height: 0;
+  align-items: center;
+  padding: 20px;
+}
+
+.sliding-board-card {
+  display: grid;
+  width: 100%;
+  max-width: min(500px, calc(100svh - 220px));
+  aspect-ratio: 1;
+  place-items: center;
+  justify-self: center;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  box-shadow:
+    0 30px 12px rgba(0, 0, 0, 0.01),
+    0 17px 10px rgba(0, 0, 0, 0.05),
+    0 8px 8px rgba(0, 0, 0, 0.09),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sliding-board {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0d0e10;
+  border: 8px solid #0d0e10;
+  border-radius: 20px;
+}
+
+.sliding-tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 25%;
+  padding: 0;
+  background-repeat: no-repeat;
+  border: 2px solid #0d0e10;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.sliding-tile:hover {
+  z-index: 2;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.sliding-controls {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  padding: 18px;
+  background: #ffffff;
+  border-radius: 20px;
+}
+
+.sliding-new-button {
+  align-self: flex-end;
+  min-width: 132px;
+}
+
+.sliding-preview-card {
+  width: 100%;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  box-shadow:
+    0 17px 10px rgba(0, 0, 0, 0.035),
+    0 6px 8px rgba(0, 0, 0, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.sliding-preview-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.22;
+  object-fit: fill;
+  border-radius: 16px;
+}
+
+.sliding-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sliding-image-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.sliding-image-picker > span {
+  color: #60657c;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sliding-image-picker > div {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sliding-image-picker button {
+  aspect-ratio: 1;
+  padding: 3px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.sliding-image-picker button.is-active {
+  border: 2px solid #712e1e;
+}
+
+.sliding-image-picker img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* ========================================================================== */
+/* CELEBRATION CONFETTI                                                       */
+/* ========================================================================== */
+
+.brain-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.brain-confetti--screen {
+  position: fixed;
+  z-index: 1201;
+}
+
+.brain-confetti--popup {
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.brain-confetti__piece {
+  position: absolute;
+  top: -24px;
+  left: var(--confetti-left);
+  width: 8px;
+  height: 14px;
+  background: var(--confetti-color);
+  border-radius: 2px;
+  opacity: 0;
+  transform: translate3d(0, -20px, 0) rotate(var(--confetti-rotation));
+  animation: brain-confetti-fall var(--confetti-duration) linear var(--confetti-delay) infinite;
+}
+
+.brain-confetti__piece--1 {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.brain-confetti__piece--2 {
+  width: 11px;
+  height: 5px;
+  border-radius: 999px;
+}
+
+.brain-confetti--popup .brain-confetti__piece {
+  width: 6px;
+  height: 10px;
+  animation-duration: calc(var(--confetti-duration) * 0.86);
+}
+
+@keyframes brain-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -24px, 0) rotate(var(--confetti-rotation));
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.95;
+    transform: translate3d(var(--confetti-drift), calc(100vh + 48px), 0) rotate(calc(var(--confetti-rotation) + 720deg));
+  }
+}
+
+.brain-confetti--popup .brain-confetti__piece {
+  animation-name: brain-confetti-popup-fall;
+}
+
+@keyframes brain-confetti-popup-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0) rotate(var(--confetti-rotation));
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.8;
+    transform: translate3d(var(--confetti-drift), 360px, 0) rotate(calc(var(--confetti-rotation) + 540deg));
+  }
+}
+
+/* ========================================================================== */
+/* RESULT MODAL                                                               */
+/* ========================================================================== */
+
+.brain-result-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(32, 40, 58, 0.26);
+  backdrop-filter: blur(2px);
+}
+
+.brain-result-modal {
+  position: relative;
+  z-index: 1202;
+  display: flex;
+  width: min(500px, calc(100vw - 40px));
+  min-height: 305px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 38px 24px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 18px 60px rgba(32, 40, 58, 0.14);
+  text-align: center;
+  animation: brain-modal-in 180ms ease-out;
+  overflow: hidden;
+}
+
+.brain-result-modal > *:not(.brain-confetti) {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes brain-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.brain-result-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  color: #667085;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.brain-result-close:hover {
+  background: #f7f4f2;
+}
+
+.brain-result-illustration {
+  display: block;
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+}
+
+.brain-result-illustration--loss {
+  width: 112px;
+  height: 104px;
+}
+
+.brain-result-modal h2 {
+  margin: 8px 0 0;
+  color: #0c1421;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 30px;
+}
+
+.brain-result-modal p {
+  max-width: 360px;
+  margin: 10px 0 0;
+  color: #7b808b;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.brain-result-actions {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.brain-result-actions .brain-button {
+  width: 100%;
+}
+
+/* ========================================================================== */
+/* RESPONSIVE                                                                 */
+/* ========================================================================== */
+
+
+
+
+@media (max-width: 1180px) {
+  .sudoku-shell,
+  .sliding-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 410px);
+  }
+
+  .sudoku-controls {
+    padding: 22px;
+  }
+
+  .sudoku-controls__top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sudoku-new-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 940px) {
+  .brain-games-home__secondary-grid,
+  .sudoku-shell,
+  .sliding-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sudoku-board,
+  .sliding-board-card {
+    max-width: 700px;
+  }
+
+  .sudoku-controls,
+  .sliding-controls {
+    width: 100%;
+    max-width: 700px;
+    justify-self: center;
+  }
+
+  .sliding-preview-card {
+    max-width: 420px;
+    align-self: center;
+  }
+
+  .sliding-new-button {
+    align-self: center;
+  }
+}
+
+@media (max-width: 700px) {
+  .brain-game-card,
+  .brain-game-card--featured {
+    min-height: 0;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .brain-game-card__media {
+    height: auto;
+    aspect-ratio: 16 / 7;
+    border-radius: 14px;
+  }
+
+  .brain-game-card__footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .brain-game-card__play {
+    width: 100%;
+  }
+
+  .sudoku-shell,
+  .sliding-shell,
+  .tictactoe-shell {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+
+  .sudoku-controls,
+  .sliding-controls {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .sudoku-difficulty {
+    width: 100%;
+  }
+
+  .sudoku-difficulty button {
+    flex: 1 1 0;
+    padding: 0 6px;
+  }
+
+  .sudoku-utility-grid {
+    gap: 8px;
+  }
+
+  .brain-utility-button {
+    min-height: 74px;
+    border-radius: 14px;
+    font-size: 12px;
+  }
+
+  .sudoku-number-pad {
+    gap: 8px;
+  }
+
+  .sudoku-number-pad button {
+    border-radius: 14px;
+  }
+
+  .tictactoe-shell {
+    min-height: 620px;
+  }
+
+  .tictactoe-notice {
+    align-items: flex-start;
+    font-size: 12px;
+  }
+
+  .tictactoe-board {
+    width: min(560px, 90vw);
+    gap: 7px;
+    padding: 7px;
+    border-radius: 14px;
+  }
+
+  .tictactoe-cell {
+    border-radius: 10px;
+  }
+
+  .sliding-board-card {
+    padding: 8px;
+    border-radius: 14px;
+  }
+
+  .sliding-board {
+    border-width: 7px;
+    border-radius: 12px;
+  }
+
+  .brain-result-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .brain-page-heading h1,
+  .brain-game-heading h1 {
+    font-size: 21px;
+    line-height: 26px;
+  }
+
+  .sudoku-utility-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brain-utility-button {
+    min-height: 56px;
+    flex-direction: row;
+  }
+
+  .sliding-image-picker > div {
+    grid-template-columns: repeat(5, minmax(42px, 1fr));
+    overflow-x: auto;
+  }
+}
+
+@media (min-width: 941px) and (max-height: 820px) {
+  .brain-page-heading,
+  .brain-game-heading {
+    margin-bottom: 8px;
+  }
+
+  .brain-game-card,
+  .brain-game-card--featured {
+    min-height: 255px;
+    padding: 18px;
+  }
+
+  .brain-game-card__media {
+    height: 138px;
+  }
+
+  .sudoku-board,
+  .sliding-board-card {
+    max-width: min(430px, calc(100svh - 225px));
+  }
+
+  .sudoku-shell,
+  .sliding-shell {
+    padding: 14px 18px;
+  }
+
+  .sudoku-controls,
+  .sliding-controls {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .brain-utility-button {
+    min-height: 50px;
+  }
+
+  .sudoku-number-pad button {
+    height: 58px;
+    min-height: 58px;
+    font-size: 18px;
+  }
+
+  .tictactoe-shell {
+    padding: 14px 28px 18px;
+  }
+
+  .tictactoe-notice {
+    min-height: 38px;
+    padding: 9px 14px;
+  }
+
+  .tictactoe-game-area {
+    margin-top: 8px;
+  }
+
+  .tictactoe-turn {
+    min-height: 50px;
+    gap: 4px;
+  }
+
+  .tictactoe-turn img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .tictactoe-board {
+    width: min(390px, 46vw, calc(100svh - 342px));
+    min-width: 340px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brain-games-page *,
+  .brain-games-page *::before,
+  .brain-games-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

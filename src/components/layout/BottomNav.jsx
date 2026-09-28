@@ -16,6 +16,7 @@ const NAV_ITEMS = [
     matchPaths: [
   "/dashboard",
   "/app/breathing",
+  "/app/brain-games",
 ],
   },
   {

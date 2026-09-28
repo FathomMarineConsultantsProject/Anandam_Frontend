@@ -15,6 +15,7 @@ import ProfilePage from "./pages/ProfilePage";
 import { getStoredToken } from "./utils/storage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import BreathingPage from "./pages/BreathingPage";
+import BrainGamesPage from "./pages/BrainGamesPage";
 
 
 function RequireAuth({ children }) {
@@ -136,6 +137,11 @@ function App() {
             </RequireAuth>
           }
         />
+
+        <Route
+  path="/app/brain-games/*"
+  element={<BrainGamesPage />}
+/>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

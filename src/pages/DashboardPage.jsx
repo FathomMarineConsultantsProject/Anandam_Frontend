@@ -124,13 +124,13 @@ const TOOLKIT_ITEMS = [
     route: null,
   },
   {
-    id: "brain-training",
-    title: "Brain training",
-    subtitle: "Cognitive exercises",
-    icon: brainTrainingIcon,
-    background: "#F6F8E7",
-    route: null,
-  },
+  id: "brain-training",
+  title: "Brain training",
+  subtitle: "Cognitive exercises",
+  icon: brainTrainingIcon,
+  background: "#F6F8E7",
+  route: "/app/brain-games",
+},
   {
     id: "health",
     title: "Health monitoring",
@@ -643,7 +643,7 @@ function DashboardPage() {
         <section className="dashboard-voyage-card">
           <div className="dashboard-voyage-heading">
             <h1>
-              Welcome back, Captain
+              Welcome back, {dashboardData.fullName}
             </h1>
 
             <div className="dashboard-connection">
@@ -860,7 +860,7 @@ function DashboardPage() {
 
         <section className="dashboard-toolkit">
           <h2 className="dashboard-section-title">
-            Mind & body toolkit
+            Mind & Body Toolkit
           </h2>
 
           <div className="dashboard-toolkit-grid">
