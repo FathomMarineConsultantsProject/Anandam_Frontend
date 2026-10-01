@@ -81,15 +81,23 @@ function loadYouTubeIframeApi() {
 
   youtubeApiPromise = new Promise((resolve, reject) => {
     let settled = false;
+    let timeoutId = null;
+
+    const cleanup = () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
 
     const finishResolve = () => {
       if (settled) return;
       settled = true;
-      window.clearTimeout(timeoutId);
+      cleanup();
 
       if (window.YT?.Player) {
         resolve(window.YT);
       } else {
+        youtubeApiPromise = null;
         reject(new Error("YouTube player API did not initialise."));
       }
     };
@@ -97,7 +105,8 @@ function loadYouTubeIframeApi() {
     const finishReject = () => {
       if (settled) return;
       settled = true;
-      window.clearTimeout(timeoutId);
+      cleanup();
+      youtubeApiPromise = null;
       reject(new Error("Unable to load the YouTube player."));
     };
 
@@ -108,14 +117,14 @@ function loadYouTubeIframeApi() {
         try {
           previousReady();
         } catch {
-          // Do not block this player if another callback fails.
+          // Another callback must not block this player.
         }
       }
 
       finishResolve();
     };
 
-    const timeoutId = window.setTimeout(() => {
+    timeoutId = window.setTimeout(() => {
       if (window.YT?.Player) {
         finishResolve();
       } else {
@@ -931,12 +940,36 @@ function YouTubeWorkoutPlayer({
   const mountRef = useRef(null);
   const playerRef = useRef(null);
   const intervalRef = useRef(null);
+
+  // Callback props change whenever the parent renders. Keep them in refs so
+  // the YouTube iframe itself never needs to be rebuilt for a callback change.
   const onProgressRef = useRef(onProgress);
   const onEndedRef = useRef(onEnded);
+
+  // IMPORTANT: this is a RESUME position, not a live controlled prop.
+  // Progress saves update the session every few seconds, so using
+  // initialSeconds as an effect dependency would destroy/recreate the player.
+  const resumeSecondsRef = useRef(
+    Math.max(0, Number(initialSeconds) || 0)
+  );
+  const mountedVideoIdRef = useRef(videoId);
+
   const lastSavedSecondRef = useRef(-1);
   const endedRef = useRef(false);
+  const playerReadyRef = useRef(false);
 
   const [playerError, setPlayerError] = useState("");
+
+  if (mountedVideoIdRef.current !== videoId) {
+    mountedVideoIdRef.current = videoId;
+    resumeSecondsRef.current = Math.max(
+      0,
+      Number(initialSeconds) || 0
+    );
+    lastSavedSecondRef.current = -1;
+    endedRef.current = false;
+    playerReadyRef.current = false;
+  }
 
   useEffect(() => {
     onProgressRef.current = onProgress;
@@ -949,6 +982,10 @@ function YouTubeWorkoutPlayer({
   useEffect(() => {
     let cancelled = false;
 
+    endedRef.current = false;
+    playerReadyRef.current = false;
+    setPlayerError("");
+
     function stopProgressTimer() {
       if (intervalRef.current) {
         window.clearInterval(intervalRef.current);
@@ -958,13 +995,31 @@ function YouTubeWorkoutPlayer({
 
     function emitProgress(force = false) {
       const player = playerRef.current;
-      if (!player?.getCurrentTime) return;
+
+      if (
+        !playerReadyRef.current ||
+        !player ||
+        typeof player.getCurrentTime !== "function"
+      ) {
+        return;
+      }
+
+      let currentTime = 0;
+      let youtubeDuration = 0;
+
+      try {
+        currentTime = Number(player.getCurrentTime()) || 0;
+        youtubeDuration = Number(player.getDuration?.()) || 0;
+      } catch {
+        return;
+      }
 
       const positionSeconds = Math.max(
         0,
-        Math.floor(Number(player.getCurrentTime()) || 0)
+        Math.floor(currentTime)
       );
 
+      // Normal interval saves should not send duplicate positions.
       if (
         !force &&
         Math.abs(positionSeconds - lastSavedSecondRef.current) < 5
@@ -972,18 +1027,37 @@ function YouTubeWorkoutPlayer({
         return;
       }
 
+      // A pause can fire more than once at the same second. Avoid duplicate
+      // network updates even for forced saves when nothing actually moved.
+      if (
+        force &&
+        positionSeconds === lastSavedSecondRef.current
+      ) {
+        return;
+      }
+
       lastSavedSecondRef.current = positionSeconds;
 
-      const youtubeDuration = Number(player.getDuration?.()) || 0;
-      const fallbackDuration = Math.max(Number(durationMinutes) * 60, 1);
+      const fallbackDuration = Math.max(
+        Number(durationMinutes) * 60,
+        1
+      );
+
       const totalSeconds =
-        youtubeDuration > 0 ? youtubeDuration : fallbackDuration;
+        youtubeDuration > 0
+          ? youtubeDuration
+          : fallbackDuration;
 
       const progressPercent = Math.min(
         99.9,
-        Math.max(0, (positionSeconds / totalSeconds) * 100)
+        Math.max(
+          0,
+          (positionSeconds / totalSeconds) * 100
+        )
       );
 
+      // Do not await here. Saving progress must never pause or replace the
+      // YouTube iframe. The parent handles API errors independently.
       onProgressRef.current?.({
         positionSeconds,
         progressPercent,
@@ -994,7 +1068,17 @@ function YouTubeWorkoutPlayer({
       try {
         const YT = await loadYouTubeIframeApi();
 
-        if (cancelled || !mountRef.current) return;
+        if (cancelled || !mountRef.current) {
+          return;
+        }
+
+        // If StrictMode or a fast re-render left an older instance behind,
+        // remove it before creating exactly one player for this video.
+        try {
+          playerRef.current?.destroy?.();
+        } catch {
+          // Best-effort cleanup only.
+        }
 
         playerRef.current = new YT.Player(mountRef.current, {
           videoId,
@@ -1010,48 +1094,90 @@ function YouTubeWorkoutPlayer({
           },
           events: {
             onReady: (event) => {
-              const resumeAt = Math.max(0, Number(initialSeconds) || 0);
+              if (cancelled) return;
+
+              playerReadyRef.current = true;
+
+              const resumeAt = Math.max(
+                0,
+                Number(resumeSecondsRef.current) || 0
+              );
 
               if (resumeAt > 0) {
-                event.target.seekTo(resumeAt, true);
+                try {
+                  event.target.seekTo(resumeAt, true);
+                } catch {
+                  // If seeking is unavailable, start from the beginning.
+                }
               }
 
-              event.target.playVideo();
+              try {
+                event.target.playVideo();
+              } catch {
+                // Browser autoplay policy may require the user to press Play.
+              }
             },
 
             onStateChange: (event) => {
+              if (cancelled) return;
+
               if (event.data === YT.PlayerState.PLAYING) {
                 stopProgressTimer();
 
                 intervalRef.current = window.setInterval(() => {
                   emitProgress(false);
                 }, 10000);
+                return;
               }
 
               if (event.data === YT.PlayerState.PAUSED) {
                 stopProgressTimer();
                 emitProgress(true);
+                return;
               }
 
               if (event.data === YT.PlayerState.ENDED) {
                 endedRef.current = true;
                 stopProgressTimer();
                 onEndedRef.current?.();
+                return;
+              }
+
+              // BUFFERING/CUED/UNSTARTED should not destroy the iframe.
+              // Only stop the periodic save timer until playback resumes.
+              if (
+                event.data === YT.PlayerState.BUFFERING ||
+                event.data === YT.PlayerState.CUED ||
+                event.data === YT.PlayerState.UNSTARTED
+              ) {
+                stopProgressTimer();
               }
             },
 
-            onError: () => {
+            onError: (event) => {
               stopProgressTimer();
-              setPlayerError(
-                "This workout video could not be played inside Anandam. Please try another workout."
-              );
+
+              const code = Number(event?.data);
+              let message =
+                "This workout video could not be played inside Anandam. Please try another workout.";
+
+              if (code === 101 || code === 150) {
+                message =
+                  "This YouTube video does not allow embedded playback. Please use another workout video that permits embedding.";
+              } else if (code === 100) {
+                message =
+                  "This YouTube video is unavailable or has been removed.";
+              }
+
+              setPlayerError(message);
             },
           },
         });
       } catch (error) {
         if (!cancelled) {
           setPlayerError(
-            error?.message || "Unable to initialise the YouTube player."
+            error?.message ||
+              "Unable to initialise the YouTube player."
           );
         }
       }
@@ -1063,13 +1189,17 @@ function YouTubeWorkoutPlayer({
       cancelled = true;
       stopProgressTimer();
 
+      // Save the latest position before leaving the page. This does not
+      // control the iframe and therefore cannot recreate it.
       if (!endedRef.current) {
         try {
           emitProgress(true);
         } catch {
-          // Progress saving on unmount is best effort.
+          // Best-effort save only.
         }
       }
+
+      playerReadyRef.current = false;
 
       try {
         playerRef.current?.destroy?.();
@@ -1079,10 +1209,18 @@ function YouTubeWorkoutPlayer({
 
       playerRef.current = null;
     };
-  }, [videoId, initialSeconds, durationMinutes]);
+
+    // CRITICAL: do not add initialSeconds, durationMinutes, onProgress or
+    // onEnded here. They change during progress saves and used to recreate
+    // the iframe every 10-20 seconds / every pause.
+  }, [videoId]);
 
   if (playerError) {
-    return <div className="fitness-video-error">{playerError}</div>;
+    return (
+      <div className="fitness-video-error" role="alert">
+        {playerError}
+      </div>
+    );
   }
 
   return (
@@ -1112,13 +1250,17 @@ function GuidedWorkoutDetail({
   const completingRef = useRef(false);
 
   useEffect(() => {
+    // This effect is only for opening/changing a workout.
+    // Do NOT depend on activeSession here: progress saves return a new
+    // session object every 10 seconds and previously setPlaying(false),
+    // which unmounted the YouTube iframe and produced the white screen.
     const nextSession = activeSession || null;
     setSession(nextSession);
     sessionRef.current = nextSession;
     setPlaying(false);
     setError("");
     completingRef.current = false;
-  }, [activeSession, workout?.id]);
+  }, [workout?.id]);
 
   const setLiveSession = useCallback(
     (nextSession) => {
@@ -1172,7 +1314,11 @@ function GuidedWorkoutDetail({
         progress
       );
 
-      setLiveSession(updated);
+      // Keep progress locally. Do not push every 10-second progress response
+      // into the parent selectedSession state; that causes unnecessary parent
+      // renders while the YouTube iframe is playing.
+      sessionRef.current = updated;
+      setSession(updated);
     } catch (progressError) {
       console.error("Fitness progress save failed:", progressError);
     }
