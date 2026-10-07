@@ -1583,16 +1583,19 @@ button {
   position: fixed;
   z-index: 450;
 
-  top: calc(50% - 226px + 23.5px);
+  top: 50%;
   left: 10px;
+
+  transform: translateY(-50%);
 
   display: flex;
   align-items: center;
 
   width: 72px;
-  height: 452px;
+  height: auto;
+  min-height: 452px;
 
-  padding: 32px 10px;
+  padding: 22px 10px;
 
   background: rgba(255, 255, 255, 0.72);
 
@@ -1613,9 +1616,9 @@ button {
   align-items: center;
 
   width: 50px;
-  height: 386px;
+  height: auto;
 
-  gap: 14px;
+  gap: 11px;
 }
 
 .anandam-side-nav__entry {
@@ -1703,9 +1706,14 @@ button {
   width: 24.5px;
   height: 1px;
 
-  margin-top: 14px;
+  margin-top: 10px;
 
-  background: rgba(168, 168, 168, 0.22);
+  background: rgba(
+    168,
+    168,
+    168,
+    0.22
+  );
 }
 
 

@@ -1,11 +1,16 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import homeIcon from "../../assets/navbar/home.png";
 import calendarIcon from "../../assets/navbar/calendar.png";
 import moodIcon from "../../assets/navbar/mood.png";
 import workIcon from "../../assets/navbar/work.png";
 import fitnessIcon from "../../assets/navbar/fitness.png";
+import blogIcon from "../../assets/navbar/write-blog-icon-1px 1.png";
 import emergencyIcon from "../../assets/navbar/emergency.png";
+
 
 const NAV_ITEMS = [
   {
@@ -13,74 +18,135 @@ const NAV_ITEMS = [
     label: "Home",
     icon: homeIcon,
     path: "/dashboard",
+
     matchPaths: [
-  "/dashboard",
-  "/app/breathing",
-  "/app/brain-games",
-],
+      "/dashboard",
+      "/app/breathing",
+      "/app/brain-games",
+    ],
   },
+
   {
     id: "day",
     label: "Day",
     icon: calendarIcon,
     path: "/app/perfect-day",
-    matchPaths: ["/app/perfect-day"],
+
+    matchPaths: [
+      "/app/perfect-day",
+    ],
   },
+
   {
     id: "mood",
     label: "Mood",
     icon: moodIcon,
-
-    // IMPORTANT:
-    // Clicking Mood from the sidebar goes to the normal Mood page.
     path: "/mood",
 
-    // Both mood pages show Mood as active.
-    matchPaths: ["/mood", "/mood-quick"],
+    matchPaths: [
+      "/mood",
+      "/mood-quick",
+    ],
   },
+
   {
     id: "work-rest",
     label: "Work/rest",
     icon: workIcon,
     path: "/app/work-rest",
-    matchPaths: ["/app/work-rest"],
+
+    matchPaths: [
+      "/app/work-rest",
+    ],
   },
+
   {
     id: "fitness",
     label: "Fitness",
     icon: fitnessIcon,
     path: "/app/fitness",
-    matchPaths: ["/app/fitness"],
+
+    matchPaths: [
+      "/app/fitness",
+    ],
   },
+
+  /* =========================
+     BLOGS
+     ========================= */
+
+  {
+    id: "blogs",
+    label: "Blogs",
+    icon: blogIcon,
+    path: "/app/blogs",
+
+    /*
+      This means Blogs remains highlighted on:
+
+      /app/blogs
+      /app/blogs/new
+      /app/blogs/abc
+      /app/blogs/abc/edit
+    */
+    matchPaths: [
+      "/app/blogs",
+    ],
+  },
+
   {
     id: "emergency",
     label: "Emergency",
     icon: emergencyIcon,
     path: "/app/emergency",
-    matchPaths: ["/app/emergency"],
+
+    matchPaths: [
+      "/app/emergency",
+    ],
   },
 ];
 
-function isItemActive(item, pathname) {
-  return item.matchPaths.some((path) => {
-    return (
-      pathname === path ||
-      pathname.startsWith(`${path}/`)
-    );
-  });
+
+function isItemActive(
+  item,
+  pathname
+) {
+  return item.matchPaths.some(
+    (path) => {
+      return (
+        pathname === path ||
+        pathname.startsWith(
+          `${path}/`
+        )
+      );
+    }
+  );
 }
 
+
 function BottomNav() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate =
+    useNavigate();
 
-  function handleNavigation(item) {
-    if (!item.path) return;
+  const location =
+    useLocation();
 
-    if (location.pathname !== item.path) {
+
+  function handleNavigation(
+    item
+  ) {
+    if (!item.path) {
+      return;
+    }
+
+    if (
+      location.pathname !==
+      item.path
+    ) {
       navigate(item.path);
     }
   }
+
 
   return (
     <nav
@@ -88,49 +154,78 @@ function BottomNav() {
       aria-label="Primary application navigation"
     >
       <div className="anandam-side-nav__items">
-        {NAV_ITEMS.map((item, index) => {
-          const active = isItemActive(
+
+        {NAV_ITEMS.map(
+          (
             item,
-            location.pathname
-          );
+            index
+          ) => {
 
-          return (
-            <div
-              key={item.id}
-              className="anandam-side-nav__entry"
-            >
-              <button
-                type="button"
-                className={`anandam-side-nav__item${
-                  active ? " is-active" : ""
-                }`}
-                onClick={() => handleNavigation(item)}
-                aria-current={active ? "page" : undefined}
-                title={item.label}
+            const active =
+              isItemActive(
+                item,
+                location.pathname
+              );
+
+            return (
+              <div
+                key={item.id}
+                className="anandam-side-nav__entry"
               >
-                <span className="anandam-side-nav__icon-wrap">
-                  <img
-                    src={item.icon}
-                    alt=""
+                <button
+                  type="button"
+                  className={
+                    `anandam-side-nav__item${
+                      active
+                        ? " is-active"
+                        : ""
+                    }`
+                  }
+                  onClick={() =>
+                    handleNavigation(
+                      item
+                    )
+                  }
+                  aria-current={
+                    active
+                      ? "page"
+                      : undefined
+                  }
+                  title={item.label}
+                >
+
+                  <span className="anandam-side-nav__icon-wrap">
+
+                    <img
+                      src={item.icon}
+                      alt=""
+                      aria-hidden="true"
+                      className="anandam-side-nav__icon"
+                    />
+
+                  </span>
+
+                  <span className="anandam-side-nav__label">
+                    {item.label}
+                  </span>
+
+                </button>
+
+
+                {index <
+                  NAV_ITEMS.length -
+                    1 && (
+                  <span
+                    className="anandam-side-nav__divider"
                     aria-hidden="true"
-                    className="anandam-side-nav__icon"
                   />
-                </span>
+                )}
 
-                <span className="anandam-side-nav__label">
-                  {item.label}
-                </span>
-              </button>
+              </div>
+            );
+          }
+        )}
 
-              {index < NAV_ITEMS.length - 1 && (
-                <span
-                  className="anandam-side-nav__divider"
-                  aria-hidden="true"
-                />
-              )}
-            </div>
-          );
-        })}
       </div>
     </nav>
   );
