@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -26,41 +31,96 @@ import {
   getStoredToken,
 } from "./utils/storage";
 
+
 function RequireAuth({ children }) {
   const token = getStoredToken();
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
 
   return children;
 }
+
 
 function RequireMoodBeforeDashboard({ children }) {
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
 
   if (!hasCompletedMoodGate()) {
-    return <Navigate to="/mood-quick" replace />;
+    return (
+      <Navigate
+        to="/mood-quick"
+        replace
+      />
+    );
   }
 
   return children;
 }
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-        {/* Public blog share route. Backend buildPublicBlogUrl() creates /blog/:shareToken. */}
-        <Route path="/blog/:shareToken" element={<PublicBlogPage />} />
+        {/* =====================================================
+            PUBLIC ROUTES
+            ===================================================== */}
 
-        {/* Comes right after login */}
+        <Route
+          path="/"
+          element={<LandingPage />}
+        />
+
+        <Route
+          path="/login"
+          element={<LoginPage />}
+        />
+
+        <Route
+          path="/signup"
+          element={<SignupPage />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPasswordPage />}
+        />
+
+
+        {/* =====================================================
+            PUBLIC BLOG SHARE ROUTE
+
+            IMPORTANT:
+            No RequireAuth here.
+
+            Shared URL:
+            https://your-domain.vercel.app/blog/:shareToken
+            ===================================================== */}
+
+        <Route
+          path="/blog/:shareToken"
+          element={<PublicBlogPage />}
+        />
+
+
+        {/* =====================================================
+            MOOD GATE
+            ===================================================== */}
+
         <Route
           path="/mood-quick"
           element={
@@ -69,6 +129,11 @@ function App() {
             </RequireAuth>
           }
         />
+
+
+        {/* =====================================================
+            DASHBOARD
+            ===================================================== */}
 
         <Route
           path="/dashboard"
@@ -79,7 +144,11 @@ function App() {
           }
         />
 
-        {/* Main mood check-in page */}
+
+        {/* =====================================================
+            MOOD
+            ===================================================== */}
+
         <Route
           path="/mood"
           element={
@@ -88,6 +157,11 @@ function App() {
             </RequireAuth>
           }
         />
+
+
+        {/* =====================================================
+            DAY PLANNER
+            ===================================================== */}
 
         <Route
           path="/app/perfect-day"
@@ -98,6 +172,11 @@ function App() {
           }
         />
 
+
+        {/* =====================================================
+            WORK / REST
+            ===================================================== */}
+
         <Route
           path="/app/work-rest"
           element={
@@ -106,6 +185,11 @@ function App() {
             </RequireAuth>
           }
         />
+
+
+        {/* =====================================================
+            FITNESS
+            ===================================================== */}
 
         <Route
           path="/app/fitness"
@@ -116,6 +200,11 @@ function App() {
           }
         />
 
+
+        {/* =====================================================
+            EMERGENCY
+            ===================================================== */}
+
         <Route
           path="/app/emergency"
           element={
@@ -124,6 +213,11 @@ function App() {
             </RequireAuth>
           }
         />
+
+
+        {/* =====================================================
+            PROFILE
+            ===================================================== */}
 
         <Route
           path="/app/profile"
@@ -134,6 +228,11 @@ function App() {
           }
         />
 
+
+        {/* =====================================================
+            BREATHING
+            ===================================================== */}
+
         <Route
           path="/app/breathing"
           element={
@@ -143,12 +242,23 @@ function App() {
           }
         />
 
-        <Route path="/app/brain-games/*" element={<BrainGamesPage />} />
 
         {/* =====================================================
-            BLOG ROUTES
-            IMPORTANT: /write is an explicit create route.
-            It must NOT be treated as :blogId.
+            BRAIN GAMES
+            ===================================================== */}
+
+        <Route
+          path="/app/brain-games/*"
+          element={
+            <RequireAuth>
+              <BrainGamesPage />
+            </RequireAuth>
+          }
+        />
+
+
+        {/* =====================================================
+            BLOGS
             ===================================================== */}
 
         <Route
@@ -160,6 +270,16 @@ function App() {
           }
         />
 
+
+        {/* CREATE BLOG
+
+            IMPORTANT:
+            This must exist as an explicit route.
+
+            Otherwise "write" could be interpreted
+            as a blogId.
+        */}
+
         <Route
           path="/app/blogs/write"
           element={
@@ -168,6 +288,9 @@ function App() {
             </RequireAuth>
           }
         />
+
+
+        {/* EDIT BLOG */}
 
         <Route
           path="/app/blogs/:blogId/edit"
@@ -178,6 +301,9 @@ function App() {
           }
         />
 
+
+        {/* VIEW BLOG */}
+
         <Route
           path="/app/blogs/:blogId"
           element={
@@ -187,10 +313,25 @@ function App() {
           }
         />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+
+        {/* =====================================================
+            FALLBACK
+            ===================================================== */}
+
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to="/"
+              replace
+            />
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   );
 }
+
 
 export default App;

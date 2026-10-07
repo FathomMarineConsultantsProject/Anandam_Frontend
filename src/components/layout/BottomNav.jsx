@@ -1,4 +1,8 @@
 import {
+  Fragment,
+} from "react";
+
+import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
@@ -19,6 +23,10 @@ const NAV_ITEMS = [
     icon: homeIcon,
     path: "/dashboard",
 
+    // Figma artwork is visually around 20px
+    iconSize: 20,
+    iconScale: 1,
+
     matchPaths: [
       "/dashboard",
       "/app/breathing",
@@ -32,6 +40,10 @@ const NAV_ITEMS = [
     icon: calendarIcon,
     path: "/app/perfect-day",
 
+    // Figma calendar = around 20px
+    iconSize: 20,
+    iconScale: 1,
+
     matchPaths: [
       "/app/perfect-day",
     ],
@@ -42,6 +54,9 @@ const NAV_ITEMS = [
     label: "Mood",
     icon: moodIcon,
     path: "/mood",
+
+    iconSize: 24,
+    iconScale: 1,
 
     matchPaths: [
       "/mood",
@@ -55,6 +70,9 @@ const NAV_ITEMS = [
     icon: workIcon,
     path: "/app/work-rest",
 
+    iconSize: 24,
+    iconScale: 1,
+
     matchPaths: [
       "/app/work-rest",
     ],
@@ -66,14 +84,19 @@ const NAV_ITEMS = [
     icon: fitnessIcon,
     path: "/app/fitness",
 
+    /*
+      The Fitness PNG contains more empty transparent
+      space around the actual line artwork.
+
+      Slightly enlarge only the artwork, NOT its wrapper.
+    */
+    iconSize: 24,
+    iconScale: 1.28,
+
     matchPaths: [
       "/app/fitness",
     ],
   },
-
-  /* =========================
-     BLOGS
-     ========================= */
 
   {
     id: "blogs",
@@ -82,13 +105,12 @@ const NAV_ITEMS = [
     path: "/app/blogs",
 
     /*
-      This means Blogs remains highlighted on:
-
-      /app/blogs
-      /app/blogs/new
-      /app/blogs/abc
-      /app/blogs/abc/edit
+      Blog artwork visually occupies more of its PNG,
+      so reduce it slightly.
     */
+    iconSize: 24,
+    iconScale: 0.92,
+
     matchPaths: [
       "/app/blogs",
     ],
@@ -99,6 +121,9 @@ const NAV_ITEMS = [
     label: "Emergency",
     icon: emergencyIcon,
     path: "/app/emergency",
+
+    iconSize: 24,
+    iconScale: 1,
 
     matchPaths: [
       "/app/emergency",
@@ -112,14 +137,11 @@ function isItemActive(
   pathname
 ) {
   return item.matchPaths.some(
-    (path) => {
-      return (
-        pathname === path ||
-        pathname.startsWith(
-          `${path}/`
-        )
-      );
-    }
+    (path) =>
+      pathname === path ||
+      pathname.startsWith(
+        `${path}/`
+      )
   );
 }
 
@@ -143,7 +165,9 @@ function BottomNav() {
       location.pathname !==
       item.path
     ) {
-      navigate(item.path);
+      navigate(
+        item.path
+      );
     }
   }
 
@@ -168,48 +192,61 @@ function BottomNav() {
               );
 
             return (
-              <div
+              <Fragment
                 key={item.id}
-                className="anandam-side-nav__entry"
               >
-                <button
-                  type="button"
-                  className={
-                    `anandam-side-nav__item${
-                      active
-                        ? " is-active"
-                        : ""
-                    }`
-                  }
-                  onClick={() =>
-                    handleNavigation(
-                      item
-                    )
-                  }
-                  aria-current={
-                    active
-                      ? "page"
-                      : undefined
-                  }
-                  title={item.label}
+                <div
+                  className="anandam-side-nav__entry"
                 >
+                  <button
+                    type="button"
+                    className={
+                      `anandam-side-nav__item${
+                        active
+                          ? " is-active"
+                          : ""
+                      }`
+                    }
+                    onClick={() =>
+                      handleNavigation(
+                        item
+                      )
+                    }
+                    aria-current={
+                      active
+                        ? "page"
+                        : undefined
+                    }
+                    title={
+                      item.label
+                    }
+                  >
+                    <span
+                      className="anandam-side-nav__icon-wrap"
+                    >
+                      <img
+                        src={item.icon}
+                        alt=""
+                        aria-hidden="true"
+                        className="anandam-side-nav__icon"
+                        style={{
+                          "--nav-icon-size":
+                            `${item.iconSize}px`,
 
-                  <span className="anandam-side-nav__icon-wrap">
+                          "--nav-icon-scale":
+                            item.iconScale,
+                        }}
+                      />
+                    </span>
 
-                    <img
-                      src={item.icon}
-                      alt=""
-                      aria-hidden="true"
-                      className="anandam-side-nav__icon"
-                    />
 
-                  </span>
-
-                  <span className="anandam-side-nav__label">
-                    {item.label}
-                  </span>
-
-                </button>
+                    <span
+                      className="anandam-side-nav__label"
+                    >
+                      {item.label}
+                    </span>
+                  </button>
+                </div>
 
 
                 {index <
@@ -221,7 +258,7 @@ function BottomNav() {
                   />
                 )}
 
-              </div>
+              </Fragment>
             );
           }
         )}
@@ -230,5 +267,6 @@ function BottomNav() {
     </nav>
   );
 }
+
 
 export default BottomNav;

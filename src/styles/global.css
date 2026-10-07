@@ -1569,14 +1569,19 @@ button {
   background: #fff1ef;
 }
 
-
 /* =========================================================
    LEFT SIDE NAVIGATION
-   Figma:
+
+   Based on Figma:
    width: 72px
-   height: 452px
-   left: 10px
-   vertically centered
+   height: 516px
+   left: 9-10px
+   vertically centred
+
+   Each icon lives inside one consistent 24x24 alignment box.
+   Individual PNG artwork is visually normalised using
+   --nav-icon-scale so transparent padding in the PNG files
+   does not make icons look mismatched.
    ========================================================= */
 
 .anandam-side-nav {
@@ -1584,18 +1589,19 @@ button {
   z-index: 450;
 
   top: 50%;
-  left: 10px;
+  left: 9px;
 
   transform: translateY(-50%);
 
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   width: 72px;
-  height: auto;
-  min-height: 452px;
+  height: 475px;
 
-  padding: 22px 10px;
+  padding: 32px 10px;
 
   background: rgba(255, 255, 255, 0.72);
 
@@ -1610,77 +1616,149 @@ button {
   -webkit-backdrop-filter: blur(10px);
 }
 
+
+/* =========================================================
+   INNER STACK
+   ========================================================= */
+
 .anandam-side-nav__items {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   width: 50px;
-  height: auto;
+  height: 100%;
 
-  gap: 11px;
+  /*
+    Figma uses roughly a 14px relationship
+    between item / separator / item.
+  */
+  gap: 13.5px;
 }
+
+
+/* =========================================================
+   EACH ITEM
+   ========================================================= */
 
 .anandam-side-nav__entry {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   width: 50px;
+
+  flex: 0 0 auto;
 }
+
 
 .anandam-side-nav__item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
 
   width: 50px;
+  height: 36px;
+
   min-height: 36px;
 
   padding: 0;
+  margin: 0;
 
   color: #667085;
   background: transparent;
 
   border: 0;
 
-  cursor: pointer;
+  font-family: "Roboto", Arial, sans-serif;
 
+  cursor: pointer;
   text-decoration: none;
+
+  transition:
+    color 160ms ease,
+    transform 160ms ease;
 }
+
+
+/* =========================================================
+   ICON ALIGNMENT WRAPPER
+
+   IMPORTANT:
+   All icons share exactly this box.
+   The IMAGE itself is scaled separately.
+   ========================================================= */
 
 .anandam-side-nav__icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
 
+  position: relative;
+
   width: 24px;
   height: 24px;
 
   flex: 0 0 24px;
 
-  overflow: hidden;
+  margin: 0;
+
+  overflow: visible;
 
   border-radius: 1000px;
 
   transition:
     width 180ms ease,
     height 180ms ease,
+    flex-basis 180ms ease,
     background-color 180ms ease;
 }
+
+
+/* =========================================================
+   ACTUAL ICON
+
+   The wrapper stays identical.
+
+   --nav-icon-size:
+   nominal Figma size
+
+   --nav-icon-scale:
+   compensates for transparent padding inside individual PNGs
+   ========================================================= */
 
 .anandam-side-nav__icon {
   display: block;
 
-  width: 24px;
-  height: 24px;
+  width: var(--nav-icon-size, 24px);
+  height: var(--nav-icon-size, 24px);
+
+  max-width: none;
+  max-height: none;
+
+  flex-shrink: 0;
 
   object-fit: contain;
+  object-position: center;
+
+  transform:
+    scale(
+      var(--nav-icon-scale, 1)
+    );
+
+  transform-origin: center;
 
   transition:
     transform 180ms ease,
     filter 180ms ease;
 }
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
 
 .anandam-side-nav__label {
   display: block;
@@ -1688,71 +1766,158 @@ button {
   width: 50px;
   height: 12px;
 
+  margin-top: 0;
+
+  overflow: visible;
+
   color: #667085;
 
   font-family: "Roboto", Arial, sans-serif;
   font-size: 10px;
+  font-style: normal;
   font-weight: 400;
   line-height: 12px;
 
   text-align: center;
+  white-space: nowrap;
 
-  transition: color 180ms ease;
+  transition:
+    color 180ms ease,
+    font-size 180ms ease;
 }
+
+
+/* =========================================================
+   SEPARATOR
+
+   Now rendered as its own item rather than being contained
+   inside the previous navigation entry.
+   This makes spacing much closer to the Figma Auto Layout.
+   ========================================================= */
 
 .anandam-side-nav__divider {
   display: block;
 
+  flex: 0 0 auto;
+
   width: 24.5px;
   height: 1px;
 
-  margin-top: 10px;
+  margin: 0;
 
-  background: rgba(
-    168,
-    168,
-    168,
-    0.22
-  );
+  background:
+    rgba(
+      168,
+      168,
+      168,
+      0.22
+    );
+
+  border: 0;
 }
 
 
-/* Hover */
+/* =========================================================
+   HOVER
+   ========================================================= */
 
-.anandam-side-nav__item:hover .anandam-side-nav__icon-wrap {
-  background: rgba(201, 166, 98, 0.1);
+.anandam-side-nav__item:hover
+.anandam-side-nav__icon-wrap {
+  background:
+    rgba(
+      201,
+      166,
+      98,
+      0.08
+    );
 }
 
-.anandam-side-nav__item:hover .anandam-side-nav__label {
+
+.anandam-side-nav__item:hover
+.anandam-side-nav__label {
   color: #a88039;
 }
 
 
-/* Active */
+/* =========================================================
+   ACTIVE
 
-.anandam-side-nav__item.is-active .anandam-side-nav__icon-wrap {
+   Figma uses a larger 44px active icon container,
+   but the actual icon remains visually around 20-24px.
+   ========================================================= */
+
+.anandam-side-nav__item.is-active {
+  height: 64px;
+  min-height: 64px;
+}
+
+
+.anandam-side-nav__item.is-active
+.anandam-side-nav__icon-wrap {
   width: 44px;
   height: 44px;
 
   flex-basis: 44px;
 
-  background: rgba(201, 166, 98, 0.13);
+  background:
+    rgba(
+      201,
+      166,
+      98,
+      0.13
+    );
 }
 
-.anandam-side-nav__item.is-active .anandam-side-nav__icon {
-  width: 24px;
-  height: 24px;
 
-  transform: scale(1.02);
+/*
+  IMPORTANT:
+  Do NOT resize the PNG when active.
+
+  Only the circular active container becomes larger.
+*/
+.anandam-side-nav__item.is-active
+.anandam-side-nav__icon {
+  width: var(--nav-icon-size, 24px);
+  height: var(--nav-icon-size, 24px);
+
+  transform:
+    scale(
+      var(--nav-icon-scale, 1)
+    );
 }
 
-.anandam-side-nav__item.is-active .anandam-side-nav__label {
+
+.anandam-side-nav__item.is-active
+.anandam-side-nav__label {
   color: #c9a662;
 
   font-size: 12px;
   line-height: 14px;
 }
 
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.anandam-side-nav__item:focus-visible {
+  outline: none;
+}
+
+
+.anandam-side-nav__item:focus-visible
+.anandam-side-nav__icon-wrap {
+  outline:
+    2px solid
+    rgba(
+      201,
+      166,
+      98,
+      0.45
+    );
+
+  outline-offset: 2px;
+}
 
 /* =========================================================
    UNIVERSAL PAGE CONTENT
@@ -1876,22 +2041,35 @@ button {
     Desktop/tablet remain fixed on the left.
   */
 
+  @media (max-width: 620px) {
+
   .anandam-side-nav {
     top: auto;
+
     right: 12px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
+    bottom:
+      calc(
+        10px +
+        env(safe-area-inset-bottom)
+      );
     left: 12px;
+
+    transform: none;
 
     width: auto;
     height: 68px;
+
+    min-height: 0;
 
     padding: 7px 8px;
 
     border-radius: 16px;
   }
 
+
   .anandam-side-nav__items {
     flex-direction: row;
+    align-items: center;
     justify-content: space-between;
 
     width: 100%;
@@ -1900,6 +2078,7 @@ button {
     gap: 0;
   }
 
+
   .anandam-side-nav__entry {
     flex: 1 1 0;
 
@@ -1907,16 +2086,21 @@ button {
     height: 54px;
   }
 
+
   .anandam-side-nav__divider {
     display: none;
   }
 
-  .anandam-side-nav__item {
+
+  .anandam-side-nav__item,
+  .anandam-side-nav__item.is-active {
     justify-content: center;
 
     width: 100%;
+    height: 54px;
     min-height: 54px;
   }
+
 
   .anandam-side-nav__icon-wrap {
     width: 26px;
@@ -1925,26 +2109,52 @@ button {
     flex-basis: 26px;
   }
 
-  .anandam-side-nav__item.is-active .anandam-side-nav__icon-wrap {
+
+  .anandam-side-nav__item.is-active
+  .anandam-side-nav__icon-wrap {
     width: 34px;
     height: 34px;
 
     flex-basis: 34px;
   }
 
+
+  /*
+    KEEP each icon's own scale.
+    Do not override them all to the same apparent artwork size.
+  */
   .anandam-side-nav__icon,
-  .anandam-side-nav__item.is-active .anandam-side-nav__icon {
-    width: 22px;
-    height: 22px;
+  .anandam-side-nav__item.is-active
+  .anandam-side-nav__icon {
+    width:
+      min(
+        var(--nav-icon-size, 24px),
+        22px
+      );
+
+    height:
+      min(
+        var(--nav-icon-size, 24px),
+        22px
+      );
+
+    transform:
+      scale(
+        var(--nav-icon-scale, 1)
+      );
   }
 
+
   .anandam-side-nav__label,
-  .anandam-side-nav__item.is-active .anandam-side-nav__label {
+  .anandam-side-nav__item.is-active
+  .anandam-side-nav__label {
     width: 100%;
 
     font-size: 9px;
     line-height: 11px;
   }
+
+}
 
 
   .anandam-app-layout__content {
