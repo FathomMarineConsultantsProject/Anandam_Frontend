@@ -1,0 +1,1429 @@
+/* =========================================================
+   ANANDAM — SLEEP STORIES
+   ========================================================= */
+
+.sleep-stories-page,
+.sleep-focus-page {
+  font-family: "Roboto", Arial, sans-serif;
+  color: #0c1421;
+}
+
+.sleep-stories-page {
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  padding: 2px 22px 60px 22px;
+  background: #fcfaf7;
+}
+
+
+/* =========================================================
+   PAGE HEADING
+   ========================================================= */
+
+.sleep-stories-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 26px;
+}
+
+.sleep-stories-heading h1 {
+  margin: 0;
+  color: #0c1421;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.sleep-stories-heading p {
+  margin: 0;
+  color: #60657c;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+
+/* =========================================================
+   TABS
+   ========================================================= */
+
+.sleep-stories-tabs {
+  display: flex;
+  align-items: flex-end;
+  height: 37px;
+  margin-bottom: 20px;
+}
+
+.sleep-stories-tabs button {
+  position: relative;
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: #5d616b;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.sleep-stories-tabs button.is-active {
+  color: #712e1e;
+  font-weight: 500;
+}
+
+.sleep-stories-tabs button.is-active::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: #712e1e;
+  content: "";
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.sleep-search {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  margin-bottom: 20px;
+
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+
+  color: #757575;
+}
+
+.sleep-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+
+  color: #343a46;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.sleep-search input::placeholder {
+  color: #666666;
+}
+
+
+/* =========================================================
+   TRACK LIST
+   ========================================================= */
+
+.sleep-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.sleep-track-card {
+  display: flex;
+  width: 100%;
+  min-height: 152px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px;
+
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+.sleep-track-card__main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 24px;
+}
+
+.sleep-track-card__image {
+  width: 172px;
+  height: 114px;
+
+  display: block;
+  flex: 0 0 172px;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  object-position: center;
+}
+
+/* =========================================
+   SLEEP STORY ARTWORK
+   ========================================= */
+
+.sleep-track-card__image--story {
+  object-fit: cover;
+  background: #f8f3e8;
+}
+
+@media (max-width: 768px) {
+  .sleep-track-card__image,
+  .sleep-continue-card .sleep-track-card__image {
+    width: 130px;
+    height: 90px;
+    flex-basis: 130px;
+  }
+}
+
+/* =========================================
+   SLEEP SOUND ARTWORK
+   ========================================= */
+
+.sleep-track-card__image--sound {
+  object-fit: contain;
+
+  background: #fbf6e9;
+
+  padding: 8px;
+
+  box-sizing: border-box;
+}
+
+.sleep-track-card__image--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  background: #faf4e8;
+}
+
+.sleep-mini-wave {
+  display: flex;
+  width: 75%;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.sleep-mini-wave span {
+  width: 3px;
+  min-height: 5px;
+  background: #d5a62c;
+  border-radius: 999px;
+}
+
+.sleep-track-card__content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 54px;
+}
+
+.sleep-track-card__copy {
+  display: flex;
+  min-width: 280px;
+  max-width: 460px;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sleep-track-card__copy h2 {
+  margin: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #0c1421;
+
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.sleep-track-card__copy p {
+  margin: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #5d616b;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.sleep-track-card__meta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 24px;
+
+  color: #343a46;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.sleep-track-card__duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sleep-listen-button {
+  display: inline-flex;
+  min-width: 111px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 22px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #712e1e;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.sleep-listen-button:hover {
+  background: #5e2518;
+}
+
+.sleep-listen-button:active {
+  transform: scale(0.98);
+}
+
+
+/* =========================================================
+   CONTINUE LISTENING
+   ========================================================= */
+
+.sleep-continue-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.sleep-section-label {
+  color: #0c1421;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sleep-continue-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  padding: 14px 18px;
+
+  background: #fffaf2;
+  border: 1px solid #e5c77e;
+  border-radius: 14px;
+}
+
+.sleep-continue-card .sleep-track-card__image {
+  width: 128px;
+  height: 84px;
+  flex-basis: 128px;
+}
+
+.sleep-continue-card__content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sleep-continue-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.sleep-continue-card__top h2 {
+  margin: 0 0 3px;
+  color: #0c1421;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.sleep-continue-card__top p {
+  margin: 0;
+  color: #60657c;
+  font-size: 13px;
+}
+
+.sleep-continue-progress {
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+
+  background: #eadfd5;
+  border-radius: 999px;
+}
+
+.sleep-continue-progress span {
+  display: block;
+  height: 100%;
+  background: #b88a32;
+  border-radius: inherit;
+}
+
+.sleep-continue-card__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #757575;
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   LOAD / ERROR / EMPTY
+   ========================================================= */
+
+.sleep-track-skeleton {
+  height: 152px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #f4f2ef 25%,
+      #faf9f7 50%,
+      #f4f2ef 75%
+    );
+
+  background-size: 200% 100%;
+
+  border: 1px solid #e5e0db;
+  border-radius: 20px;
+
+  animation: sleepSkeleton 1.3s infinite linear;
+}
+
+@keyframes sleepSkeleton {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.sleep-error-panel,
+.sleep-empty-state {
+  padding: 30px;
+  margin-bottom: 20px;
+
+  background: #ffffff;
+  border: 1px solid #ded9d4;
+  border-radius: 14px;
+}
+
+.sleep-error-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  color: #9d3027;
+  font-size: 13px;
+}
+
+.sleep-error-panel button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  border: 0;
+  background: transparent;
+  color: #712e1e;
+
+  cursor: pointer;
+}
+
+.sleep-empty-state {
+  text-align: center;
+}
+
+.sleep-empty-state h2 {
+  margin: 0 0 7px;
+  font-size: 18px;
+}
+
+.sleep-empty-state p {
+  margin: 0;
+  color: #60657c;
+  font-size: 14px;
+}
+
+/* =========================================================
+   SLEEP PLAYER
+   Uses universal AppLayout:
+   - AppHeader already reserves top area
+   - BottomNav already reserves left area
+   ========================================================= */
+
+.sleep-player-page {
+  width: 100%;
+  min-width: 0;
+
+  font-family: "Roboto", Arial, sans-serif;
+  color: #0c1421;
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.sleep-player-card {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 22px 24px 24px;
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.sleep-player-header {
+  display: grid;
+
+  grid-template-columns:
+    190px
+    minmax(0, 1fr)
+    200px;
+
+  align-items: start;
+
+  width: 100%;
+
+  gap: 16px;
+
+  margin-bottom: 20px;
+}
+
+
+.sleep-player-back {
+  display: inline-flex;
+
+  width: fit-content;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 7px 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #60657c;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+.sleep-player-back:hover {
+  color: #712e1e;
+}
+
+
+.sleep-player-title {
+  display: flex;
+
+  min-width: 0;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 4px;
+
+  padding-top: 2px;
+
+  text-align: center;
+}
+
+
+.sleep-player-title h1 {
+  width: 100%;
+
+  margin: 0;
+
+  overflow: hidden;
+
+  color: #0c1421;
+
+  font-size: 24px;
+
+  font-weight: 400;
+
+  line-height: 30px;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+.sleep-player-title p {
+  margin: 0;
+
+  color: #60657c;
+
+  font-size: 14px;
+
+  font-weight: 400;
+
+  line-height: 18px;
+}
+
+
+/* =========================================================
+   TIMER
+   ========================================================= */
+
+.sleep-timer-field {
+  display: flex;
+
+  width: 200px;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  justify-self: end;
+}
+
+
+.sleep-timer-field > span {
+  color: #0c1421;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  line-height: 16px;
+}
+
+
+.sleep-timer-field select {
+  width: 200px;
+
+  height: 42px;
+
+  padding: 0 15px;
+
+  outline: none;
+
+  background: #f7f7f7;
+
+  border: 1px solid #d5d7da;
+
+  border-radius: 8px;
+
+  color: #7d8797;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+
+.sleep-timer-field select:focus {
+  border-color: #b88a32;
+}
+
+
+.sleep-timer-field small {
+  color: #b88a32;
+
+  font-size: 11px;
+
+  line-height: 14px;
+}
+
+
+/* =========================================================
+   WAVE PANEL
+   Reduced height so page fits naturally at 100% zoom.
+   ========================================================= */
+
+.sleep-wave-panel {
+  display: flex;
+
+  width: 100%;
+
+  height: clamp(
+    285px,
+    42vh,
+    460px
+  );
+
+  align-items: center;
+
+  justify-content: center;
+
+  overflow: hidden;
+
+  padding:
+    28px
+    clamp(
+      32px,
+      8vw,
+      130px
+    );
+
+  background: #faf4e8;
+
+  border-radius: 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   WAVEFORM
+   ========================================================= */
+
+.sleep-waveform {
+  display: flex;
+
+  width: min(
+    900px,
+    100%
+  );
+
+  height: 76%;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 2px;
+}
+
+
+.sleep-waveform > span {
+  display: block;
+
+  width: 4px;
+
+  min-width: 2px;
+
+  height: var(
+    --wave-height
+  );
+
+  flex: 1 1 auto;
+
+  max-width: 5px;
+
+  background: #dda915;
+
+  border-radius: 999px;
+
+  opacity: 0.9;
+
+  transform-origin: center;
+
+  animation:
+    sleepWaveMotion
+    var(--wave-speed)
+    ease-in-out
+    var(--wave-delay)
+    infinite
+    alternate;
+
+  animation-play-state: paused;
+
+  will-change:
+    transform,
+    opacity;
+}
+
+
+.sleep-waveform.is-playing > span {
+  animation-play-state:
+    running;
+}
+
+
+@keyframes sleepWaveMotion {
+  0% {
+    transform:
+      scaleY(0.76);
+
+    opacity: 0.82;
+  }
+
+  45% {
+    transform:
+      scaleY(1.05);
+
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      scaleY(0.86);
+
+    opacity: 0.92;
+  }
+}
+
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
+
+.sleep-progress-section {
+  display: flex;
+
+  width: 100%;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  margin-top: 18px;
+}
+
+
+.sleep-progress-range {
+  --sleep-progress: 0%;
+
+  width: 100%;
+
+  height: 26px;
+
+  margin: 0;
+
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+.sleep-progress-range::-webkit-slider-runnable-track {
+  width: 100%;
+
+  height: 4px;
+
+  background:
+    linear-gradient(
+      to right,
+
+      #a87a29
+        var(
+          --sleep-progress
+        ),
+
+      #e9dfd5
+        var(
+          --sleep-progress
+        )
+    );
+
+  border-radius: 999px;
+}
+
+
+.sleep-progress-range::-webkit-slider-thumb {
+  width: 24px;
+
+  height: 24px;
+
+  margin-top: -10px;
+
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  background: #ae7d28;
+
+  border: 1px solid #ffffff;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 1px 2px
+    rgba(0, 0, 0, 0.2);
+}
+
+
+.sleep-progress-range::-moz-range-track {
+  height: 4px;
+
+  background: #e9dfd5;
+
+  border-radius: 999px;
+}
+
+
+.sleep-progress-range::-moz-range-progress {
+  height: 4px;
+
+  background: #a87a29;
+
+  border-radius: 999px;
+}
+
+
+.sleep-progress-range::-moz-range-thumb {
+  width: 24px;
+
+  height: 24px;
+
+  background: #ae7d28;
+
+  border: 1px solid #ffffff;
+
+  border-radius: 50%;
+}
+
+
+.sleep-progress-times {
+  display: flex;
+
+  width: 100%;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  color: #5c626a;
+
+  font-size: 13px;
+
+  line-height: 16px;
+}
+
+
+.sleep-progress-times strong {
+  color: #0c1421;
+
+  font-weight: 500;
+}
+
+
+.sleep-progress-times span {
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   PLAYER CONTROLS
+   ========================================================= */
+
+.sleep-player-controls {
+  display: grid;
+
+  grid-template-columns:
+    145px
+    minmax(0, 1fr)
+    145px;
+
+  width: 100%;
+
+  min-height: 64px;
+
+  align-items: center;
+
+  margin-top: 12px;
+}
+
+
+.sleep-main-controls {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 36px;
+}
+
+
+.sleep-skip-button {
+  position: relative;
+
+  display: flex;
+
+  width: 44px;
+
+  height: 44px;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #5c626a;
+
+  cursor: pointer;
+}
+
+
+.sleep-skip-button:hover {
+  color: #712e1e;
+}
+
+
+.sleep-skip-button span {
+  position: absolute;
+
+  top: 16px;
+
+  font-size: 10px;
+
+  font-weight: 500;
+}
+
+
+.sleep-play-button {
+  display: flex;
+
+  width: 66px;
+
+  height: 66px;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  background: #712e1e;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  transition:
+    transform 150ms ease,
+    background 150ms ease;
+}
+
+
+.sleep-play-button:hover:not(:disabled) {
+  background: #5e2518;
+
+  transform: scale(1.035);
+}
+
+
+.sleep-play-button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   VOLUME
+   ========================================================= */
+
+.sleep-volume-control {
+  display: flex;
+
+  width: 145px;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  color: #5c626a;
+}
+
+
+.sleep-volume-control input {
+  --sleep-volume: 70%;
+
+  width: 80px;
+
+  height: 20px;
+
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+.sleep-volume-control input::-webkit-slider-runnable-track {
+  height: 3px;
+
+  background:
+    linear-gradient(
+      to right,
+
+      #712e1e
+        var(
+          --sleep-volume
+        ),
+
+      #e9dfd5
+        var(
+          --sleep-volume
+        )
+    );
+
+  border-radius: 999px;
+}
+
+
+.sleep-volume-control input::-webkit-slider-thumb {
+  width: 12px;
+
+  height: 12px;
+
+  margin-top: -4.5px;
+
+  appearance: none;
+
+  -webkit-appearance: none;
+
+  background: #712e1e;
+
+  border: 0;
+
+  border-radius: 50%;
+}
+
+
+.sleep-volume-control input::-moz-range-track {
+  height: 3px;
+
+  background: #e9dfd5;
+
+  border-radius: 999px;
+}
+
+
+.sleep-volume-control input::-moz-range-progress {
+  height: 3px;
+
+  background: #712e1e;
+
+  border-radius: 999px;
+}
+
+
+.sleep-volume-control input::-moz-range-thumb {
+  width: 12px;
+
+  height: 12px;
+
+  background: #712e1e;
+
+  border: 0;
+
+  border-radius: 50%;
+}
+
+
+/* =========================================================
+   YOUTUBE AUDIO ENGINE
+
+   IMPORTANT:
+   Never use display:none.
+
+   It remains rendered so YouTube playback/audio continues,
+   while staying invisible to the user.
+   ========================================================= */
+
+.sleep-youtube-engine {
+  position: fixed;
+
+  z-index: -1;
+
+  right: 0;
+
+  bottom: 0;
+
+  width: 220px;
+
+  height: 124px;
+
+  overflow: hidden;
+
+  opacity: 0.001;
+
+  pointer-events: none;
+}
+
+
+.sleep-youtube-engine iframe {
+  display: block;
+
+  width: 220px !important;
+
+  height: 124px !important;
+}
+
+
+/* =========================================================
+   ERROR / LOADING
+   ========================================================= */
+
+.sleep-player-loading,
+.sleep-player-error {
+  width: 100%;
+
+  padding: 32px;
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  color: #60657c;
+
+  box-sizing: border-box;
+}
+
+
+.sleep-player-error h2 {
+  margin:
+    0
+    0
+    8px;
+
+  color: #0c1421;
+}
+
+
+.sleep-player-error p {
+  margin:
+    0
+    0
+    20px;
+}
+
+
+.sleep-player-error button {
+  height: 40px;
+
+  padding:
+    0
+    20px;
+
+  border: 0;
+
+  background: #712e1e;
+
+  border-radius: 8px;
+
+  color: #ffffff;
+
+  cursor: pointer;
+}
+
+
+.sleep-player-inline-error {
+  width: 100%;
+
+  padding: 10px 14px;
+
+  margin-top: 10px;
+
+  background: #fff3f1;
+
+  border: 1px solid #f1c5be;
+
+  border-radius: 8px;
+
+  color: #9d3027;
+
+  font-size: 12px;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (
+  max-width: 1100px
+) {
+  .sleep-player-header {
+    grid-template-columns:
+      150px
+      minmax(0, 1fr)
+      180px;
+  }
+
+
+  .sleep-timer-field,
+  .sleep-timer-field select {
+    width: 180px;
+  }
+
+
+  .sleep-wave-panel {
+    padding:
+      28px
+      52px;
+  }
+}
+
+
+@media (
+  max-width: 800px
+) {
+  .sleep-player-card {
+    padding: 18px;
+  }
+
+
+  .sleep-player-header {
+    grid-template-columns:
+      1fr;
+
+    gap: 15px;
+  }
+
+
+  .sleep-player-title {
+    align-items: flex-start;
+
+    text-align: left;
+
+    grid-row: 2;
+  }
+
+
+  .sleep-player-title h1 {
+    white-space: normal;
+  }
+
+
+  .sleep-timer-field {
+    width: 100%;
+
+    justify-self: stretch;
+
+    grid-row: 3;
+  }
+
+
+  .sleep-timer-field select {
+    width: 100%;
+  }
+
+
+  .sleep-wave-panel {
+    height: 320px;
+
+    padding:
+      24px
+      20px;
+  }
+
+
+  .sleep-waveform {
+    gap: 1px;
+  }
+
+
+  .sleep-waveform > span {
+    width: 3px;
+  }
+
+
+  .sleep-player-controls {
+    grid-template-columns:
+      1fr;
+
+    gap: 14px;
+  }
+
+
+  .sleep-player-controls__spacer {
+    display: none;
+  }
+
+
+  .sleep-volume-control {
+    width: 100%;
+
+    justify-content: center;
+  }
+}

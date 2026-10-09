@@ -25,6 +25,9 @@ import BlogEditorPage from "./pages/BlogEditorPage";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import PublicBlogPage from "./pages/PublicBlogPage";
 
+import SleepStoriesPage from "./pages/SleepStoriesPage";
+import SleepPlayerPage from "./pages/SleepPlayerPage";
+
 import {
   hasCompletedMoodGate,
   isAuthenticated,
@@ -256,6 +259,24 @@ function App() {
           }
         />
 
+        <Route
+          path="/app/sleep-stories"
+          element={
+            <RequireAuth>
+              <SleepStoriesPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/sleep-stories/:slug"
+          element={
+            <RequireAuth>
+              <SleepPlayerPage />
+            </RequireAuth>
+          }
+        />
+
 
         {/* =====================================================
             BLOGS
@@ -330,6 +351,8 @@ function App() {
 
       </Routes>
     </BrowserRouter>
+
+
   );
 }
 

@@ -14,14 +14,8 @@
 
   width: 100%;
   min-width: 0;
-  min-height: calc(100svh - 87px);
-
-  margin: 0;
-
-  padding:
-    0
-    0
-    120px;
+  min-height: calc(100vh - 64px);
+  padding: 2px 22px 60px 42px;
 
   color: #0c1421;
   background: #fcfaf7;

@@ -28,10 +28,11 @@ const NAV_ITEMS = [
     iconScale: 1,
 
     matchPaths: [
-      "/dashboard",
-      "/app/breathing",
-      "/app/brain-games",
-    ],
+  "/dashboard",
+  "/app/breathing",
+  "/app/brain-games",
+  "/app/sleep-stories",
+],
   },
 
   {

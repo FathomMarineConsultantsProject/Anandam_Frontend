@@ -54,9 +54,8 @@
 
 .blog-detail-page {
 
-  min-height: calc(100svh - 64px);
-
-  padding: 24px 24px 56px;
+  min-height: calc(100vh - 64px);
+  padding: 2px 22px 60px 42px;
 
   background: var(--blog-bg);
 
