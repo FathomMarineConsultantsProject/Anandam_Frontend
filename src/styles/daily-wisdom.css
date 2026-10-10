@@ -1,0 +1,622 @@
+/* =========================================================
+   DAILY WISDOM
+   ========================================================= */
+
+.daily-wisdom-page {
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: calc(100vh - 64px);
+
+  padding:
+    24px
+    22px
+    48px
+    50px;
+
+  background: #fcfaf7;
+
+  font-family:
+    "Roboto",
+    Arial,
+    sans-serif;
+
+  color: #0c1421;
+}
+
+
+.daily-wisdom-page *,
+.daily-wisdom-page *::before,
+.daily-wisdom-page *::after {
+  box-sizing: border-box;
+}
+
+
+.daily-wisdom-shell {
+  width: 100%;
+  max-width: 1303px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 23px;
+}
+
+
+/* =========================================================
+   PAGE HEADING
+   ========================================================= */
+
+.daily-wisdom-header {
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 4px;
+
+  min-height: 50px;
+}
+
+
+.daily-wisdom-header h1 {
+  margin: 0;
+
+  font-family:
+    "Roboto",
+    Arial,
+    sans-serif;
+
+  font-size: 24px;
+  line-height: 28px;
+
+  font-weight: 400;
+
+  color: #0c1421;
+}
+
+
+.daily-wisdom-header p {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 16px;
+
+  font-weight: 400;
+
+  color: #60657c;
+}
+
+
+/* =========================================================
+   MAIN WISDOM CARD
+   ========================================================= */
+
+.daily-wisdom-card {
+  width: 100%;
+  min-height: 394px;
+
+  padding:
+    32px
+    20px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 23px;
+
+  background: #ffffff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+}
+
+
+/* =========================================================
+   TOP WISDOM SYMBOL
+   ========================================================= */
+
+.daily-wisdom-symbol {
+  width: 34px;
+  height: 39px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #928a77;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.daily-wisdom-card__content {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 28px;
+
+  animation:
+    dailyWisdomFadeIn
+    240ms
+    ease;
+}
+
+
+@keyframes dailyWisdomFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   QUOTE
+   ========================================================= */
+
+.daily-wisdom-quote-area {
+  position: relative;
+
+  width: 100%;
+  max-width: 700px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+}
+
+
+.daily-wisdom-quote-icon {
+  position: absolute;
+
+  left: -35px;
+  top: -7px;
+
+  color: #8f9399;
+}
+
+
+.daily-wisdom-quote {
+  width: 100%;
+
+  margin: 0;
+
+  font-size: 20px;
+  line-height: 26px;
+
+  font-weight: 500;
+
+  text-align: center;
+
+  color: #0c1421;
+}
+
+
+.daily-wisdom-author {
+  width: 100%;
+
+  margin:
+    16px
+    0
+    0;
+
+  padding-right: 4px;
+
+  font-size: 14px;
+  line-height: 16px;
+
+  font-weight: 400;
+
+  text-align: right;
+
+  color: #5c626a;
+}
+
+
+/* =========================================================
+   DASHED DIVIDER
+   ========================================================= */
+
+.daily-wisdom-divider {
+  width: 100%;
+  height: 0;
+
+  border-top:
+    1px
+    dashed
+    #d9d9d9;
+}
+
+
+/* =========================================================
+   REFLECTION
+   ========================================================= */
+
+.daily-wisdom-reflection {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 18px;
+}
+
+
+.daily-wisdom-reflection__label {
+  margin: 0;
+
+  font-size: 12px;
+  line-height: 14px;
+
+  font-weight: 400;
+
+  text-align: center;
+
+  color: #8f9399;
+}
+
+
+.daily-wisdom-reflection__text {
+  width: 100%;
+  max-width: 897px;
+
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 18px;
+
+  font-weight: 400;
+
+  text-align: center;
+
+  color: #3d434d;
+}
+
+
+/* =========================================================
+   NEXT WISDOM
+   ========================================================= */
+
+.daily-wisdom-next {
+  appearance: none;
+
+  display: inline-flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #712e1e;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  line-height: 15px;
+
+  font-weight: 400;
+
+  cursor: pointer;
+}
+
+
+.daily-wisdom-next span {
+  padding-bottom: 2px;
+
+  border-bottom:
+    1px
+    solid
+    #712e1e;
+}
+
+
+.daily-wisdom-next:hover {
+  opacity: 0.78;
+}
+
+
+.daily-wisdom-next:focus-visible {
+  outline:
+    2px
+    solid
+    rgba(113, 46, 30, 0.32);
+
+  outline-offset: 5px;
+
+  border-radius: 4px;
+}
+
+
+/* =========================================================
+   BREATHING CARD
+   ========================================================= */
+
+.daily-wisdom-breathe-card {
+  width: 100%;
+  min-height: 140px;
+
+  padding:
+    32px
+    20px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 23px;
+
+  background: #ffffff;
+
+  border:
+    1px
+    solid
+    #d9d9d9;
+
+  border-radius: 20px;
+}
+
+
+/* icon */
+
+.daily-wisdom-breathe-card__icon {
+  width: 74px;
+  height: 74px;
+
+  flex:
+    0
+    0
+    74px;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 50%;
+
+  background: #eaf2f9;
+
+  color: #3d668e;
+}
+
+
+/* text */
+
+.daily-wisdom-breathe-card__content {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 8px;
+}
+
+
+.daily-wisdom-breathe-card__eyebrow {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 16px;
+
+  font-weight: 400;
+
+  color: #3d434d;
+}
+
+
+.daily-wisdom-breathe-card__content h2 {
+  margin: 0;
+
+  font-size: 20px;
+  line-height: 23px;
+
+  font-weight: 500;
+
+  color: #0c1421;
+}
+
+
+/* =========================================================
+   START SESSION
+   ========================================================= */
+
+.daily-wisdom-start-button {
+  width: 132px;
+  height: 40px;
+
+  flex:
+    0
+    0
+    132px;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  padding:
+    0
+    24px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #712e1e;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  line-height: 16px;
+
+  font-weight: 400;
+
+  letter-spacing: 0.01em;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+
+.daily-wisdom-start-button:hover {
+  background: #602619;
+}
+
+
+.daily-wisdom-start-button:active {
+  transform: translateY(1px);
+}
+
+
+.daily-wisdom-start-button:focus-visible {
+  outline:
+    3px
+    solid
+    rgba(113, 46, 30, 0.22);
+
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.daily-wisdom-error {
+  padding: 20px;
+
+  background: #ffffff;
+
+  border:
+    1px
+    solid
+    #d9d9d9;
+
+  border-radius: 12px;
+
+  color: #60657c;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .daily-wisdom-page {
+    padding:
+      24px
+      20px
+      40px
+      100px;
+  }
+
+  .daily-wisdom-card {
+    min-height: 360px;
+  }
+
+  .daily-wisdom-quote-area {
+    max-width: 620px;
+  }
+}
+
+
+/* =========================================================
+   SMALL SCREENS
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .daily-wisdom-page {
+    padding:
+      20px
+      16px
+      32px;
+  }
+
+  .daily-wisdom-shell {
+    gap: 16px;
+  }
+
+  .daily-wisdom-card {
+    min-height: auto;
+
+    padding:
+      28px
+      20px;
+  }
+
+  .daily-wisdom-quote-area {
+    max-width: 100%;
+
+    padding:
+      0
+      10px;
+  }
+
+  .daily-wisdom-quote-icon {
+    position: static;
+
+    align-self: flex-start;
+
+    margin-bottom: 12px;
+  }
+
+  .daily-wisdom-quote {
+    font-size: 18px;
+    line-height: 25px;
+  }
+
+  .daily-wisdom-author {
+    text-align: center;
+  }
+
+  .daily-wisdom-breathe-card {
+    min-height: auto;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    padding: 24px;
+  }
+
+  .daily-wisdom-start-button {
+    width: 100%;
+
+    flex-basis: 40px;
+  }
+}

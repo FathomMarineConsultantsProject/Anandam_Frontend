@@ -27,6 +27,7 @@ import PublicBlogPage from "./pages/PublicBlogPage";
 
 import SleepStoriesPage from "./pages/SleepStoriesPage";
 import SleepPlayerPage from "./pages/SleepPlayerPage";
+import DailyWisdomPage from "./pages/DailyWisdomPage";
 
 import {
   hasCompletedMoodGate,
@@ -334,6 +335,14 @@ function App() {
           }
         />
 
+<Route
+  path="/app/daily-wisdom"
+  element={
+    <RequireAuth>
+      <DailyWisdomPage />
+    </RequireAuth>
+  }
+/>
 
         {/* =====================================================
             FALLBACK
