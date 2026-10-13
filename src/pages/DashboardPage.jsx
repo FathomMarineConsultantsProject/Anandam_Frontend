@@ -99,14 +99,14 @@ const TOOLKIT_ITEMS = [
   background: "#FCF5D8",
   route: "/app/sleep-stories",
 },
-  {
-    id: "affirmations",
-    title: "Affirmations",
-    subtitle: "Positive mantras",
-    icon: affirmationsIcon,
-    background: "#FFEBE2",
-    route: null,
-  },
+  // {
+  //   id: "affirmations",
+  //   title: "Affirmations",
+  //   subtitle: "Positive mantras",
+  //   icon: affirmationsIcon,
+  //   background: "#FFEBE2",
+  //   route: null,
+  // },
   {
   id: "wisdom",
   title: "Daily wisdom",
@@ -116,20 +116,12 @@ const TOOLKIT_ITEMS = [
   route: "/app/daily-wisdom",
 },
   {
-    id: "masterclasses",
-    title: "Masterclasses",
-    subtitle: "Expert-led guidance",
-    icon: masterClassesIcon,
-    background: "#F8EFE7",
-    route: null,
-  },
-  {
-  id: "brain-training",
-  title: "Brain training",
-  subtitle: "Cognitive exercises",
-  icon: brainTrainingIcon,
-  background: "#F6F8E7",
-  route: "/app/brain-games",
+  id: "wellbeing",
+  title: "Your Wellbeing",
+  subtitle: "Check in with yourself",
+  icon: moodCheckIcon,
+  background: "#EDF5FF",
+  route: "/app/wellbeing",
 },
   {
     id: "health",
@@ -139,6 +131,15 @@ const TOOLKIT_ITEMS = [
     background: "#EDEDFF",
     route: "/app/fitness",
   },
+
+  {
+  id: "brain-training",
+  title: "Brain training",
+  subtitle: "Cognitive exercises",
+  icon: brainTrainingIcon,
+  background: "#F6F8E7",
+  route: "/app/brain-games",
+},
 ];
 
 const EMERGENCY_ITEMS = [

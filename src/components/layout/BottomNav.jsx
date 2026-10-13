@@ -32,7 +32,8 @@ const NAV_ITEMS = [
   "/app/breathing",
   "/app/brain-games",
   "/app/sleep-stories",
-   "/app/daily-wisdom",
+  "/app/daily-wisdom",
+  "/app/wellbeing",
 ],
   },
 

@@ -29,6 +29,9 @@ import SleepStoriesPage from "./pages/SleepStoriesPage";
 import SleepPlayerPage from "./pages/SleepPlayerPage";
 import DailyWisdomPage from "./pages/DailyWisdomPage";
 
+import WellbeingQuestionnairesPage from "./pages/WellbeingQuestionnairesPage";
+import WellbeingQuestionnairePage from "./pages/WellbeingQuestionnairePage";
+
 import {
   hasCompletedMoodGate,
   isAuthenticated,
@@ -335,11 +338,33 @@ function App() {
           }
         />
 
+        <Route
+          path="/app/daily-wisdom"
+          element={
+            <RequireAuth>
+              <DailyWisdomPage />
+            </RequireAuth>
+          }
+        />
+
+        {/* =====================================================
+    WELLBEING QUESTIONNAIRES
+    ===================================================== */}
+
 <Route
-  path="/app/daily-wisdom"
+  path="/app/wellbeing"
   element={
     <RequireAuth>
-      <DailyWisdomPage />
+      <WellbeingQuestionnairesPage />
+    </RequireAuth>
+  }
+/>
+
+<Route
+  path="/app/wellbeing/:slug"
+  element={
+    <RequireAuth>
+      <WellbeingQuestionnairePage />
     </RequireAuth>
   }
 />
