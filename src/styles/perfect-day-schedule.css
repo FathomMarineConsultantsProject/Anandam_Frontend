@@ -2319,3 +2319,976 @@
     width: auto;
   }
 }
+
+/* =========================================================
+   DAY DATE NAVIGATION
+   ========================================================= */
+
+.dp-schedule-heading-area {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 16px;
+}
+
+
+.dp-schedule-heading-copy h2 {
+  margin: 0;
+}
+
+
+.dp-schedule-heading-copy p {
+  margin:
+    5px
+    0
+    0;
+}
+
+
+.dp-date-navigator {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+
+.dp-date-nav-arrow {
+  width: 38px;
+  height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    #dedede;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #343a46;
+
+  cursor: pointer;
+
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease;
+}
+
+
+.dp-date-nav-arrow:hover:not(:disabled) {
+  border-color: #b88a32;
+
+  background: #fffaf1;
+
+  color: #8a651d;
+}
+
+
+.dp-date-nav-arrow:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+
+.dp-date-selector {
+  min-height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding:
+    0
+    12px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #dedede;
+
+  border-radius: 7px;
+
+  color: #667085;
+}
+
+
+.dp-date-selector:focus-within {
+  border-color: #b88a32;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      184,
+      138,
+      50,
+      0.08
+    );
+}
+
+
+.dp-date-selector input {
+  min-width: 126px;
+
+  padding: 0;
+
+  border: 0;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #343a46;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+.dp-date-selector input:disabled {
+  cursor: not-allowed;
+}
+
+
+.dp-date-today-button {
+  min-height: 38px;
+
+  padding:
+    0
+    14px;
+
+  border:
+    1px solid
+    #e1d3b6;
+
+  border-radius: 7px;
+
+  background: #fffaf1;
+
+  color: #8b6722;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+}
+
+
+.dp-date-today-button:hover:not(:disabled) {
+  background: #f8f0df;
+
+  border-color: #b88a32;
+}
+
+
+.dp-date-today-button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+
+/* Allow date controls + existing action buttons
+   to wrap safely on narrower screens. */
+
+.dp-schedule-card__header {
+  gap: 20px;
+}
+
+
+.dp-schedule-actions {
+  flex-wrap: wrap;
+}
+
+
+@media (max-width: 900px) {
+  .dp-date-navigator {
+    width: 100%;
+  }
+
+
+  .dp-date-selector {
+    flex: 1;
+
+    min-width: 170px;
+  }
+
+
+  .dp-date-selector input {
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 560px) {
+  .dp-date-navigator {
+    display: grid;
+
+    grid-template-columns:
+      38px
+      minmax(0, 1fr)
+      38px;
+  }
+
+
+  .dp-date-today-button {
+    grid-column:
+      1 / -1;
+
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   DAY PLANNER DATE NAVIGATION
+   ========================================================= */
+
+.dp-date-navigator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+
+.dp-date-nav-arrow {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d9d9d9;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #181f2a;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+
+.dp-date-nav-arrow:hover:not(:disabled) {
+  border-color: #c9a662;
+
+  background: #fcfaf7;
+
+  color: #8a321f;
+}
+
+
+.dp-date-nav-arrow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   DATE PICKER TRIGGER
+   ========================================================= */
+
+.dp-date-picker-trigger {
+  min-width: 178px;
+  height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  padding: 0 12px;
+
+  border: 1px solid #d9d9d9;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #181f2a;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+
+.dp-date-picker-trigger:hover:not(:disabled) {
+  border-color: #c9a662;
+  background: #fcfaf7;
+}
+
+
+.dp-date-picker-trigger svg:first-child {
+  color: #667085;
+}
+
+
+.dp-date-picker-trigger svg:last-child {
+  margin-left: 3px;
+  color: #667085;
+}
+
+
+.dp-date-picker-trigger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   TODAY BUTTON
+   ========================================================= */
+
+.dp-date-today-button {
+  height: 38px;
+
+  padding: 0 15px;
+
+  border: 1px solid #dccdad;
+
+  border-radius: 8px;
+
+  background: #fcfaf7;
+
+  color: #8a321f;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+
+.dp-date-today-button:hover:not(:disabled) {
+  border-color: #c9a662;
+  background: #f8f2e7;
+}
+
+
+.dp-date-today-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   COMPACT DAY PLANNER CALENDAR POPOVER
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   DATE NAVIGATION
+   --------------------------------------------------------- */
+
+.dp-date-navigator {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+
+.dp-date-nav-arrow {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #181f2a;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+
+.dp-date-nav-arrow:hover:not(:disabled) {
+  border-color: #c9a662;
+  background: #fcfaf7;
+  color: #8a321f;
+}
+
+
+.dp-date-nav-arrow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* ---------------------------------------------------------
+   DATE PICKER WRAPPER
+
+   IMPORTANT:
+   Calendar is positioned relative to THIS,
+   not relative to the whole screen.
+   --------------------------------------------------------- */
+
+.dp-date-picker-wrap {
+  position: relative;
+
+  display: inline-flex;
+
+  z-index: 90;
+}
+
+
+/* ---------------------------------------------------------
+   DATE BUTTON
+   --------------------------------------------------------- */
+
+.dp-date-picker-trigger {
+  width: 178px;
+  height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 12px;
+
+  gap: 9px;
+
+  color: #181f2a;
+
+  background: #ffffff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+
+.dp-date-picker-trigger:hover:not(:disabled),
+.dp-date-picker-trigger[aria-expanded="true"] {
+  border-color: #c9a662;
+
+  background: #ffffff;
+}
+
+
+.dp-date-picker-trigger[aria-expanded="true"] {
+  box-shadow:
+    0 0 0 3px
+    rgba(201, 166, 98, 0.10);
+}
+
+
+.dp-date-picker-trigger svg {
+  flex: 0 0 auto;
+
+  color: #667085;
+}
+
+
+.dp-date-picker-trigger span {
+  overflow: hidden;
+
+  flex: 1;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+
+.dp-date-picker-trigger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* ---------------------------------------------------------
+   CALENDAR POPOVER
+   --------------------------------------------------------- */
+
+.dp-calendar-popover {
+  position: absolute;
+
+  z-index: 1000;
+
+  top: calc(100% + 10px);
+
+  /*
+    Match your Figma/reference:
+    calendar starts around the left edge of date control.
+  */
+  left: 0;
+
+  width: 365px;
+
+  padding: 16px;
+
+  background: #ffffff;
+
+  border: 1px solid #e4e4e4;
+  border-radius: 12px;
+
+  box-shadow:
+    0 16px 38px
+    rgba(15, 23, 42, 0.14);
+
+  animation:
+    dpCalendarOpen 140ms ease-out;
+}
+
+
+@keyframes dpCalendarOpen {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   CALENDAR MONTH HEADER
+   --------------------------------------------------------- */
+
+.dp-calendar-header {
+  display: grid;
+
+  grid-template-columns:
+    34px
+    minmax(0, 1fr)
+    34px;
+
+  align-items: center;
+
+  width: 100%;
+
+  margin: 0 0 14px;
+}
+
+
+.dp-calendar-header h3 {
+  margin: 0;
+
+  color: #0c1421;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+
+  text-align: center;
+}
+
+
+.dp-calendar-month-arrow {
+  width: 32px;
+  height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  color: #667085;
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+
+.dp-calendar-month-arrow:hover {
+  color: #181f2a;
+
+  background: #f7f6f4;
+}
+
+
+/* ---------------------------------------------------------
+   WEEKDAY LABELS
+   --------------------------------------------------------- */
+
+.dp-calendar-weekdays {
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, minmax(0, 1fr));
+
+  width: 100%;
+
+  margin-bottom: 5px;
+
+  gap: 4px;
+}
+
+
+.dp-calendar-weekdays span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 28px;
+
+  color: #9a9a9a;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  text-align: center;
+}
+
+
+/* ---------------------------------------------------------
+   DATE GRID
+   --------------------------------------------------------- */
+
+.dp-calendar-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, minmax(0, 1fr));
+
+  width: 100%;
+
+  gap: 4px;
+}
+
+
+.dp-calendar-day {
+  position: relative;
+
+  min-width: 0;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  color: #181f2a;
+
+  background: #f7f7f7;
+
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease;
+}
+
+
+.dp-calendar-day:hover {
+  background: #f1ece8;
+}
+
+
+/* OTHER MONTH */
+
+.dp-calendar-day.is-outside {
+  color: #cacaca;
+
+  background: transparent;
+}
+
+
+.dp-calendar-day.is-outside:hover {
+  color: #a9a9a9;
+
+  background: #fafafa;
+}
+
+
+/* SELECTED DATE */
+
+.dp-calendar-day.is-selected {
+  color: #ffffff;
+
+  background: #8a321f;
+
+  border-color: #8a321f;
+}
+
+
+.dp-calendar-day.is-selected:hover {
+  background: #762918;
+}
+
+
+/* TODAY MARKER */
+
+.dp-calendar-day.is-today i {
+  position: absolute;
+
+  left: 50%;
+  bottom: 3px;
+
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+
+  background: #3578e5;
+
+  transform:
+    translateX(-50%);
+}
+
+
+.dp-calendar-day.is-selected.is-today i {
+  background: #ffffff;
+}
+
+
+/* ---------------------------------------------------------
+   CALENDAR FOOTER
+   --------------------------------------------------------- */
+
+.dp-calendar-actions {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 10px;
+
+  width: 100%;
+
+  margin-top: 16px;
+}
+
+
+.dp-calendar-cancel,
+.dp-calendar-choose {
+  height: 40px;
+
+  padding: 0 12px;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+
+.dp-calendar-cancel {
+  color: #777777;
+
+  background: #e5e5e5;
+
+  border: 1px solid #e5e5e5;
+}
+
+
+.dp-calendar-cancel:hover {
+  background: #dddddd;
+}
+
+
+.dp-calendar-choose {
+  color: #ffffff;
+
+  background: #8a321f;
+
+  border: 1px solid #8a321f;
+}
+
+
+.dp-calendar-choose:hover {
+  background: #762918;
+  border-color: #762918;
+}
+
+
+/* ---------------------------------------------------------
+   TODAY BUTTON
+   --------------------------------------------------------- */
+
+.dp-date-today-button {
+  height: 38px;
+
+  padding: 0 14px;
+
+  color: #8a321f;
+
+  background: #fcfaf7;
+
+  border: 1px solid #dccdad;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+
+.dp-date-today-button:hover:not(:disabled) {
+  border-color: #c9a662;
+
+  background: #f8f2e7;
+}
+
+
+.dp-date-today-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .dp-date-navigator {
+    display: grid;
+
+    grid-template-columns:
+      38px
+      minmax(0, 1fr)
+      38px;
+
+    width: 100%;
+  }
+
+
+  .dp-date-picker-wrap {
+    width: 100%;
+  }
+
+
+  .dp-date-picker-trigger {
+    width: 100%;
+  }
+
+
+  .dp-calendar-popover {
+    left: 50%;
+
+    width: min(
+      365px,
+      calc(100vw - 32px)
+    );
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  @keyframes dpCalendarOpen {
+    from {
+      opacity: 0;
+
+      transform:
+        translateX(-50%)
+        translateY(-5px);
+    }
+
+    to {
+      opacity: 1;
+
+      transform:
+        translateX(-50%)
+        translateY(0);
+    }
+  }
+
+
+  .dp-date-today-button {
+    grid-column:
+      1 / -1;
+
+    width: 100%;
+  }
+}

@@ -5,6 +5,8 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   Clock3,
   Edit3,
@@ -94,6 +96,289 @@ const EMPTY_TEMPLATE_ACTIVITY = {
 
 function pad(value) {
   return String(value).padStart(2, "0");
+}
+
+// ======================================================
+// DATE HELPERS
+//
+// IMPORTANT:
+// Do not use new Date("2026-10-13") directly.
+//
+// YYYY-MM-DD is interpreted as UTC by JavaScript in many
+// situations and can cause the displayed date to shift
+// depending on the user's timezone.
+//
+// These helpers deliberately create LOCAL dates.
+// ======================================================
+
+function dateKeyToLocalDate(dateKey) {
+  const [
+    year,
+    month,
+    day,
+  ] = String(dateKey || "")
+    .split("-")
+    .map(Number);
+
+  if (
+    !year ||
+    !month ||
+    !day
+  ) {
+    return new Date();
+  }
+
+  return new Date(
+    year,
+    month - 1,
+    day,
+    12,
+    0,
+    0,
+    0
+  );
+}
+
+
+function localDateToKey(date) {
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+  ].join("-");
+}
+
+
+function shiftDateKey(
+  dateKey,
+  amount
+) {
+  const date =
+    dateKeyToLocalDate(
+      dateKey
+    );
+
+  date.setDate(
+    date.getDate() +
+      Number(amount || 0)
+  );
+
+  return localDateToKey(
+    date
+  );
+}
+
+
+function formatLongDate(
+  dateKey
+) {
+  return dateKeyToLocalDate(
+    dateKey
+  ).toLocaleDateString(
+    undefined,
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
+}
+
+
+function getScheduleHeading(
+  dateKey
+) {
+  const today =
+    getLocalDateKey();
+
+  if (dateKey === today) {
+    return {
+      title:
+        "Today’s Schedule",
+
+      subtitle:
+        "Everything you have planned for today.",
+    };
+  }
+
+  const selected =
+    dateKeyToLocalDate(
+      dateKey
+    );
+
+  const current =
+    dateKeyToLocalDate(
+      today
+    );
+
+  const isPast =
+    selected.getTime() <
+    current.getTime();
+
+  return {
+    title:
+      formatLongDate(
+        dateKey
+      ),
+
+    subtitle:
+      isPast
+        ? "Review the activities you planned for this day."
+        : "Everything you have planned for this day.",
+  };
+}
+
+function getMonthStartFromDateKey(dateKey) {
+  const date = dateKeyToLocalDate(dateKey);
+
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    1,
+    12,
+    0,
+    0,
+    0
+  );
+}
+
+
+function changeMonth(date, amount) {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth() + amount,
+    1,
+    12,
+    0,
+    0,
+    0
+  );
+}
+
+
+function formatCalendarMonth(date) {
+  return date.toLocaleDateString(
+    undefined,
+    {
+      month: "long",
+      year: "numeric",
+    }
+  );
+}
+
+
+function formatDateButton(dateKey) {
+  return dateKeyToLocalDate(
+    dateKey
+  ).toLocaleDateString(
+    undefined,
+    {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }
+  );
+}
+
+
+function buildCalendarDays(viewMonth) {
+  const year =
+    viewMonth.getFullYear();
+
+  const month =
+    viewMonth.getMonth();
+
+  const firstDay =
+    new Date(
+      year,
+      month,
+      1,
+      12
+    );
+
+  /*
+    JS:
+    Sunday = 0
+    Monday = 1
+
+    We want:
+    Monday = 0
+    Tuesday = 1
+    ...
+    Sunday = 6
+  */
+  const mondayIndex =
+    (firstDay.getDay() + 6) % 7;
+
+
+  const gridStart =
+    new Date(
+      year,
+      month,
+      1 - mondayIndex,
+      12
+    );
+
+
+  const monthLastDay =
+    new Date(
+      year,
+      month + 1,
+      0,
+      12
+    );
+
+
+  const cellsNeeded =
+    mondayIndex +
+    monthLastDay.getDate();
+
+
+  /*
+    Use either 5 or 6 rows,
+    depending on the month.
+  */
+  const totalCells =
+    cellsNeeded <= 35
+      ? 35
+      : 42;
+
+
+  return Array.from(
+    {
+      length:
+        totalCells,
+    },
+    (_, index) => {
+      const date =
+        new Date(
+          gridStart
+        );
+
+      date.setDate(
+        gridStart.getDate() +
+          index
+      );
+
+
+      return {
+        date,
+
+        dateKey:
+          localDateToKey(
+            date
+          ),
+
+        day:
+          date.getDate(),
+
+        currentMonth:
+          date.getMonth() ===
+          month,
+      };
+    }
+  );
 }
 
 function formatTimeLabel(time) {
@@ -975,23 +1260,67 @@ function SummaryCards({ summary }) {
   );
 }
 
-function EmptySchedule() {
+function EmptySchedule({
+  selectedDate,
+}) {
+  const today =
+    getLocalDateKey();
+
+  let message =
+    "Add your first activity or use a template to plan your day.";
+
+
+  if (
+    selectedDate !== today
+  ) {
+    const selected =
+      dateKeyToLocalDate(
+        selectedDate
+      );
+
+    const current =
+      dateKeyToLocalDate(
+        today
+      );
+
+    message =
+      selected <
+      current
+        ? "There were no activities planned for this day."
+        : "There are no activities planned for this day yet.";
+  }
+
+
   return (
     <div className="dp-empty-schedule">
+
       <div className="dp-empty-illustration dp-empty-illustration--activities">
+
         <img
-          src={emptyActivitiesIllustration}
+          src={
+            emptyActivitiesIllustration
+          }
           alt=""
           aria-hidden="true"
           draggable="false"
           className="dp-empty-illustration__image dp-empty-illustration__image--activities"
         />
+
       </div>
 
+
       <div className="dp-empty-copy">
-        <h3>No activities planned yet</h3>
-        <p>Add your first activity or use a template to plan your day.</p>
+
+        <h3>
+          No activities planned
+        </h3>
+
+        <p>
+          {message}
+        </p>
+
       </div>
+
     </div>
   );
 }
@@ -1907,6 +2236,353 @@ function MyTemplatesTab({
   );
 }
 
+function DayDateNavigator({
+  selectedDate,
+  loading,
+  onPrevious,
+  onNext,
+  onToday,
+  onChange,
+}) {
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [draftDate, setDraftDate] = useState(selectedDate);
+
+  const [viewMonth, setViewMonth] = useState(() =>
+    getMonthStartFromDateKey(selectedDate)
+  );
+
+  const calendarRef = useRef(null);
+
+  const today = getLocalDateKey();
+  const isToday = selectedDate === today;
+
+  // ---------------------------------------------------------
+  // CLOSE WHEN CLICKING OUTSIDE
+  // ---------------------------------------------------------
+
+  useEffect(() => {
+    if (!calendarOpen) return undefined;
+
+    function handleOutsideClick(event) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target)
+      ) {
+        setDraftDate(selectedDate);
+        setCalendarOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [calendarOpen, selectedDate]);
+
+  // ---------------------------------------------------------
+  // OPEN CALENDAR
+  // ---------------------------------------------------------
+
+  function openCalendar() {
+    setDraftDate(selectedDate);
+
+    setViewMonth(
+      getMonthStartFromDateKey(selectedDate)
+    );
+
+    setCalendarOpen((current) => !current);
+  }
+
+  // ---------------------------------------------------------
+  // CANCEL
+  // ---------------------------------------------------------
+
+  function cancelCalendar() {
+    setDraftDate(selectedDate);
+    setCalendarOpen(false);
+  }
+
+  // ---------------------------------------------------------
+  // CONFIRM DATE
+  // ---------------------------------------------------------
+
+  function chooseDate() {
+    setCalendarOpen(false);
+
+    if (
+      !draftDate ||
+      draftDate === selectedDate
+    ) {
+      return;
+    }
+
+    onChange(draftDate);
+  }
+
+  // ---------------------------------------------------------
+  // SELECT DATE INSIDE CALENDAR
+  //
+  // IMPORTANT:
+  // this does NOT load the day yet.
+  // ---------------------------------------------------------
+
+  function handleCalendarDateClick(calendarDay) {
+    setDraftDate(calendarDay.dateKey);
+
+    if (!calendarDay.currentMonth) {
+      setViewMonth(
+        new Date(
+          calendarDay.date.getFullYear(),
+          calendarDay.date.getMonth(),
+          1,
+          12,
+          0,
+          0,
+          0
+        )
+      );
+    }
+  }
+
+  const calendarDays =
+    buildCalendarDays(viewMonth);
+
+  return (
+    <div className="dp-date-navigator">
+
+      {/* PREVIOUS DAY */}
+
+      <button
+        type="button"
+        className="dp-date-nav-arrow"
+        onClick={onPrevious}
+        disabled={loading}
+        aria-label="Previous day"
+        title="Previous day"
+      >
+        <ChevronLeft
+          size={19}
+          strokeWidth={1.7}
+        />
+      </button>
+
+
+      {/* DATE + CALENDAR POPOVER */}
+
+      <div
+        className="dp-date-picker-wrap"
+        ref={calendarRef}
+      >
+        <button
+          type="button"
+          className="dp-date-picker-trigger"
+          onClick={openCalendar}
+          disabled={loading}
+          aria-expanded={calendarOpen}
+          aria-haspopup="dialog"
+        >
+          <CalendarDays
+            size={18}
+            strokeWidth={1.6}
+          />
+
+          <span>
+            {formatDateButton(selectedDate)}
+          </span>
+
+          <ChevronDown
+            size={15}
+            strokeWidth={1.7}
+          />
+        </button>
+
+
+        {calendarOpen && (
+          <div
+            className="dp-calendar-popover"
+            role="dialog"
+            aria-label="Choose date"
+          >
+
+            {/* MONTH HEADER */}
+
+            <div className="dp-calendar-header">
+
+              <button
+                type="button"
+                className="dp-calendar-month-arrow"
+                onClick={() =>
+                  setViewMonth((current) =>
+                    changeMonth(current, -1)
+                  )
+                }
+                aria-label="Previous month"
+              >
+                <ChevronLeft
+                  size={18}
+                  strokeWidth={1.8}
+                />
+              </button>
+
+
+              <h3>
+                {formatCalendarMonth(
+                  viewMonth
+                )}
+              </h3>
+
+
+              <button
+                type="button"
+                className="dp-calendar-month-arrow"
+                onClick={() =>
+                  setViewMonth((current) =>
+                    changeMonth(current, 1)
+                  )
+                }
+                aria-label="Next month"
+              >
+                <ChevronRight
+                  size={18}
+                  strokeWidth={1.8}
+                />
+              </button>
+
+            </div>
+
+
+            {/* WEEKDAYS */}
+
+            <div className="dp-calendar-weekdays">
+              <span>Mo</span>
+              <span>Tu</span>
+              <span>We</span>
+              <span>Th</span>
+              <span>Fr</span>
+              <span>Sa</span>
+              <span>Su</span>
+            </div>
+
+
+            {/* DAYS */}
+
+            <div className="dp-calendar-grid">
+              {calendarDays.map(
+                (calendarDay) => {
+                  const selected =
+                    calendarDay.dateKey ===
+                    draftDate;
+
+                  const isActualToday =
+                    calendarDay.dateKey ===
+                    today;
+
+                  return (
+                    <button
+                      type="button"
+                      key={calendarDay.dateKey}
+                      className={[
+                        "dp-calendar-day",
+
+                        calendarDay.currentMonth
+                          ? ""
+                          : "is-outside",
+
+                        selected
+                          ? "is-selected"
+                          : "",
+
+                        isActualToday
+                          ? "is-today"
+                          : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() =>
+                        handleCalendarDateClick(
+                          calendarDay
+                        )
+                      }
+                    >
+                      <span>
+                        {calendarDay.day}
+                      </span>
+
+                      {isActualToday && (
+                        <i
+                          aria-hidden="true"
+                        />
+                      )}
+                    </button>
+                  );
+                }
+              )}
+            </div>
+
+
+            {/* ACTIONS */}
+
+            <div className="dp-calendar-actions">
+
+              <button
+                type="button"
+                className="dp-calendar-cancel"
+                onClick={cancelCalendar}
+              >
+                Cancel
+              </button>
+
+
+              <button
+                type="button"
+                className="dp-calendar-choose"
+                onClick={chooseDate}
+              >
+                Choose Date
+              </button>
+
+            </div>
+
+          </div>
+        )}
+      </div>
+
+
+      {/* NEXT DAY */}
+
+      <button
+        type="button"
+        className="dp-date-nav-arrow"
+        onClick={onNext}
+        disabled={loading}
+        aria-label="Next day"
+        title="Next day"
+      >
+        <ChevronRight
+          size={19}
+          strokeWidth={1.7}
+        />
+      </button>
+
+
+      {/* BACK TO TODAY */}
+
+      {!isToday && (
+        <button
+          type="button"
+          className="dp-date-today-button"
+          onClick={onToday}
+          disabled={loading}
+        >
+          Today
+        </button>
+      )}
+
+    </div>
+  );
+}
+
 function PerfectDaySchedulePage() {
   const [activeTab, setActiveTab] = useState("my-day");
   const [selectedDate, setSelectedDate] = useState(getLocalDateKey());
@@ -1935,6 +2611,8 @@ const [
 
   const googlePopupRef = useRef(null);
   const googlePollTimerRef = useRef(null);
+  const dayRequestIdRef =
+  useRef(0);
 
   useEffect(() => {
     if (!toast) return;
@@ -2192,30 +2870,136 @@ async function handleGoogleCalendarDisconnect() {
   }
 }
 
-  async function loadDay(date = selectedDate, options = {}) {
-    const { quiet = false } = options;
+  async function loadDay(
+  date = selectedDate,
+  options = {}
+) {
+  const {
+    quiet = false,
+  } = options;
 
-    try {
-      if (!quiet) setLoading(true);
+  const requestId =
+    ++dayRequestIdRef.current;
 
-      const data = await getDailyPlan(date);
-      setDay(data);
-      setSelectedDate(data?.date || date);
+  try {
+    if (!quiet) {
+      setLoading(true);
+    }
+
+
+    const data =
+      await getDailyPlan(
+        date
+      );
+
+
+    /*
+      Ignore an older request if the
+      user has already navigated to
+      another date.
+    */
+    if (
+      requestId !==
+      dayRequestIdRef.current
+    ) {
       return data;
-    } catch (error) {
+    }
+
+
+    setDay(data);
+
+    setSelectedDate(
+      data?.date ||
+        date
+    );
+
+
+    return data;
+
+  } catch (error) {
+
+    if (
+      requestId ===
+      dayRequestIdRef.current
+    ) {
       setToast({
         type: "error",
-        title: "Unable to load day planner",
-        message: friendlyError(
-          error,
-          "We couldn't load your day plan. Please refresh and try again."
-        ),
+
+        title:
+          "Unable to load day planner",
+
+        message:
+          friendlyError(
+            error,
+            "We couldn't load your day plan. Please try again."
+          ),
       });
-      throw error;
-    } finally {
-      if (!quiet) setLoading(false);
+    }
+
+
+    throw error;
+
+  } finally {
+
+    if (
+      !quiet &&
+      requestId ===
+        dayRequestIdRef.current
+    ) {
+      setLoading(false);
     }
   }
+}
+
+function handleDateChange(
+  nextDate
+) {
+  if (
+    !nextDate ||
+    nextDate ===
+      selectedDate
+  ) {
+    return;
+  }
+
+
+  loadDay(
+    nextDate
+  ).catch(() => {});
+}
+
+
+function handlePreviousDay() {
+  const previousDate =
+    shiftDateKey(
+      selectedDate,
+      -1
+    );
+
+  handleDateChange(
+    previousDate
+  );
+}
+
+
+function handleNextDay() {
+  const nextDate =
+    shiftDateKey(
+      selectedDate,
+      1
+    );
+
+  handleDateChange(
+    nextDate
+  );
+}
+
+
+function handleToday() {
+  handleDateChange(
+    getLocalDateKey()
+  );
+}
 
   async function loadMyTemplates() {
     try {
@@ -2283,6 +3067,11 @@ async function handleGoogleCalendarDisconnect() {
   };
 
   const activities = Array.isArray(day?.activities) ? day.activities : [];
+
+  const scheduleHeading =
+  getScheduleHeading(
+    selectedDate
+  );
 
   async function handleToggle(activity, nextCompleted) {
     const previous = day;
@@ -2425,10 +3214,42 @@ async function handleGoogleCalendarDisconnect() {
 
                 <section className="dp-schedule-card">
                   <div className="dp-schedule-card__header">
-                    <div>
-                      <h2>Today’s Schedule</h2>
-                      <p>Everything you have planned for today.</p>
-                    </div>
+
+  <div className="dp-schedule-heading-area">
+
+    <div className="dp-schedule-heading-copy">
+      <h2>
+        {scheduleHeading.title}
+      </h2>
+
+      <p>
+        {scheduleHeading.subtitle}
+      </p>
+    </div>
+
+
+    <DayDateNavigator
+      selectedDate={
+        selectedDate
+      }
+      loading={
+        loading
+      }
+      onPrevious={
+        handlePreviousDay
+      }
+      onNext={
+        handleNextDay
+      }
+      onToday={
+        handleToday
+      }
+      onChange={
+        handleDateChange
+      }
+    />
+
+  </div>
 
                   <div className="dp-schedule-actions">
   {/* ADD ACTIVITY */}
@@ -2514,13 +3335,10 @@ async function handleGoogleCalendarDisconnect() {
 
                   {activities.length === 0 ? (
                     <EmptySchedule
-                      onAdd={() =>
-                        setActivityDrawer({ mode: "add", activity: null })
-                      }
-                      onTemplate={() =>
-                        setTemplateDrawer({ templateId: null })
-                      }
-                    />
+  selectedDate={
+    selectedDate
+  }
+/>
                   ) : (
                     <div className="dp-schedule-list">
                       {activities.map((activity) => (
