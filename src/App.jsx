@@ -32,6 +32,15 @@ import DailyWisdomPage from "./pages/DailyWisdomPage";
 import WellbeingQuestionnairesPage from "./pages/WellbeingQuestionnairesPage";
 import WellbeingQuestionnairePage from "./pages/WellbeingQuestionnairePage";
 
+// marketplace
+import MarketplacePage from "./pages/MarketplacePage";
+import PractitionerProfilePage from "./pages/PractitionerProfilePage";
+import SendEnquiryPage from "./pages/SendEnquiryPage";
+import MyEnquiriesPage from "./pages/MyEnquiriesPage";
+import EnquiryDetailsPage from "./pages/EnquiryDetailsPage";
+import MyAppointmentsPage from "./pages/MyAppointmentsPage";
+import AppLayout from "./components/layout/AppLayout";
+
 import {
   hasCompletedMoodGate,
   isAuthenticated,
@@ -365,6 +374,76 @@ function App() {
   element={
     <RequireAuth>
       <WellbeingQuestionnairePage />
+    </RequireAuth>
+  }
+/>
+
+{/* =====================================================
+    MARKETPLACE
+===================================================== */}
+
+<Route
+  path="/marketplace"
+  element={
+    <RequireAuth>
+      <AppLayout>
+        <MarketplacePage />
+      </AppLayout>
+    </RequireAuth>
+  }
+/>
+
+<Route
+  path="/marketplace/practitioners/:slug"
+  element={
+    <RequireAuth>
+      <AppLayout>
+        <PractitionerProfilePage />
+      </AppLayout>
+    </RequireAuth>
+  }
+/>
+
+<Route
+  path="/marketplace/practitioners/:slug/enquire"
+  element={
+    <RequireAuth>
+      <AppLayout>
+        <SendEnquiryPage />
+      </AppLayout>
+    </RequireAuth>
+  }
+/>
+
+<Route
+  path="/marketplace/enquiries"
+  element={
+    <RequireAuth>
+      <AppLayout>
+        <MyEnquiriesPage />
+      </AppLayout>
+    </RequireAuth>
+  }
+/>
+
+<Route
+  path="/marketplace/enquiries/:enquiryId"
+  element={
+    <RequireAuth>
+      <AppLayout>
+        <EnquiryDetailsPage />
+      </AppLayout>
+    </RequireAuth>
+  }
+/>
+
+<Route
+  path="/marketplace/appointments"
+  element={
+    <RequireAuth>
+      <AppLayout>
+        <MyAppointmentsPage />
+      </AppLayout>
     </RequireAuth>
   }
 />

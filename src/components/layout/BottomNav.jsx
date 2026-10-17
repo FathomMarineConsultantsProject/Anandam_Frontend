@@ -14,6 +14,7 @@ import workIcon from "../../assets/navbar/work.png";
 import fitnessIcon from "../../assets/navbar/fitness.png";
 import blogIcon from "../../assets/navbar/write-blog-icon-1px 1.png";
 import emergencyIcon from "../../assets/navbar/emergency.png";
+import marketplaceIcon from "../../assets/navbar/hugeicons_store-02.png";
 
 
 const NAV_ITEMS = [
@@ -118,6 +119,20 @@ const NAV_ITEMS = [
       "/app/blogs",
     ],
   },
+
+  {
+  id: "marketplace",
+  label: "Marketplace",
+  icon: marketplaceIcon,
+  path: "/marketplace",
+
+  iconSize: 24,
+  iconScale: 1,
+
+  matchPaths: [
+    "/marketplace",
+  ],
+},
 
   {
     id: "emergency",
