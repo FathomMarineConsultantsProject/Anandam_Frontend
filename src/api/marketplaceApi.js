@@ -1,169 +1,75 @@
-import {
-  apiRequest,
-} from "./client";
+import { apiRequest } from "./client";
 
-
-// ======================================================
-// MARKETPLACE
-// ======================================================
-
-export const getPractitioners = async (
-  params = {}
-) => {
-  const query =
-    new URLSearchParams();
-
-  Object.entries(params).forEach(
-    ([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-      ) {
-        query.append(
-          key,
-          value
-        );
-      }
+function queryString(params = {}) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      search.set(key, String(value));
     }
-  );
+  });
+  const result = search.toString();
+  return result ? `?${result}` : "";
+}
 
-  const queryString =
-    query.toString();
+export function getPractitioners(filters = {}) {
+  return apiRequest(`/marketplace/practitioners${queryString(filters)}`);
+}
 
-  return apiRequest(
-    `/marketplace/practitioners${
-      queryString
-        ? `?${queryString}`
-        : ""
-    }`
-  );
-};
+export function getPractitionerBySlug(slug) {
+  return apiRequest(`/marketplace/practitioners/${encodeURIComponent(slug)}`);
+}
 
+export function getMarketplaceSpecialties() {
+  return apiRequest("/marketplace/specialties");
+}
 
-export const getPractitionerBySlug = async (
-  slug
-) => {
-  return apiRequest(
-    `/marketplace/practitioners/${slug}`
-  );
-};
+export function createEnquiry(payload) {
+  return apiRequest("/enquiries", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 
+export function getMyEnquiries() {
+  return apiRequest("/enquiries/mine");
+}
 
-export const getMarketplaceSpecialties =
-  async () => {
-    return apiRequest(
-      "/marketplace/specialties"
-    );
-  };
+export function getMyEnquiryById(enquiryId) {
+  return apiRequest(`/enquiries/${enquiryId}`);
+}
 
+export function acceptProposal(enquiryId, proposalId) {
+  return apiRequest(`/enquiries/${enquiryId}/proposals/${proposalId}/accept`, {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
 
-// ======================================================
-// USER ENQUIRIES
-// ======================================================
+export function requestAnotherTime(enquiryId, proposalId, payload) {
+  return apiRequest(`/enquiries/${enquiryId}/proposals/${proposalId}/reschedule`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 
-export const createEnquiry = async (
-  data
-) => {
-  return apiRequest(
-    "/enquiries",
-    {
-      method: "POST",
+export function rescheduleConfirmedAppointment(enquiryId, payload) {
+  return apiRequest(`/enquiries/${enquiryId}/reschedule`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 
-      body: JSON.stringify(
-        data
-      ),
-    }
-  );
-};
+export function declineProposal(enquiryId, proposalId, payload = {}) {
+  return apiRequest(`/enquiries/${enquiryId}/proposals/${proposalId}/decline`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 
+export function getMyAppointments() {
+  return apiRequest("/appointments/mine");
+}
 
-export const getMyEnquiries =
-  async () => {
-    return apiRequest(
-      "/enquiries/mine"
-    );
-  };
-
-
-export const getMyEnquiryById = async (
-  enquiryId
-) => {
-  return apiRequest(
-    `/enquiries/${enquiryId}`
-  );
-};
-
-
-// ======================================================
-// PROPOSAL ACTIONS
-// ======================================================
-
-export const acceptProposal = async (
-  enquiryId,
-  proposalId
-) => {
-  return apiRequest(
-    `/enquiries/${enquiryId}/proposals/${proposalId}/accept`,
-    {
-      method: "POST",
-    }
-  );
-};
-
-
-export const requestAnotherTime = async (
-  enquiryId,
-  proposalId,
-  message
-) => {
-  return apiRequest(
-    `/enquiries/${enquiryId}/proposals/${proposalId}/request-another-time`,
-    {
-      method: "POST",
-
-      body: JSON.stringify({
-        message,
-      }),
-    }
-  );
-};
-
-
-export const declineProposal = async (
-  enquiryId,
-  proposalId,
-  message
-) => {
-  return apiRequest(
-    `/enquiries/${enquiryId}/proposals/${proposalId}/decline`,
-    {
-      method: "POST",
-
-      body: JSON.stringify({
-        message,
-      }),
-    }
-  );
-};
-
-
-// ======================================================
-// APPOINTMENTS
-// ======================================================
-
-export const getMyAppointments =
-  async () => {
-    return apiRequest(
-      "/appointments/mine"
-    );
-  };
-
-
-export const getMyAppointmentById = async (
-  appointmentId
-) => {
-  return apiRequest(
-    `/appointments/${appointmentId}`
-  );
-};
+export function getMyAppointmentById(appointmentId) {
+  return apiRequest(`/appointments/${appointmentId}`);
+}

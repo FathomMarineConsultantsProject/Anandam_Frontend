@@ -1,921 +1,174 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-
-import {
-  useNavigate,
-} from "react-router-dom";
-
-import {
-  getPractitioners,
-  getMarketplaceSpecialties,
-} from "../api/marketplaceApi";
-
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getMyEnquiries, getPractitioners } from "../api/marketplaceApi";
+import EnquiryStatusCard from "../components/marketplace/EnquiryStatusCard";
+import MarketplaceIcon from "../components/marketplace/MarketplaceIcon";
 import "../styles/marketplace.css";
 
-
-// ======================================================
-// HELPERS
-// ======================================================
-
-const formatCurrency = (
-  value,
-  currency = "INR"
-) => {
-  try {
-    return new Intl.NumberFormat(
-      "en-IN",
-      {
-        style: "currency",
-        currency,
-        maximumFractionDigits: 0,
-      }
-    ).format(Number(value));
-  } catch {
-    return `${currency} ${value}`;
-  }
-};
-
+const CATEGORIES = ["All", "Mental Health", "Counselling", "Physical Wellness", "Nutrition", "Yoga & Mindfulness"];
 
 export default function MarketplacePage() {
-  const navigate =
-    useNavigate();
-
-
-  // ======================================================
-  // STATE
-  // ======================================================
-
-  const [
-    practitioners,
-    setPractitioners,
-  ] = useState([]);
-
-  const [
-    specialties,
-    setSpecialties,
-  ] = useState([]);
-
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
-
-  const [
-    error,
-    setError,
-  ] = useState("");
-
-  const [
-    pagination,
-    setPagination,
-  ] = useState({
-    page: 1,
-    limit: 12,
-    total: 0,
-    totalPages: 0,
-  });
-
-
-  const [
-    filters,
-    setFilters,
-  ] = useState({
-    search: "",
-    type: "",
-    specialty: "",
-    language: "",
-    minPrice: "",
-    maxPrice: "",
-    page: 1,
-  });
-
-
-  // ======================================================
-  // LOAD SPECIALTIES
-  // ======================================================
+  const navigate = useNavigate();
+  const [practitioners, setPractitioners] = useState([]);
+  const [enquiries, setEnquiries] = useState([]);
+  const [category, setCategory] = useState("All");
+  const [language, setLanguage] = useState("");
+  const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadSpecialties =
-      async () => {
-        try {
-          const data =
-            await getMarketplaceSpecialties();
-
-          setSpecialties(
-            data.specialties || []
-          );
-        } catch (err) {
-          console.error(
-            "loadSpecialties:",
-            err
-          );
-        }
-      };
-
-    loadSpecialties();
+    let active = true;
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+        const [pData, eData] = await Promise.all([
+          getPractitioners(),
+          getMyEnquiries().catch(() => ({ enquiries: [] })),
+        ]);
+        if (!active) return;
+        setPractitioners(pData.practitioners || []);
+        setEnquiries(eData.enquiries || []);
+      } catch (err) {
+        if (active) setError(err?.message || "Unable to load marketplace.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    load();
+    return () => { active = false; };
   }, []);
 
+  const activeEnquiry = useMemo(
+    () => enquiries.find((item) => ["PENDING", "TIME_PROPOSED", "RESCHEDULE_REQUESTED", "CONFIRMED"].includes(item.status)) || enquiries[0],
+    [enquiries]
+  );
 
-  // ======================================================
-  // LOAD PRACTITIONERS
-  // ======================================================
+  const languages = useMemo(
+    () => Array.from(new Set(practitioners.flatMap((p) => p.languages || []))).sort(),
+    [practitioners]
+  );
 
-  useEffect(() => {
-    const loadPractitioners =
-      async () => {
-        try {
-          setLoading(true);
-          setError("");
+  const locations = useMemo(
+    () => Array.from(new Set(practitioners.map((p) => p.location || p.country || p.user?.homeCountry).filter(Boolean))).sort(),
+    [practitioners]
+  );
 
-          const params = {};
-
-          if (
-            filters.search.trim()
-          ) {
-            params.search =
-              filters.search.trim();
-          }
-
-          if (
-            filters.type
-          ) {
-            params.type =
-              filters.type;
-          }
-
-          if (
-            filters.specialty
-          ) {
-            params.specialty =
-              filters.specialty;
-          }
-
-          if (
-            filters.language
-          ) {
-            params.language =
-              filters.language;
-          }
-
-          if (
-            filters.minPrice
-          ) {
-            params.minPrice =
-              filters.minPrice;
-          }
-
-          if (
-            filters.maxPrice
-          ) {
-            params.maxPrice =
-              filters.maxPrice;
-          }
-
-          params.page =
-            filters.page;
-
-          params.limit = 12;
-
-          const data =
-            await getPractitioners(
-              params
-            );
-
-          setPractitioners(
-            data.practitioners || []
-          );
-
-          setPagination(
-            data.pagination || {
-              page: 1,
-              limit: 12,
-              total: 0,
-              totalPages: 0,
-            }
-          );
-        } catch (err) {
-          console.error(
-            "loadPractitioners:",
-            err
-          );
-
-          setError(
-            err?.response?.data?.message ||
-              "Unable to load practitioners."
-          );
-        } finally {
-          setLoading(false);
-        }
-      };
-
-
-    const timer =
-      setTimeout(
-        loadPractitioners,
-        250
-      );
-
-    return () =>
-      clearTimeout(timer);
-  }, [filters]);
-
-
-  // ======================================================
-  // DERIVED VALUES
-  // ======================================================
-
-  const languages =
-    useMemo(() => {
-      const unique =
-        new Set();
-
-      practitioners.forEach(
-        (practitioner) => {
-          (
-            practitioner.languages ||
-            []
-          ).forEach(
-            (language) =>
-              unique.add(
-                language
-              )
-          );
-        }
-      );
-
-      return [
-        ...unique,
-      ].sort();
-    }, [practitioners]);
-
-
-  // ======================================================
-  // FILTER HELPERS
-  // ======================================================
-
-  const updateFilter = (
-    key,
-    value
-  ) => {
-    setFilters(
-      (current) => ({
-        ...current,
-        [key]: value,
-        page: 1,
-      })
-    );
-  };
-
-
-  const clearFilters = () => {
-    setFilters({
-      search: "",
-      type: "",
-      specialty: "",
-      language: "",
-      minPrice: "",
-      maxPrice: "",
-      page: 1,
-    });
-  };
-
-
-  // ======================================================
-  // RENDER
-  // ======================================================
+  const filtered = useMemo(() => practitioners.filter((p) => {
+    const typeText = `${p.practitionerType || ""} ${p.professionalTitle || ""}`.toLowerCase();
+    const categoryOk = category === "All" || typeText.includes(category.toLowerCase().split(" ")[0]);
+    const languageOk = !language || (p.languages || []).includes(language);
+    const pLocation = p.location || p.country || p.user?.homeCountry || "";
+    const locationOk = !location || pLocation === location;
+    return categoryOk && languageOk && locationOk;
+  }), [practitioners, category, language, location]);
 
   return (
-    <div className="marketplace-page">
-
-      <div className="marketplace-content">
-
-        {/* ===============================================
-            PAGE HEADER
-        =============================================== */}
-
-        <div className="marketplace-page-header">
-
-          <div>
-            <h1>
-              Marketplace
-            </h1>
-
-            <p>
-              Explore wellbeing stays
-              and find practitioners
-              who support your
-              wellbeing.
-            </p>
-          </div>
-
-          <button
-            className="marketplace-secondary-button"
-            onClick={() =>
-              navigate(
-                "/marketplace/enquiries"
-              )
-            }
-          >
-            My enquiries
-          </button>
-
+    <main className="marketplace-page">
+      <header className="mk-page-heading">
+        <div>
+          <h1>Marketplace</h1>
+          <p>Explore wellness stays and find practitioners who support your wellbeing</p>
         </div>
+      </header>
 
-
-        {/* ===============================================
-            TOP CATEGORY FILTERS
-        =============================================== */}
-
-        <div className="marketplace-filter-bar">
-
-          <div className="marketplace-category-row">
-
-            <button
-              className={
-                !filters.type
-                  ? "marketplace-filter-chip active"
-                  : "marketplace-filter-chip"
-              }
-              onClick={() =>
-                updateFilter(
-                  "type",
-                  ""
-                )
-              }
-            >
-              All
-            </button>
-
-            <button
-              className={
-                filters.type ===
-                "PSYCHOLOGIST"
-                  ? "marketplace-filter-chip active"
-                  : "marketplace-filter-chip"
-              }
-              onClick={() =>
-                updateFilter(
-                  "type",
-                  "PSYCHOLOGIST"
-                )
-              }
-            >
-              Mental Health
-            </button>
-
-            <button
-              className={
-                filters.type ===
-                "COUNSELLOR"
-                  ? "marketplace-filter-chip active"
-                  : "marketplace-filter-chip"
-              }
-              onClick={() =>
-                updateFilter(
-                  "type",
-                  "COUNSELLOR"
-                )
-              }
-            >
-              Counselling
-            </button>
-
-            <button
-              className={
-                filters.type ===
-                "COACH"
-                  ? "marketplace-filter-chip active"
-                  : "marketplace-filter-chip"
-              }
-              onClick={() =>
-                updateFilter(
-                  "type",
-                  "COACH"
-                )
-              }
-            >
-              Coaching
-            </button>
-
-            <button
-              className={
-                filters.type ===
-                "WELLNESS_PRACTITIONER"
-                  ? "marketplace-filter-chip active"
-                  : "marketplace-filter-chip"
-              }
-              onClick={() =>
-                updateFilter(
-                  "type",
-                  "WELLNESS_PRACTITIONER"
-                )
-              }
-            >
-              Physical Wellness
-            </button>
-
-          </div>
-
-
-          <div className="marketplace-filter-selects">
-
-            <input
-              type="text"
-              className="marketplace-search-input"
-              placeholder="Search practitioners"
-              value={
-                filters.search
-              }
-              onChange={(e) =>
-                updateFilter(
-                  "search",
-                  e.target.value
-                )
-              }
-            />
-
-
-            <select
-              value={
-                filters.specialty
-              }
-              onChange={(e) =>
-                updateFilter(
-                  "specialty",
-                  e.target.value
-                )
-              }
-            >
-              <option value="">
-                Specialty
-              </option>
-
-              {specialties.map(
-                (specialty) => (
-                  <option
-                    key={
-                      specialty.id
-                    }
-                    value={
-                      specialty.slug
-                    }
-                  >
-                    {
-                      specialty.name
-                    }
-                  </option>
-                )
-              )}
+      <div className="mk-filter-row">
+        <div className="mk-category-tabs">
+          {CATEGORIES.map((item) => (
+            <button key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>
+          ))}
+        </div>
+        <div className="mk-select-filters">
+          <div className="mk-select-wrap">
+            <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+              <option value="">Language</option>
+              {languages.map((item) => <option key={item}>{item}</option>)}
             </select>
-
-
-            <select
-              value={
-                filters.language
-              }
-              onChange={(e) =>
-                updateFilter(
-                  "language",
-                  e.target.value
-                )
-              }
-            >
-              <option value="">
-                Language
-              </option>
-
-              {languages.map(
-                (language) => (
-                  <option
-                    key={
-                      language
-                    }
-                    value={
-                      language
-                    }
-                  >
-                    {language}
-                  </option>
-                )
-              )}
+          </div>
+          <div className="mk-select-wrap">
+            <select value={location} onChange={(e) => setLocation(e.target.value)}>
+              <option value="">Location</option>
+              {locations.map((item) => <option key={item}>{item}</option>)}
             </select>
-
           </div>
-
         </div>
-
-
-        {/* ===============================================
-            RESULTS HEADER
-        =============================================== */}
-
-        <div className="marketplace-results-meta">
-
-          <span>
-            {pagination.total}{" "}
-            practitioner
-            {pagination.total === 1
-              ? ""
-              : "s"}
-          </span>
-
-          {(
-            filters.search ||
-            filters.type ||
-            filters.specialty ||
-            filters.language ||
-            filters.minPrice ||
-            filters.maxPrice
-          ) && (
-            <button
-              className="marketplace-clear-filters"
-              onClick={
-                clearFilters
-              }
-            >
-              Clear filters
-            </button>
-          )}
-
-        </div>
-
-
-        {/* ===============================================
-            LOADING
-        =============================================== */}
-
-        {loading && (
-          <div className="marketplace-grid">
-
-            {Array.from(
-              {
-                length: 4,
-              }
-            ).map(
-              (_, index) => (
-                <div
-                  className="practitioner-card marketplace-skeleton-card"
-                  key={
-                    index
-                  }
-                >
-                  <div className="marketplace-skeleton-line large" />
-                  <div className="marketplace-skeleton-line" />
-                  <div className="marketplace-skeleton-line" />
-                </div>
-              )
-            )}
-
-          </div>
-        )}
-
-
-        {/* ===============================================
-            ERROR
-        =============================================== */}
-
-        {!loading &&
-          error && (
-            <div className="marketplace-error">
-              {error}
-            </div>
-          )}
-
-
-        {/* ===============================================
-            EMPTY STATE
-        =============================================== */}
-
-        {!loading &&
-          !error &&
-          practitioners.length ===
-            0 && (
-            <div className="marketplace-empty-state">
-
-              <h3>
-                No practitioners found
-              </h3>
-
-              <p>
-                Try changing your
-                filters or search.
-              </p>
-
-              <button
-                className="marketplace-primary-button"
-                onClick={
-                  clearFilters
-                }
-              >
-                Clear filters
-              </button>
-
-            </div>
-          )}
-
-
-        {/* ===============================================
-            PRACTITIONER CARDS
-        =============================================== */}
-
-        {!loading &&
-          !error &&
-          practitioners.length >
-            0 && (
-
-            <div className="marketplace-grid">
-
-              {practitioners.map(
-                (
-                  practitioner
-                ) => (
-
-                  <article
-                    className="practitioner-card"
-                    key={
-                      practitioner.id
-                    }
-                  >
-
-                    {/* TOP */}
-
-                    <div className="practitioner-card-header">
-
-                      <div className="practitioner-card-avatar">
-
-                        {practitioner
-                          .profileImageUrl ? (
-
-                          <img
-                            src={
-                              practitioner.profileImageUrl
-                            }
-                            alt={
-                              practitioner
-                                .user
-                                ?.fullName ||
-                              "Practitioner"
-                            }
-                          />
-
-                        ) : (
-
-                          <span>
-                            {
-                              practitioner
-                                .user
-                                ?.fullName?.[0] ||
-                              "P"
-                            }
-                          </span>
-
-                        )}
-
-                      </div>
-
-
-                      <div className="practitioner-card-name">
-
-                        <h2>
-                          {
-                            practitioner
-                              .user
-                              ?.fullName
-                          }
-                        </h2>
-
-                        <p>
-                          {
-                            practitioner
-                              .professionalTitle ||
-                            practitioner
-                              .practitionerType
-                          }
-                        </p>
-
-                      </div>
-
-                    </div>
-
-
-                    {/* META */}
-
-                    <div className="practitioner-card-meta">
-
-                      {practitioner
-                        .languages
-                        ?.length >
-                        0 && (
-
-                        <div className="practitioner-meta-item">
-
-                          <span className="practitioner-meta-label">
-                            Speaks
-                          </span>
-
-                          <strong>
-                            {practitioner.languages.join(
-                              ", "
-                            )}
-                          </strong>
-
-                        </div>
-
-                      )}
-
-
-                      {practitioner
-                        .experienceYears && (
-
-                        <div className="practitioner-meta-item">
-
-                          <span className="practitioner-meta-label">
-                            Experience
-                          </span>
-
-                          <strong>
-                            {
-                              practitioner.experienceYears
-                            }{" "}
-                            years
-                          </strong>
-
-                        </div>
-
-                      )}
-
-                    </div>
-
-
-                    {/* SPECIALTIES */}
-
-                    {practitioner
-                      .specialties
-                      ?.length >
-                      0 && (
-
-                      <div className="practitioner-specialties">
-
-                        <span className="practitioner-meta-label">
-                          Expertise
-                        </span>
-
-                        <div className="practitioner-specialty-list">
-
-                          {practitioner.specialties
-                            .slice(
-                              0,
-                              4
-                            )
-                            .map(
-                              (
-                                item
-                              ) => (
-
-                                <span
-                                  className="practitioner-specialty-chip"
-                                  key={
-                                    item
-                                      .specialty
-                                      .id
-                                  }
-                                >
-                                  {
-                                    item
-                                      .specialty
-                                      .name
-                                  }
-                                </span>
-
-                              )
-                            )}
-
-                        </div>
-
-                      </div>
-                    )}
-
-
-                    {/* FOOTER */}
-
-                    <div className="practitioner-card-footer">
-
-                      <div className="practitioner-price">
-
-                        <strong>
-                          {formatCurrency(
-                            practitioner.sessionPrice,
-                            practitioner.currency
-                          )}
-                        </strong>
-
-                        <span>
-                          / session
-                        </span>
-
-                      </div>
-
-
-                      <button
-                        className="marketplace-primary-button"
-                        onClick={() =>
-                          navigate(
-                            `/marketplace/practitioners/${practitioner.slug}`
-                          )
-                        }
-                      >
-                        View profile
-                      </button>
-
-                    </div>
-
-                  </article>
-
-                )
-              )}
-
-            </div>
-
-          )}
-
-
-        {/* ===============================================
-            PAGINATION
-        =============================================== */}
-
-        {!loading &&
-          pagination.totalPages >
-            1 && (
-
-            <div className="marketplace-pagination">
-
-              <button
-                className="marketplace-secondary-button"
-                disabled={
-                  pagination.page <=
-                  1
-                }
-                onClick={() =>
-                  setFilters(
-                    (
-                      current
-                    ) => ({
-                      ...current,
-
-                      page:
-                        current.page -
-                        1,
-                    })
-                  )
-                }
-              >
-                Previous
-              </button>
-
-
-              <span>
-                Page{" "}
-                {
-                  pagination.page
-                }{" "}
-                of{" "}
-                {
-                  pagination.totalPages
-                }
-              </span>
-
-
-              <button
-                className="marketplace-secondary-button"
-                disabled={
-                  pagination.page >=
-                  pagination.totalPages
-                }
-                onClick={() =>
-                  setFilters(
-                    (
-                      current
-                    ) => ({
-                      ...current,
-
-                      page:
-                        current.page +
-                        1,
-                    })
-                  )
-                }
-              >
-                Next
-              </button>
-
-            </div>
-
-          )}
-
       </div>
-    </div>
+
+      {activeEnquiry && (
+        <EnquiryStatusCard
+          enquiry={activeEnquiry}
+          onOpen={() => navigate(`/marketplace/enquiries/${activeEnquiry.id}`)}
+        />
+      )}
+
+      {error && <div className="mk-error-banner">{error}</div>}
+      {loading ? (
+        <div className="mk-loading">Loading practitioners…</div>
+      ) : (
+        <div className="mk-practitioner-grid">
+          {filtered.map((practitioner) => (
+            <PractitionerCard
+              key={practitioner.id}
+              practitioner={practitioner}
+              onOpen={() => navigate(`/marketplace/practitioners/${practitioner.slug}`)}
+            />
+          ))}
+          {!filtered.length && <div className="mk-empty-state">No practitioners match these filters.</div>}
+        </div>
+      )}
+    </main>
+  );
+}
+
+function PractitionerCard({ practitioner, onOpen }) {
+  const name = practitioner.user?.fullName || "Practitioner";
+  const specialties = (practitioner.specialties || [])
+    .map((item) => item.specialty?.name || item.name)
+    .filter(Boolean)
+    .slice(0, 3);
+  const location = practitioner.location || practitioner.country || practitioner.user?.homeCountry || "—";
+  const price = practitioner.sessionPrice != null
+    ? `₹${Number(practitioner.sessionPrice).toLocaleString("en-IN")} / session`
+    : "Contact for fee";
+
+  return (
+    <article className="mk-practitioner-card">
+      <div className="mk-card-head">
+        <div className="mk-avatar-lg">
+          {practitioner.profileImageUrl ? <img src={practitioner.profileImageUrl} alt={name} /> : name[0]}
+        </div>
+        <div className="mk-card-identity">
+          <h2>{name}</h2>
+          <p>{practitioner.professionalTitle || practitioner.practitionerType}</p>
+          <div className="mk-rating"><span className="mk-stars">★★★★★</span><span className="mk-rating-value">4.5</span></div>
+        </div>
+      </div>
+
+      <div className="mk-card-meta">
+        <div className="mk-card-meta-item">
+          <MarketplaceIcon name="location" />
+          <span>Location: <strong>{location}</strong></span>
+        </div>
+        <div className="mk-card-meta-item">
+          <MarketplaceIcon name="speak" />
+          <span>Speaks: <strong>{(practitioner.languages || []).join(", ") || "—"}</strong></span>
+        </div>
+      </div>
+
+      <div className="mk-expertise">
+        <div className="mk-expertise-label"><MarketplaceIcon name="expertise" /><span>Expertise:</span></div>
+        <div className="mk-specialty-row">
+          {specialties.length
+            ? specialties.map((item, index) => <span className={`mk-tag mk-tag-${index + 1}`} key={item}>{item}</span>)
+            : <span className="mk-tag mk-tag-1">General wellbeing</span>}
+        </div>
+      </div>
+
+      <div className="mk-card-footer">
+        <strong>{price}</strong>
+        <button className="mk-primary-button mk-view-profile-button" onClick={onOpen}>View profile</button>
+      </div>
+    </article>
   );
 }

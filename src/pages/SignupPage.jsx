@@ -8,7 +8,7 @@ import {
 import {
   getUserFriendlyError,
 } from "../api/client";
-import { resetMoodGate, saveAuthSession } from "../utils/storage";
+import { resetMoodGate } from "../utils/storage";
 
 import leafFrame11 from "../assets/loginpage/Property 1=Frame 11.png";
 import leafFrame12 from "../assets/loginpage/Property 1=Frame 12.png";
@@ -160,6 +160,7 @@ function SignupPage() {
   const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [accountType, setAccountType] = useState("USER");
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -234,18 +235,13 @@ function SignupPage() {
           fullName,
           email,
           password: form.password,
+          accountType,
         });
 
-      saveAuthSession({
-        token:
-          signupData.token,
-
-        refreshToken:
-          signupData.refreshToken,
-
-        user:
-          signupData.user,
-      });
+      if (signupData?.user?.role === "PRACTITIONER") {
+        navigate("/practitioner/onboarding", { replace: true });
+        return;
+      }
 
       resetMoodGate();
       navigate("/mood-quick", { replace: true });
@@ -323,6 +319,34 @@ function SignupPage() {
             noValidate
             aria-busy={loading}
           >
+            <div
+              className="anandam-signup-account-tabs"
+              role="tablist"
+              aria-label="Account type"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={accountType === "USER"}
+                className={accountType === "USER" ? "is-active" : ""}
+                onClick={() => setAccountType("USER")}
+                disabled={loading}
+              >
+                Personal account
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={accountType === "PRACTITIONER"}
+                className={accountType === "PRACTITIONER" ? "is-active" : ""}
+                onClick={() => setAccountType("PRACTITIONER")}
+                disabled={loading}
+              >
+                Coaching / Practitioner 
+              </button>
+            </div>
+
             <div className="anandam-signup-fields">
               <div className="anandam-signup-field">
                 <label htmlFor="signup-full-name">Full Name</label>

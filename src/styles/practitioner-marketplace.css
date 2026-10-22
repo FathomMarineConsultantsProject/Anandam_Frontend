@@ -1,0 +1,1049 @@
+:root {
+  --pr-bg: #fcfaf7;
+  --pr-card: #ffffff;
+  --pr-text: #0c1421;
+  --pr-muted: #60657c;
+  --pr-border: #d9d9d9;
+  --pr-primary: #8b3522;
+  --pr-primary-dark: #712e1e;
+  --pr-peach: #fff0e8;
+  --pr-green: #e8f6e7;
+}
+
+.pr-page,
+.pr-practitioner-marketplace {
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  padding: 2px 22px 60px 42px;
+  background: var(--pr-bg);
+  color: var(--pr-text);
+  font-family: Inter, Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.pr-page-inner {
+  width: 100%;
+  max-width: 1324px;
+  margin: 0 auto;
+  padding-top: 23px;
+}
+
+.pr-page-heading,
+.pr-marketplace-head {
+  margin: 0 0 28px;
+}
+
+.pr-page-heading h1,
+.pr-marketplace-head h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 400;
+  color: #0c1421;
+}
+
+.pr-page-heading p,
+.pr-marketplace-head p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 16px;
+  color: #60657c;
+}
+
+.pr-loading,
+.pr-error-banner {
+  max-width: 1324px;
+  margin: 22px auto;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.pr-loading {
+  border: 1px dashed #d9d9d9;
+  background: #fff;
+  color: #60657c;
+}
+
+.pr-error-banner,
+.pr-form-error {
+  border: 1px solid #efc1b7;
+  background: #fff2ef;
+  color: #8b3522;
+}
+
+.pr-form-error {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+/* =====================================================
+   STATS
+   ===================================================== */
+
+.pr-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.pr-stat-card {
+  min-height: 142px;
+  padding: 16px 18px;
+  border: 1px solid var(--pr-border);
+  border-radius: 20px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.pr-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 9px;
+}
+
+.pr-stat-icon img,
+.pr-stat-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.pr-stat-icon-blue {
+  background: #edf5f8;
+  color: #5d7682;
+}
+
+.pr-stat-icon-peach {
+  background: #fff0e8;
+  color: #c7694b;
+}
+
+.pr-stat-icon-lavender {
+  background: #f0f2ff;
+  color: #7889c9;
+}
+
+.pr-stat-card > span {
+  color: #59627a;
+  font-size: 14px;
+  line-height: 16px;
+  margin-bottom: 17px;
+}
+
+.pr-stat-card > strong {
+  color: #0c1421;
+  font-size: 30px;
+  line-height: 35px;
+  font-weight: 500;
+}
+
+/* =====================================================
+   TABS
+   ===================================================== */
+
+.pr-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 54px;
+  margin-bottom: 20px;
+}
+
+.pr-tabs button,
+.pr-marketplace-tabs button {
+  border: 0;
+  background: transparent;
+  color: #666b78;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.pr-tabs button {
+  position: relative;
+  padding: 14px 12px 13px;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.pr-tabs button:first-child {
+  padding-left: 12px;
+}
+
+.pr-tabs button.active {
+  color: var(--pr-primary);
+  font-weight: 600;
+}
+
+.pr-tabs button.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--pr-primary);
+}
+
+.pr-tab-content {
+  width: 100%;
+}
+
+/* =====================================================
+   EMPTY STATE
+   ===================================================== */
+
+.pr-empty-card {
+  min-height: 588px;
+  border: 1px solid var(--pr-border);
+  border-radius: 20px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.pr-empty-illustration {
+  width: 124px;
+  height: 104px;
+  margin-bottom: 22px;
+  position: relative;
+}
+
+.pr-empty-illustration::before,
+.pr-empty-illustration::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 22px;
+  border-radius: 999px;
+  background: #f2e7cf;
+}
+
+.pr-empty-illustration::before { top: 10px; }
+.pr-empty-illustration::after { bottom: 8px; }
+
+.pr-empty-paper {
+  position: absolute;
+  z-index: 1;
+  left: 28px;
+  top: 19px;
+  width: 68px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c99b43;
+  border-radius: 6px;
+  background: #ffedbd;
+  color: #b57f1e;
+  font-size: 44px;
+  font-weight: 700;
+}
+
+.pr-empty-card h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.pr-empty-card p {
+  max-width: 360px;
+  margin: 0;
+  color: #7d8798;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+/* =====================================================
+   ENQUIRY ROWS / UPCOMING ROWS
+   ===================================================== */
+
+.pr-enquiry-row,
+.pr-upcoming-card {
+  width: 100%;
+  border: 1px solid var(--pr-border);
+  border-radius: 20px;
+  background: #fff;
+}
+
+.pr-enquiry-row {
+  min-height: 174px;
+  display: grid;
+  grid-template-columns: minmax(300px, 1.25fr) minmax(170px, .75fr) minmax(150px, .65fr) minmax(160px, .7fr) minmax(220px, .85fr);
+  gap: 26px;
+  align-items: center;
+  padding: 27px 31px;
+  margin-bottom: 18px;
+}
+
+.pr-enquiry-main h3,
+.pr-upcoming-person h3 {
+  margin: 0 0 14px;
+  color: #07314b;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.pr-person-line {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.pr-person-line > strong {
+  font-size: 24px;
+  line-height: 28px;
+  color: #202124;
+  font-weight: 600;
+}
+
+.pr-avatar {
+  overflow: hidden;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #e3b35f;
+  background: #ffe6b6;
+  color: #7d3a28;
+  font-weight: 700;
+}
+
+.pr-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pr-avatar-md { width: 72px; height: 72px; font-size: 18px; }
+.pr-avatar-lg { width: 82px; height: 82px; font-size: 20px; }
+
+.pr-row-info {
+  min-width: 0;
+}
+
+.pr-row-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #676a6e;
+}
+
+.pr-row-label .mk-asset-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+
+.pr-row-label span {
+  font-size: 16px;
+  line-height: 19px;
+}
+
+.pr-row-info > strong {
+  display: block;
+  padding-left: 26px;
+  color: #181c22;
+  font-size: 16px;
+  line-height: 19px;
+  font-weight: 600;
+}
+
+.pr-row-action {
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 18px;
+}
+
+.pr-outline-button,
+.pr-primary-button,
+.pr-link-button {
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.pr-outline-button,
+.pr-primary-button {
+  min-height: 40px;
+  border-radius: 8px;
+  padding: 0 24px;
+}
+
+.pr-outline-button {
+  border: 1px solid var(--pr-primary);
+  background: #fff;
+  color: var(--pr-primary);
+}
+
+.pr-primary-button {
+  border: 1px solid var(--pr-primary);
+  background: var(--pr-primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pr-primary-button:hover:not(:disabled) { background: var(--pr-primary-dark); }
+.pr-primary-button:disabled,
+.pr-outline-button:disabled { opacity: .5; cursor: not-allowed; }
+
+.pr-primary-button .mk-asset-icon {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) invert(1);
+}
+
+.pr-link-button {
+  border: 0;
+  background: transparent;
+  color: var(--pr-primary);
+  text-decoration: underline;
+  padding: 8px 10px;
+}
+
+.pr-reschedule-pill,
+.pr-scheduled-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 15px;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 15px;
+}
+
+.pr-reschedule-pill {
+  background: #fbeae6;
+  color: #ce654a;
+}
+
+.pr-scheduled-pill {
+  background: #e8f6e7;
+  color: #2e7c35;
+}
+
+.pr-session-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pr-upcoming-card {
+  min-height: 174px;
+  display: grid;
+  grid-template-columns: minmax(320px, 1.25fr) minmax(170px, .75fr) minmax(150px, .65fr) minmax(150px, .65fr) minmax(240px, .9fr);
+  gap: 26px;
+  align-items: center;
+  padding: 27px 31px;
+}
+
+.pr-upcoming-card.compact {
+  min-height: 160px;
+}
+
+.pr-upcoming-actions {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.pr-upcoming-actions > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* =====================================================
+   HISTORY
+   ===================================================== */
+
+.pr-history-wrap {
+  width: 100%;
+  border: 1px solid var(--pr-border);
+  border-radius: 20px;
+  background: #fff;
+  padding: 28px 30px 34px;
+}
+
+.pr-history-wrap h3 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.pr-table-scroll {
+  overflow-x: auto;
+}
+
+.pr-history-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+.pr-history-table th,
+.pr-history-table td {
+  text-align: left;
+  border-bottom: 1px solid #eeeeee;
+  padding: 13px 22px;
+}
+
+.pr-history-table th {
+  background: #fff7ef;
+  color: #555b65;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.pr-history-table th:first-child { border-radius: 8px 0 0 0; }
+.pr-history-table th:last-child { border-radius: 0 8px 0 0; }
+
+.pr-history-status {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.pr-history-completed { background: #e8f6e7; color: #2e7c35; }
+.pr-history-cancelled,
+.pr-history-no_show { background: #fdecea; color: #b44335; }
+
+.pr-history-empty {
+  min-height: 160px;
+  display: grid;
+  place-items: center;
+  color: #7d8798;
+}
+
+/* =====================================================
+   ENQUIRY DETAILS
+   ===================================================== */
+
+.pr-enquiry-detail-card {
+  border: 1px solid var(--pr-border);
+  border-radius: 20px;
+  background: #fff;
+  padding: 36px 31px 30px;
+}
+
+.pr-detail-person {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.pr-detail-person h2 {
+  margin: 0 0 7px;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.pr-detail-person p {
+  margin: 0;
+  color: #60657c;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.pr-detail-divider {
+  height: 1px;
+  background: #dfdfdf;
+  margin: 36px 0;
+}
+
+.pr-detail-message strong,
+.pr-detail-grid strong {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 17px;
+  color: #0c1421;
+}
+
+.pr-detail-message p,
+.pr-detail-grid span {
+  color: #626873;
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.pr-detail-message p {
+  margin: 0;
+}
+
+.pr-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 90px;
+  row-gap: 30px;
+  margin-top: 34px;
+}
+
+.pr-detail-grid span {
+  display: block;
+}
+
+.pr-detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.pr-detail-actions .pr-outline-button,
+.pr-detail-actions .pr-primary-button {
+  min-width: 145px;
+}
+
+.pr-detail-state {
+  color: #60657c;
+  font-size: 14px;
+}
+
+/* =====================================================
+   MODALS
+   ===================================================== */
+
+.pr-modal-backdrop {
+  position: fixed;
+  z-index: 3000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(18, 22, 24, .48);
+  overflow-y: auto;
+}
+
+.pr-modal {
+  width: min(880px, 100%);
+  border-radius: 20px;
+  background: #fff;
+  padding: 34px 32px 30px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .18);
+}
+
+.pr-propose-modal {
+  width: min(880px, 100%);
+}
+
+.pr-reschedule-modal {
+  width: min(936px, 100%);
+}
+
+.pr-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.pr-modal-head-lined {
+  border-bottom: 1px solid #dedede;
+  padding-bottom: 24px;
+}
+
+.pr-modal-head h2 {
+  margin: 0 0 6px;
+  font-size: 27px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.pr-modal-head p {
+  margin: 0;
+  color: #8b9098;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.pr-close-button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: #555;
+  font-size: 29px;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+.pr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.pr-field > span,
+.pr-section-title {
+  color: #17212f;
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 600;
+}
+
+.pr-field > span b {
+  color: #b22121;
+}
+
+.pr-field input,
+.pr-field select,
+.pr-field textarea,
+.pr-time-input-wrap input {
+  width: 100%;
+  border: 1px solid #d5d7da;
+  border-radius: 8px;
+  background: #fff;
+  color: #0c1421;
+  font-family: inherit;
+  font-size: 14px;
+  min-height: 46px;
+  padding: 11px 16px;
+}
+
+.pr-field select:disabled,
+.pr-field input:read-only {
+  color: #4c5159;
+  opacity: 1;
+  background: #fff;
+}
+
+.pr-field textarea {
+  min-height: 102px;
+  resize: vertical;
+}
+
+.pr-form-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.pr-section-title {
+  margin: 2px 0 18px;
+}
+
+.pr-time-input-wrap {
+  position: relative;
+}
+
+.pr-time-input-wrap input {
+  padding-right: 46px;
+}
+
+.pr-time-input-wrap input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
+.pr-time-input-wrap .mk-asset-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.pr-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 22px;
+}
+
+.pr-modal-footer small {
+  color: #7b8aa0;
+  font-size: 12px;
+}
+
+.pr-modal-footer > div,
+.pr-reschedule-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pr-modal-footer button,
+.pr-reschedule-actions button {
+  min-width: 200px;
+}
+
+.pr-current-time-box {
+  margin-bottom: 26px;
+  border: 1px dashed #79d2f1;
+  border-radius: 6px;
+  background: #eefbff;
+  padding: 14px 16px;
+  color: #606b75;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.pr-reason-display > div {
+  min-height: 118px;
+  border: 1px solid #d5d7da;
+  border-radius: 8px;
+  padding: 13px 16px;
+  color: #101318;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.pr-counter-section {
+  border-top: 1px solid #dedede;
+  padding-top: 24px;
+  margin-top: 22px;
+}
+
+.pr-counter-section h3 {
+  margin: 0 0 28px;
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.pr-counter-date-time {
+  max-width: 540px;
+}
+
+.pr-reschedule-actions {
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+/* Reuse the exact custom calendar component inside practitioner modals. */
+.pr-modal .mk-calendar-popover {
+  z-index: 3200;
+}
+
+/* =====================================================
+   PRACTITIONER MARKETPLACE
+   ===================================================== */
+
+.pr-practitioner-marketplace {
+  padding-top: 23px;
+}
+
+.pr-marketplace-head,
+.pr-marketplace-nav-row,
+.pr-practitioner-filter-row,
+.pr-marketplace-upcoming,
+.pr-own-profile-grid {
+  width: 100%;
+  max-width: 1324px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pr-marketplace-nav-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.pr-marketplace-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.pr-marketplace-tabs button {
+  position: relative;
+  padding: 12px 12px 13px;
+  font-size: 14px;
+}
+
+.pr-marketplace-tabs button.active {
+  color: var(--pr-primary);
+  font-weight: 600;
+}
+
+.pr-marketplace-tabs button.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--pr-primary);
+}
+
+.pr-marketplace-tabs button:disabled {
+  color: #666b78;
+  opacity: 1;
+  cursor: default;
+}
+
+.pr-view-enquiries {
+  min-width: 150px;
+}
+
+.pr-practitioner-filter-row {
+  margin-bottom: 28px !important;
+}
+
+.pr-marketplace-upcoming {
+  margin-bottom: 18px;
+}
+
+.pr-own-profile-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pr-own-profile-card {
+  grid-column: 1 / 2;
+}
+
+.pr-profile-preview-label {
+  min-width: 124px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--pr-primary);
+  border-radius: 7px;
+  color: var(--pr-primary);
+  font-size: 13px;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 1180px) {
+  .pr-enquiry-row,
+  .pr-upcoming-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pr-enquiry-main,
+  .pr-upcoming-person,
+  .pr-row-action,
+  .pr-upcoming-actions {
+    grid-column: 1 / -1;
+  }
+
+  .pr-row-action,
+  .pr-upcoming-actions {
+    align-items: flex-start;
+  }
+
+  .pr-upcoming-actions > div {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  .pr-stats-grid,
+  .pr-own-profile-grid,
+  .pr-detail-grid,
+  .pr-form-two {
+    grid-template-columns: 1fr;
+  }
+
+  .pr-own-profile-card {
+    grid-column: auto;
+  }
+
+  .pr-marketplace-nav-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .pr-modal-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pr-modal-footer > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .pr-page,
+  .pr-practitioner-marketplace {
+    padding: 18px 16px 100px;
+  }
+
+  .pr-stats-grid {
+    gap: 10px;
+  }
+
+  .pr-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .pr-enquiry-row,
+  .pr-upcoming-card {
+    grid-template-columns: 1fr;
+    padding: 22px 18px;
+  }
+
+  .pr-row-info,
+  .pr-enquiry-main,
+  .pr-upcoming-person,
+  .pr-row-action,
+  .pr-upcoming-actions {
+    grid-column: auto;
+  }
+
+  .pr-row-info > strong {
+    padding-left: 26px;
+  }
+
+  .pr-modal {
+    padding: 28px 20px 24px;
+  }
+
+  .pr-modal-footer > div,
+  .pr-reschedule-actions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pr-modal-footer button,
+  .pr-reschedule-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pr-detail-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pr-detail-actions button {
+    width: 100%;
+  }
+}

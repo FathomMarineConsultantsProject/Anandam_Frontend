@@ -208,6 +208,51 @@
 }
 
 /* =========================================================
+   ACCOUNT TYPE TABS
+   Added for practitioner registration only.
+   The original animated-leaf design remains unchanged.
+   ========================================================= */
+
+.anandam-signup-account-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 516px;
+  height: 36px;
+  padding: 2px;
+  background: #f1efec;
+  border-radius: 8px;
+}
+
+.anandam-signup-account-tabs button {
+  height: 32px;
+  padding: 0 12px;
+  color: #626875;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.anandam-signup-account-tabs button.is-active {
+  color: #111827;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.18);
+}
+
+.anandam-signup-account-tabs button:focus-visible {
+  outline: 2px solid #712e1e;
+  outline-offset: 2px;
+}
+
+.anandam-signup-account-tabs button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* =========================================================
    FORM AND INPUTS
    ========================================================= */
 
@@ -219,7 +264,7 @@
   justify-content: center;
   width: 516px;
   min-height: 436.5px;
-  gap: 32px;
+  gap: 24px;
 }
 
 .anandam-signup-fields {
@@ -578,6 +623,7 @@
   .anandam-signup-panel,
   .anandam-signup-intro,
   .anandam-signup-form,
+  .anandam-signup-account-tabs,
   .anandam-signup-fields,
   .anandam-signup-field,
   .anandam-signup-actions,
@@ -659,6 +705,7 @@
   }
 
   .anandam-signup-form,
+  .anandam-signup-account-tabs,
   .anandam-signup-fields,
   .anandam-signup-field,
   .anandam-signup-actions,

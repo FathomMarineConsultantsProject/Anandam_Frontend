@@ -95,7 +95,7 @@ const NAV_ITEMS = [
       Slightly enlarge only the artwork, NOT its wrapper.
     */
     iconSize: 24,
-    iconScale: 1.28,
+    iconScale: 1.58,
 
     matchPaths: [
       "/app/fitness",
@@ -122,12 +122,12 @@ const NAV_ITEMS = [
 
   {
   id: "marketplace",
-  label: "Marketplace",
+  label:"Marketplace",
   icon: marketplaceIcon,
   path: "/marketplace",
 
-  iconSize: 24,
-  iconScale: 1,
+  iconSize: 25,
+  iconScale: 0.92,
 
   matchPaths: [
     "/marketplace",

@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
@@ -33,12 +34,18 @@ import WellbeingQuestionnairesPage from "./pages/WellbeingQuestionnairesPage";
 import WellbeingQuestionnairePage from "./pages/WellbeingQuestionnairePage";
 
 // marketplace
-import MarketplacePage from "./pages/MarketplacePage";
+import MarketplaceEntryPage from "./pages/MarketplaceEntryPage";
+import PractitionerMarketplacePage from "./pages/PractitionerMarketplacePage";
+import PractitionerSessionsPage from "./pages/PractitionerSessionsPage";
+import PractitionerEnquiryDetailsPage from "./pages/PractitionerEnquiryDetailsPage";
 import PractitionerProfilePage from "./pages/PractitionerProfilePage";
 import SendEnquiryPage from "./pages/SendEnquiryPage";
 import MyEnquiriesPage from "./pages/MyEnquiriesPage";
 import EnquiryDetailsPage from "./pages/EnquiryDetailsPage";
 import MyAppointmentsPage from "./pages/MyAppointmentsPage";
+import VideoCallLobbyPage from "./pages/VideoCallLobbyPage";
+import VideoCallRoomPage from "./pages/VideoCallRoomPage";
+import PractitionerOnboardingPage from "./pages/PractitionerOnboardingPage";
 import AppLayout from "./components/layout/AppLayout";
 
 import {
@@ -47,427 +54,231 @@ import {
   getStoredToken,
 } from "./utils/storage";
 
+import {
+  getStoredAuthUser,
+  getStoredPractitionerOnboarding,
+} from "./api/authApi";
+
+function practitionerNeedsOnboarding() {
+  const user = getStoredAuthUser();
+  const onboarding = getStoredPractitionerOnboarding();
+
+  return (
+    user?.role === "PRACTITIONER" &&
+    onboarding?.completed !== true
+  );
+}
 
 function RequireAuth({ children }) {
+  const location = useLocation();
   const token = getStoredToken();
 
   if (!token) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-      />
-    );
+    return <Navigate to="/login" replace />;
+  }
+
+  if (
+    practitionerNeedsOnboarding() &&
+    location.pathname !== "/practitioner/onboarding"
+  ) {
+    return <Navigate to="/practitioner/onboarding" replace />;
   }
 
   return children;
 }
 
+function RequirePractitioner({ children }) {
+  const location = useLocation();
+  const token = getStoredToken();
+  const user = getStoredAuthUser();
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== "PRACTITIONER") {
+    return <Navigate to="/marketplace" replace />;
+  }
+
+  if (
+    practitionerNeedsOnboarding() &&
+    location.pathname !== "/practitioner/onboarding"
+  ) {
+    return <Navigate to="/practitioner/onboarding" replace />;
+  }
+
+  return children;
+}
+
+function RequireNormalUser({ children }) {
+  const token = getStoredToken();
+  const user = getStoredAuthUser();
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role === "PRACTITIONER") {
+    return <Navigate to="/marketplace/practitioner" replace />;
+  }
+
+  return children;
+}
+
+function MoodQuickEntry() {
+  const user = getStoredAuthUser();
+
+  // Practitioners do not use the first-login mood gate as their landing page.
+  // Incomplete practitioners are already intercepted by RequireAuth and sent
+  // back to /practitioner/onboarding. Completed practitioners land on dashboard.
+  if (user?.role === "PRACTITIONER") {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <MoodPage />;
+}
 
 function RequireMoodBeforeDashboard({ children }) {
   if (!isAuthenticated()) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-      />
-    );
+    return <Navigate to="/login" replace />;
+  }
+
+  if (practitionerNeedsOnboarding()) {
+    return <Navigate to="/practitioner/onboarding" replace />;
+  }
+
+  const user = getStoredAuthUser();
+
+  // Practitioner onboarding is the practitioner gate. Once it is submitted,
+  // the practitioner should land on the normal Anandam dashboard immediately.
+  if (user?.role === "PRACTITIONER") {
+    return children;
   }
 
   if (!hasCompletedMoodGate()) {
-    return (
-      <Navigate
-        to="/mood-quick"
-        replace
-      />
-    );
+    return <Navigate to="/mood-quick" replace />;
   }
 
   return children;
 }
 
+function MarketplaceRoleEntry() {
+  const user = getStoredAuthUser();
+
+  if (user?.role === "PRACTITIONER") {
+    return <Navigate to="/marketplace/practitioner" replace />;
+  }
+
+  return <MarketplaceEntryPage />;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* PUBLIC ROUTES */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/blog/:shareToken" element={<PublicBlogPage />} />
 
-        {/* =====================================================
-            PUBLIC ROUTES
-            ===================================================== */}
-
+        {/* PRACTITIONER AUTH / ONBOARDING - no AppLayout, matches Figma */}
         <Route
-          path="/"
-          element={<LandingPage />}
-        />
-
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
-
-        <Route
-          path="/signup"
-          element={<SignupPage />}
-        />
-
-        <Route
-          path="/forgot-password"
-          element={<ForgotPasswordPage />}
-        />
-
-
-        {/* =====================================================
-            PUBLIC BLOG SHARE ROUTE
-
-            IMPORTANT:
-            No RequireAuth here.
-
-            Shared URL:
-            https://your-domain.vercel.app/blog/:shareToken
-            ===================================================== */}
-
-        <Route
-          path="/blog/:shareToken"
-          element={<PublicBlogPage />}
-        />
-
-
-        {/* =====================================================
-            MOOD GATE
-            ===================================================== */}
-
-        <Route
-          path="/mood-quick"
+          path="/practitioner/onboarding"
           element={
-            <RequireAuth>
-              <MoodPage />
-            </RequireAuth>
+            <RequirePractitioner>
+              <PractitionerOnboardingPage />
+            </RequirePractitioner>
           }
         />
 
+        {/* MOOD GATE */}
+        <Route path="/mood-quick" element={<RequireAuth><MoodQuickEntry /></RequireAuth>} />
 
-        {/* =====================================================
-            DASHBOARD
-            ===================================================== */}
+        {/* DASHBOARD */}
+        <Route path="/dashboard" element={<RequireMoodBeforeDashboard><DashboardPage /></RequireMoodBeforeDashboard>} />
 
+        {/* MAIN APP */}
+        <Route path="/mood" element={<RequireAuth><MoodCheckinPage /></RequireAuth>} />
+        <Route path="/app/perfect-day" element={<RequireAuth><PerfectDaySchedulePage /></RequireAuth>} />
+        <Route path="/app/work-rest" element={<RequireAuth><WorkRestPage /></RequireAuth>} />
+        <Route path="/app/fitness" element={<RequireAuth><FitnessPage /></RequireAuth>} />
+        <Route path="/app/emergency" element={<RequireAuth><EmergencyPage /></RequireAuth>} />
+        <Route path="/app/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+        <Route path="/app/breathing" element={<RequireAuth><BreathingPage /></RequireAuth>} />
+        <Route path="/app/brain-games/*" element={<RequireAuth><BrainGamesPage /></RequireAuth>} />
+        <Route path="/app/sleep-stories" element={<RequireAuth><SleepStoriesPage /></RequireAuth>} />
+        <Route path="/app/sleep-stories/:slug" element={<RequireAuth><SleepPlayerPage /></RequireAuth>} />
+
+        {/* BLOGS */}
+        <Route path="/app/blogs" element={<RequireAuth><BlogsPage /></RequireAuth>} />
+        <Route path="/app/blogs/write" element={<RequireAuth><BlogEditorPage /></RequireAuth>} />
+        <Route path="/app/blogs/:blogId/edit" element={<RequireAuth><BlogEditorPage /></RequireAuth>} />
+        <Route path="/app/blogs/:blogId" element={<RequireAuth><BlogDetailPage /></RequireAuth>} />
+        <Route path="/app/daily-wisdom" element={<RequireAuth><DailyWisdomPage /></RequireAuth>} />
+
+        {/* WELLBEING QUESTIONNAIRES */}
+        <Route path="/app/wellbeing" element={<RequireAuth><WellbeingQuestionnairesPage /></RequireAuth>} />
+        <Route path="/app/wellbeing/:slug" element={<RequireAuth><WellbeingQuestionnairePage /></RequireAuth>} />
+
+        {/* MARKETPLACE ENTRY - role aware */}
         <Route
-          path="/dashboard"
-          element={
-            <RequireMoodBeforeDashboard>
-              <DashboardPage />
-            </RequireMoodBeforeDashboard>
-          }
+          path="/marketplace"
+          element={<RequireAuth><AppLayout><MarketplaceRoleEntry /></AppLayout></RequireAuth>}
         />
 
-
-        {/* =====================================================
-            MOOD
-            ===================================================== */}
-
+        {/* MARKETPLACE - NORMAL USER ONLY */}
         <Route
-          path="/mood"
-          element={
-            <RequireAuth>
-              <MoodCheckinPage />
-            </RequireAuth>
-          }
+          path="/marketplace/practitioners/:slug"
+          element={<RequireNormalUser><AppLayout><PractitionerProfilePage /></AppLayout></RequireNormalUser>}
+        />
+        <Route
+          path="/marketplace/practitioners/:slug/enquire"
+          element={<RequireNormalUser><AppLayout><SendEnquiryPage /></AppLayout></RequireNormalUser>}
+        />
+        <Route
+          path="/marketplace/enquiries"
+          element={<RequireNormalUser><AppLayout><MyEnquiriesPage /></AppLayout></RequireNormalUser>}
+        />
+        <Route
+          path="/marketplace/enquiries/:enquiryId"
+          element={<RequireNormalUser><AppLayout><EnquiryDetailsPage /></AppLayout></RequireNormalUser>}
+        />
+        <Route
+          path="/marketplace/appointments"
+          element={<RequireNormalUser><AppLayout><MyAppointmentsPage /></AppLayout></RequireNormalUser>}
         />
 
-
-        {/* =====================================================
-            DAY PLANNER
-            ===================================================== */}
-
+        {/* VIDEO - both roles are authorized by appointment ownership on backend */}
         <Route
-          path="/app/perfect-day"
-          element={
-            <RequireAuth>
-              <PerfectDaySchedulePage />
-            </RequireAuth>
-          }
+          path="/marketplace/appointments/:appointmentId/join"
+          element={<RequireAuth><AppLayout><VideoCallLobbyPage /></AppLayout></RequireAuth>}
+        />
+        <Route
+          path="/marketplace/appointments/:appointmentId/call"
+          element={<RequireAuth><AppLayout><VideoCallRoomPage /></AppLayout></RequireAuth>}
         />
 
-
-        {/* =====================================================
-            WORK / REST
-            ===================================================== */}
-
+        {/* MARKETPLACE - PRACTITIONER ONLY */}
         <Route
-          path="/app/work-rest"
-          element={
-            <RequireAuth>
-              <WorkRestPage />
-            </RequireAuth>
-          }
+          path="/marketplace/practitioner"
+          element={<RequirePractitioner><AppLayout><PractitionerMarketplacePage /></AppLayout></RequirePractitioner>}
+        />
+        <Route
+          path="/marketplace/practitioner/sessions"
+          element={<RequirePractitioner><AppLayout><PractitionerSessionsPage /></AppLayout></RequirePractitioner>}
+        />
+        <Route
+          path="/marketplace/practitioner/enquiries/:enquiryId"
+          element={<RequirePractitioner><AppLayout><PractitionerEnquiryDetailsPage /></AppLayout></RequirePractitioner>}
         />
 
-
-        {/* =====================================================
-            FITNESS
-            ===================================================== */}
-
-        <Route
-          path="/app/fitness"
-          element={
-            <RequireAuth>
-              <FitnessPage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* =====================================================
-            EMERGENCY
-            ===================================================== */}
-
-        <Route
-          path="/app/emergency"
-          element={
-            <RequireAuth>
-              <EmergencyPage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* =====================================================
-            PROFILE
-            ===================================================== */}
-
-        <Route
-          path="/app/profile"
-          element={
-            <RequireAuth>
-              <ProfilePage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* =====================================================
-            BREATHING
-            ===================================================== */}
-
-        <Route
-          path="/app/breathing"
-          element={
-            <RequireAuth>
-              <BreathingPage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* =====================================================
-            BRAIN GAMES
-            ===================================================== */}
-
-        <Route
-          path="/app/brain-games/*"
-          element={
-            <RequireAuth>
-              <BrainGamesPage />
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/app/sleep-stories"
-          element={
-            <RequireAuth>
-              <SleepStoriesPage />
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/app/sleep-stories/:slug"
-          element={
-            <RequireAuth>
-              <SleepPlayerPage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* =====================================================
-            BLOGS
-            ===================================================== */}
-
-        <Route
-          path="/app/blogs"
-          element={
-            <RequireAuth>
-              <BlogsPage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* CREATE BLOG
-
-            IMPORTANT:
-            This must exist as an explicit route.
-
-            Otherwise "write" could be interpreted
-            as a blogId.
-        */}
-
-        <Route
-          path="/app/blogs/write"
-          element={
-            <RequireAuth>
-              <BlogEditorPage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* EDIT BLOG */}
-
-        <Route
-          path="/app/blogs/:blogId/edit"
-          element={
-            <RequireAuth>
-              <BlogEditorPage />
-            </RequireAuth>
-          }
-        />
-
-
-        {/* VIEW BLOG */}
-
-        <Route
-          path="/app/blogs/:blogId"
-          element={
-            <RequireAuth>
-              <BlogDetailPage />
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/app/daily-wisdom"
-          element={
-            <RequireAuth>
-              <DailyWisdomPage />
-            </RequireAuth>
-          }
-        />
-
-        {/* =====================================================
-    WELLBEING QUESTIONNAIRES
-    ===================================================== */}
-
-<Route
-  path="/app/wellbeing"
-  element={
-    <RequireAuth>
-      <WellbeingQuestionnairesPage />
-    </RequireAuth>
-  }
-/>
-
-<Route
-  path="/app/wellbeing/:slug"
-  element={
-    <RequireAuth>
-      <WellbeingQuestionnairePage />
-    </RequireAuth>
-  }
-/>
-
-{/* =====================================================
-    MARKETPLACE
-===================================================== */}
-
-<Route
-  path="/marketplace"
-  element={
-    <RequireAuth>
-      <AppLayout>
-        <MarketplacePage />
-      </AppLayout>
-    </RequireAuth>
-  }
-/>
-
-<Route
-  path="/marketplace/practitioners/:slug"
-  element={
-    <RequireAuth>
-      <AppLayout>
-        <PractitionerProfilePage />
-      </AppLayout>
-    </RequireAuth>
-  }
-/>
-
-<Route
-  path="/marketplace/practitioners/:slug/enquire"
-  element={
-    <RequireAuth>
-      <AppLayout>
-        <SendEnquiryPage />
-      </AppLayout>
-    </RequireAuth>
-  }
-/>
-
-<Route
-  path="/marketplace/enquiries"
-  element={
-    <RequireAuth>
-      <AppLayout>
-        <MyEnquiriesPage />
-      </AppLayout>
-    </RequireAuth>
-  }
-/>
-
-<Route
-  path="/marketplace/enquiries/:enquiryId"
-  element={
-    <RequireAuth>
-      <AppLayout>
-        <EnquiryDetailsPage />
-      </AppLayout>
-    </RequireAuth>
-  }
-/>
-
-<Route
-  path="/marketplace/appointments"
-  element={
-    <RequireAuth>
-      <AppLayout>
-        <MyAppointmentsPage />
-      </AppLayout>
-    </RequireAuth>
-  }
-/>
-
-        {/* =====================================================
-            FALLBACK
-            ===================================================== */}
-
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/"
-              replace
-            />
-          }
-        />
-
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-
-
   );
 }
-
 
 export default App;
