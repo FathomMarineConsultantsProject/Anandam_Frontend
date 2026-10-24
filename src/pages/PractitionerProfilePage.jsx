@@ -29,7 +29,19 @@ export default function PractitionerProfilePage() {
 
   return (
     <main className="marketplace-page mk-profile-page">
-      <button className="mk-back-button" onClick={() => navigate(-1)}>←&nbsp; Back</button>
+      <button
+  type="button"
+  className="mk-page-back-button"
+  onClick={() =>
+    navigate(-1)
+  }
+>
+  <span aria-hidden="true">
+    ←
+  </span>
+
+  Back
+</button>
       <div className="mk-profile-shell">
         <section className="mk-profile-content">
           <div className="mk-profile-head">

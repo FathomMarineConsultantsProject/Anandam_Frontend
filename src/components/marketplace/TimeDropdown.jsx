@@ -1,24 +1,45 @@
-import { useMemo } from "react";
+import {
+  useMemo,
+} from "react";
 
-function buildTimeOptions(stepMinutes = 15) {
+function createOptions(
+  interval = 15
+) {
   const values = [];
 
   for (
-    let minutes = 0;
-    minutes < 24 * 60;
-    minutes += stepMinutes
+    let minuteOfDay = 0;
+    minuteOfDay <
+    24 * 60;
+    minuteOfDay +=
+    interval
   ) {
     const hour =
-      Math.floor(minutes / 60);
+      Math.floor(
+        minuteOfDay /
+          60
+      );
 
     const minute =
-      minutes % 60;
+      minuteOfDay %
+      60;
 
     const value =
-      `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+      `${String(
+        hour
+      ).padStart(
+        2,
+        "0"
+      )}:${String(
+        minute
+      ).padStart(
+        2,
+        "0"
+      )}`;
 
-    const displayHour =
-      hour % 12 || 12;
+    const hour12 =
+      hour % 12 ||
+      12;
 
     const period =
       hour < 12
@@ -26,7 +47,17 @@ function buildTimeOptions(stepMinutes = 15) {
         : "PM";
 
     const label =
-      `${String(displayHour).padStart(2, "0")}:${String(minute).padStart(2, "0")} ${period}`;
+      `${String(
+        hour12
+      ).padStart(
+        2,
+        "0"
+      )}:${String(
+        minute
+      ).padStart(
+        2,
+        "0"
+      )} ${period}`;
 
     values.push({
       value,
@@ -38,7 +69,7 @@ function buildTimeOptions(stepMinutes = 15) {
 }
 
 export default function TimeDropdown({
-  value,
+  value = "",
   onChange,
   placeholder = "Select time",
   required = false,
@@ -47,36 +78,65 @@ export default function TimeDropdown({
 }) {
   const options =
     useMemo(
-      () => buildTimeOptions(15),
+      () =>
+        createOptions(
+          15
+        ),
       []
     );
 
-  const visibleOptions =
+  const filtered =
     minTime
       ? options.filter(
-          (option) =>
-            option.value > minTime
+          (
+            option
+          ) =>
+            option.value >
+            minTime
         )
       : options;
 
   return (
     <select
-      value={value}
-      onChange={(event) =>
-        onChange(event.target.value)
+      className="mk-time-select"
+      value={
+        value
       }
-      required={required}
-      disabled={disabled}
+      onChange={(
+        event
+      ) =>
+        onChange?.(
+          event.target
+            .value
+        )
+      }
+      required={
+        required
+      }
+      disabled={
+        disabled
+      }
     >
-      <option value="">
+      <option
+        value=""
+        disabled={
+          required
+        }
+      >
         {placeholder}
       </option>
 
-      {visibleOptions.map(
-        (option) => (
+      {filtered.map(
+        (
+          option
+        ) => (
           <option
-            key={option.value}
-            value={option.value}
+            key={
+              option.value
+            }
+            value={
+              option.value
+            }
           >
             {option.label}
           </option>

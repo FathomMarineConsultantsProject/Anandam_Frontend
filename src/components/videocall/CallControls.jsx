@@ -1,41 +1,158 @@
-import { useState } from "react";
-import { useLocalParticipant, useRoomContext } from "@livekit/components-react";
+import {
+  useState,
+} from "react";
+
+import {
+  useLocalParticipant,
+} from "@livekit/components-react";
+
 import VideoControlIcon from "./VideoControlIcon";
 
-export default function CallControls({ onEndSession }) {
-  const room = useRoomContext();
-  const { localParticipant, isMicrophoneEnabled, isCameraEnabled } = useLocalParticipant();
-  const [busy, setBusy] = useState(false);
+
+export default function CallControls({
+  onEndSession,
+  onLeave,
+  ending = false,
+}) {
+  const {
+    localParticipant,
+    isMicrophoneEnabled,
+    isCameraEnabled,
+  } =
+    useLocalParticipant();
+
+
+  const [
+    busy,
+    setBusy,
+  ] =
+    useState(false);
+
 
   async function toggleMic() {
-    setBusy(true);
-    try { await localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled); } finally { setBusy(false); }
+    if (busy) {
+      return;
+    }
+
+    try {
+      setBusy(
+        true
+      );
+
+      await localParticipant
+        .setMicrophoneEnabled(
+          !isMicrophoneEnabled
+        );
+    } finally {
+      setBusy(
+        false
+      );
+    }
   }
+
 
   async function toggleCamera() {
-    setBusy(true);
-    try { await localParticipant.setCameraEnabled(!isCameraEnabled); } finally { setBusy(false); }
+    if (busy) {
+      return;
+    }
+
+    try {
+      setBusy(
+        true
+      );
+
+      await localParticipant
+        .setCameraEnabled(
+          !isCameraEnabled
+        );
+    } finally {
+      setBusy(
+        false
+      );
+    }
   }
 
-  async function leave() {
-    await room.disconnect();
-    window.history.back();
-  }
 
   return (
     <div className="vc-controls">
-      <button className={!isMicrophoneEnabled ? "is-off" : ""} onClick={toggleMic} disabled={busy} aria-label="Toggle microphone">
-        <VideoControlIcon name={isMicrophoneEnabled ? "mic" : "micOff"} />
+
+      <button
+        type="button"
+        className="vc-control-button"
+        onClick={
+          toggleMic
+        }
+        disabled={
+          busy
+        }
+        aria-label={
+          isMicrophoneEnabled
+            ? "Mute microphone"
+            : "Unmute microphone"
+        }
+      >
+        <VideoControlIcon
+          name={
+            isMicrophoneEnabled
+              ? "mic"
+              : "micOff"
+          }
+        />
       </button>
-      <button className={!isCameraEnabled ? "is-off" : ""} onClick={toggleCamera} disabled={busy} aria-label="Toggle camera">
-        <VideoControlIcon name={isCameraEnabled ? "camera" : "cameraOff"} />
+
+
+      <button
+        type="button"
+        className="vc-control-button"
+        onClick={
+          toggleCamera
+        }
+        disabled={
+          busy
+        }
+        aria-label={
+          isCameraEnabled
+            ? "Turn camera off"
+            : "Turn camera on"
+        }
+      >
+        <VideoControlIcon
+          name={
+            isCameraEnabled
+              ? "camera"
+              : "cameraOff"
+          }
+        />
       </button>
-      <button className="vc-leave-button" onClick={leave} aria-label="Leave call">
-        <VideoControlIcon name="leave" />
+
+
+      <button
+        type="button"
+        className="vc-control-button"
+        aria-label="Call settings"
+      >
+        <VideoControlIcon
+          name="settings"
+        />
       </button>
-      <button className="vc-end-button" onClick={onEndSession} aria-label="End session for everyone">
-        <VideoControlIcon name="end" />
+
+
+      <button
+        type="button"
+        className="vc-end-button"
+        onClick={
+          onEndSession
+        }
+        disabled={
+          ending
+        }
+        aria-label="End session"
+      >
+        <span className="vc-end-phone">
+          ☎
+        </span>
       </button>
+
     </div>
   );
 }

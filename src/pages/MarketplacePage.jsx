@@ -375,20 +375,46 @@ export default function MarketplacePage() {
         )[0] || null;
     }, [appointments]);
 
-  const activeEnquiry =
-    useMemo(() => {
-      return (
-        enquiries.find((item) =>
-          [
+  const activeEnquiries =
+  useMemo(
+    () =>
+      enquiries.filter(
+        (
+          enquiry
+        ) => {
+          const appointmentStatus =
+            enquiry
+              ?.appointment
+              ?.status;
+
+          const ended =
+            [
+              "COMPLETED",
+              "CANCELLED",
+              "NO_SHOW",
+            ].includes(
+              appointmentStatus
+            );
+
+          if (ended) {
+            return false;
+          }
+
+          return [
             "PENDING",
             "TIME_PROPOSED",
             "RESCHEDULE_REQUESTED",
           ].includes(
-            item.status
-          )
-        ) || null
-      );
-    }, [enquiries]);
+            enquiry.status
+          );
+        }
+      ),
+    [enquiries]
+  );
+
+const activeEnquiry =
+  activeEnquiries[0] ||
+  null;
 
   const languages =
     useMemo(
@@ -500,19 +526,19 @@ export default function MarketplacePage() {
         </div>
 
         <button
-          type="button"
-          className="mk-primary-button"
-          onClick={() =>
-            navigate(
-              "/marketplace/enquiries"
-            )
-          }
-        >
-          View Enquiries
-          {enquiryCount > 0
-            ? ` (${enquiryCount})`
-            : ""}
-        </button>
+  type="button"
+  className="mk-primary-button"
+  onClick={() =>
+    navigate(
+      "/marketplace/enquiries"
+    )
+  }
+>
+  View Enquiries
+  {activeEnquiries.length
+    ? ` (${activeEnquiries.length})`
+    : ""}
+</button>
       </header>
 
       <div className="mk-filter-row">
@@ -630,53 +656,53 @@ export default function MarketplacePage() {
             confirming
           }
         />
-        
+
       ) : null}
 
       {rescheduling && (
-  <RescheduleModal
-    title="Ask for new time"
+        <RescheduleModal
+          title="Ask for new time"
 
-    currentText={
-      new Date(
-        rescheduling
-          .proposedStart
-      ).toLocaleString()
-    }
+          currentText={
+            new Date(
+              rescheduling
+                .proposedStart
+            ).toLocaleString()
+          }
 
-    defaultDuration={
-      rescheduling
-        .durationMinutes ||
-      40
-    }
+          defaultDuration={
+            rescheduling
+              .durationMinutes ||
+            40
+          }
 
-    timeZone={
-      rescheduling
-        .timeZone ||
-      activeEnquiry
-        ?.timeZone ||
-      "Asia/Kolkata"
-    }
+          timeZone={
+            rescheduling
+              .timeZone ||
+            activeEnquiry
+              ?.timeZone ||
+            "Asia/Kolkata"
+          }
 
-    onClose={() =>
-      setRescheduling(
-        null
-      )
-    }
+          onClose={() =>
+            setRescheduling(
+              null
+            )
+          }
 
-    onSubmit={
-      sendNewTime
-    }
+          onSubmit={
+            sendNewTime
+          }
 
-    submitting={
-      confirming
-    }
+          submitting={
+            confirming
+          }
 
-    error={
-      error
-    }
-  />
-)}
+          error={
+            error
+          }
+        />
+      )}
 
       {error && (
         <div className="mk-error-banner">

@@ -67,13 +67,13 @@ export default function VideoCallRoomPage() {
     location.state?.cameraOn ?? true;
 
   const destinationForRole =
-    useCallback(
-      (role) =>
-        role === "PRACTITIONER"
-          ? "/marketplace/practitioner/sessions?tab=history"
-          : "/marketplace/appointments",
-      []
-    );
+  useCallback(
+    (role) =>
+      role === "PRACTITIONER"
+        ? "/marketplace/practitioner/sessions?tab=history"
+        : "/marketplace",
+    []
+  );
 
   /*
     If user refreshes the call page,

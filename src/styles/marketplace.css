@@ -1008,3 +1008,271 @@
     0 0 0 2px
     rgba(139, 53, 34, 0.08);
 }
+
+/* =====================================================
+   USER SESSION TABS
+   ===================================================== */
+
+.mk-session-tabs {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+
+  margin: 8px 0 28px;
+  border-bottom: 1px solid #e5e1dc;
+}
+
+.mk-session-tabs button {
+  appearance: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+
+  padding: 12px 2px 13px;
+
+  color: #667085;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.mk-session-tabs button.active {
+  color: #8f321f;
+  border-bottom-color: #8f321f;
+}
+
+.mk-pill-history {
+  background: #f3f3f3;
+  color: #667085;
+}
+
+.mk-session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mk-enquiry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* =====================================================
+   MARKETPLACE DATE / TIME CONTROLS
+   ===================================================== */
+
+.mk-date-input,
+.mk-time-select {
+  width: 100%;
+  height: 50px;
+
+  padding: 0 16px;
+
+  border: 1px solid #d7d9df;
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #101828;
+
+  font: inherit;
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.mk-date-input:focus,
+.mk-time-select:focus {
+  border-color: #8b3522;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(139, 53, 34, 0.08);
+}
+
+.mk-time-select {
+  cursor: pointer;
+}
+
+.mk-date-input {
+  cursor: pointer;
+}
+
+.mk-three-fields {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 16px;
+}
+
+@media (max-width: 800px) {
+  .mk-three-fields {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+.mk-page-back {
+  appearance: none;
+  border: 0;
+  background: transparent;
+
+  margin: 0 0 22px;
+  padding: 0;
+
+  color: #505866;
+
+  font: inherit;
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+.mk-page-back:hover {
+  color: #8b3522;
+}
+
+/* =====================================================
+   MARKETPLACE PAGE BACK BUTTON
+   ===================================================== */
+
+.mk-page-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  margin:
+    0 0 24px;
+
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #5d6574;
+
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+
+  cursor: pointer;
+}
+
+.mk-page-back-button span {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.mk-page-back-button:hover {
+  color: #8b3522;
+}
+
+
+/* =====================================================
+   USER MARKETPLACE SESSION TABS
+   ===================================================== */
+
+.mk-user-session-tabs {
+  display: flex;
+  align-items: center;
+
+  gap: 30px;
+
+  margin:
+    28px 0 20px;
+
+  border-bottom:
+    1px solid #ece7e3;
+}
+
+.mk-user-session-tabs button {
+  position: relative;
+
+  padding:
+    0 2px 14px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #656c78;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+
+  cursor: pointer;
+}
+
+.mk-user-session-tabs button.active {
+  color: #8b3522;
+  font-weight: 500;
+}
+
+.mk-user-session-tabs button.active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: -1px;
+
+  height: 2px;
+
+  background: #8b3522;
+}
+
+
+/* =====================================================
+   USER EMPTY STATE
+   ===================================================== */
+
+.mk-user-empty-state {
+  min-height: 260px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+
+  border:
+    1px solid #e4e1de;
+
+  border-radius: 16px;
+
+  background: #fff;
+
+  text-align: center;
+}
+
+.mk-user-empty-state h3 {
+  margin:
+    0 0 8px;
+
+  color: #101828;
+
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.mk-user-empty-state p {
+  margin: 0;
+
+  color: #7b8493;
+
+  font-size: 14px;
+}

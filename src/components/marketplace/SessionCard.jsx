@@ -119,7 +119,22 @@ export default function SessionCard({ appointment, onChanged }) {
 
         <div className="mk-session-actions">
           <div className="mk-session-status-row">
-            <span className="mk-pill mk-pill-ok">{appointment.status === "CONFIRMED" ? "Scheduled" : appointment.status}</span>
+            <span
+              className={`mk-pill ${appointment.status === "CONFIRMED"
+                  ? "mk-pill-ok"
+                  : "mk-pill-history"
+                }`}
+            >
+              {appointment.status === "CONFIRMED"
+                ? "Scheduled"
+                : appointment.status === "COMPLETED"
+                  ? "Completed"
+                  : appointment.status === "CANCELLED"
+                    ? "Cancelled"
+                    : appointment.status === "NO_SHOW"
+                      ? "No show"
+                      : appointment.status}
+            </span>
             <button className="mk-dots-button" type="button" aria-label="Session options"><MarketplaceIcon name="more" /></button>
           </div>
           {appointment.status === "CONFIRMED" && (
