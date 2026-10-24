@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import MarketplaceDatePicker from "./MarketplaceDatePicker";
 import MarketplaceIcon from "./MarketplaceIcon";
+import TimeDropdown from "./TimeDropdown";
 
 const TIMEZONES = [
   "Asia/Kolkata",
@@ -101,11 +102,16 @@ export default function SendEnquiryModal({ practitioner, onClose, onSubmit, subm
         <div className="mk-three-fields">
           <label className="mk-field">
             <span>Preferred date</span>
-            <MarketplaceDatePicker
-              value={form.date}
-              onChange={(value) => update("date", value)}
-              minDate={todayValue()}
-              placeholder="Select date"
+            <TimeDropdown
+              value={form.to}
+              onChange={(value) =>
+                update(
+                  "to",
+                  value
+                )
+              }
+              minTime={form.from}
+              placeholder="To"
               required
             />
           </label>

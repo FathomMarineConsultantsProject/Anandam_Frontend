@@ -685,7 +685,7 @@ function DashboardPage() {
             </div>
           </div>
 
-          <div className="dashboard-voyage-information">
+          {/* <div className="dashboard-voyage-information">
             <div className="dashboard-voyage-metrics">
               <div className="dashboard-voyage-metric">
                 <div className="dashboard-voyage-metric__label">
@@ -749,7 +749,7 @@ function DashboardPage() {
                 Export Report
               </span>
             </button>
-          </div>
+          </div> */}
 
           <div className="dashboard-contract">
             <div className="dashboard-contract__header">

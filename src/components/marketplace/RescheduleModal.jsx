@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MarketplaceDatePicker from "./MarketplaceDatePicker";
-import MarketplaceIcon from "./MarketplaceIcon";
+
+import TimeDropdown from "./TimeDropdown";
 
 function todayValue() {
   const now = new Date();
@@ -41,10 +42,12 @@ export default function RescheduleModal({ title = "Reschedule Session", currentT
           </label>
           <label className="mk-field">
             <span className="sr-only">Time</span>
-            <div className="mk-input-with-icon">
-              <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
-              <MarketplaceIcon name="time" />
-            </div>
+            <TimeDropdown
+              value={time}
+              onChange={setTime}
+              placeholder="Select new time"
+              required
+            />
           </label>
         </div>
 

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import MarketplaceDatePicker from "../marketplace/MarketplaceDatePicker";
 import MarketplaceIcon from "../marketplace/MarketplaceIcon";
 import { proposePractitionerSessionTime } from "../../api/practitionerMarketplaceApi";
+import TimeDropdown from "../marketplace/TimeDropdown";
 
 function todayValue() {
   const now = new Date();
@@ -35,7 +36,22 @@ export default function ProposeSessionModal({ enquiry, practitionerProfile, onCl
   );
 
   const [form, setForm] = useState({
-    durationMinutes: String(practitionerProfile?.sessionDurationMinutes || 20),
+    durationMinutes:
+      String(
+        practitionerProfile
+          ?.sessionDurationMinutes ||
+        20
+      ),
+
+    sessionFee:
+      practitionerProfile
+        ?.sessionPrice != null
+        ? String(
+          practitionerProfile
+            .sessionPrice
+        )
+        : "",
+
     sessionDate: "",
     startTime: "",
     message: "",
@@ -43,7 +59,7 @@ export default function ProposeSessionModal({ enquiry, practitionerProfile, onCl
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const fee = practitionerProfile?.sessionPrice;
+
   const currency = practitionerProfile?.currency || "INR";
 
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
@@ -52,6 +68,20 @@ export default function ProposeSessionModal({ enquiry, practitionerProfile, onCl
     event.preventDefault();
     if (!form.sessionDate || !form.startTime) {
       setError("Please select a session date and start time.");
+      return;
+    }
+
+    const numericFee =
+      Number(form.sessionFee);
+
+    if (
+      form.sessionFee === "" ||
+      !Number.isFinite(numericFee) ||
+      numericFee < 0
+    ) {
+      setError(
+        "Please enter a valid session fee."
+      );
       return;
     }
 
@@ -64,13 +94,34 @@ export default function ProposeSessionModal({ enquiry, practitionerProfile, onCl
         return;
       }
 
-      await proposePractitionerSessionTime(enquiry.id, {
-        proposedStart: localStart.toISOString(),
-        durationMinutes: Number(form.durationMinutes),
-        timeZone: enquiry?.timeZone || browserTimeZone,
-        sessionType: "VIDEO",
-        message: form.message.trim() || undefined,
-      });
+      await proposePractitionerSessionTime(
+        enquiry.id,
+        {
+          proposedStart:
+            localStart.toISOString(),
+
+          durationMinutes:
+            Number(
+              form.durationMinutes
+            ),
+
+          timeZone:
+            enquiry?.timeZone ||
+            browserTimeZone,
+
+          sessionType:
+            "VIDEO",
+
+          sessionFee:
+            numericFee,
+
+          currency,
+
+          message:
+            form.message.trim() ||
+            undefined,
+        }
+      );
 
       onSuccess?.();
     } catch (err) {
@@ -109,12 +160,28 @@ export default function ProposeSessionModal({ enquiry, practitionerProfile, onCl
 
           <label className="pr-field">
             <span>Session fee</span>
-            <input
-              type="text"
-              value={fee === null || fee === undefined ? "" : `${currency} ${Number(fee).toLocaleString("en-IN")}`}
-              placeholder="e.g. 500"
-              readOnly
-            />
+            <div className="pr-fee-input-wrap">
+              <span className="pr-fee-prefix">
+                {currency === "INR"
+                  ? "₹"
+                  : currency}
+              </span>
+
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={form.sessionFee}
+                onChange={(event) =>
+                  update(
+                    "sessionFee",
+                    event.target.value
+                  )
+                }
+                placeholder="e.g. 500"
+                required
+              />
+            </div>
           </label>
         </div>
 
@@ -132,10 +199,17 @@ export default function ProposeSessionModal({ enquiry, practitionerProfile, onCl
 
           <label className="pr-field">
             <span>Start time</span>
-            <div className="pr-time-input-wrap">
-              <input type="time" value={form.startTime} onChange={(event) => update("startTime", event.target.value)} />
-              <MarketplaceIcon name="time" />
-            </div>
+            <TimeDropdown
+              value={form.startTime}
+              onChange={(value) =>
+                update(
+                  "startTime",
+                  value
+                )
+              }
+              placeholder="Select start time"
+              required
+            />
           </label>
         </div>
 

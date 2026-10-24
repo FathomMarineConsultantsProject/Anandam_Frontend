@@ -32,7 +32,38 @@ export default function EnquiryStatusCard({ enquiry, onOpen, onConfirm, onAskNew
         </div>
         <Info icon="date" label="Date" value={formatDate(pendingProposal.proposedStart)} />
         <Info icon="time" label="Time" value={formatTime(pendingProposal.proposedStart)} />
-        <Info icon="payment" label="Fees" value={practitioner?.sessionPrice ? `₹${Number(practitioner.sessionPrice).toLocaleString("en-IN")}` : "—"} />
+        <Info
+  icon="payment"
+  label="Fees"
+  value={
+    enquiry
+      ?.appointment
+      ?.sessionFee != null
+      ? new Intl.NumberFormat(
+          "en-IN",
+          {
+            style:
+              "currency",
+
+            currency:
+              enquiry
+                .appointment
+                .currency ||
+              "INR",
+
+            maximumFractionDigits:
+              0,
+          }
+        ).format(
+          Number(
+            enquiry
+              .appointment
+              .sessionFee
+          )
+        )
+      : "—"
+  }
+/>
         <div className="mk-status-actions">
           <span className="mk-pill mk-pill-warn">Awaiting your confirmation</span>
           <div className="mk-status-action-row">
@@ -56,7 +87,31 @@ export default function EnquiryStatusCard({ enquiry, onOpen, onConfirm, onAskNew
         </div>
         <Info icon="date" label="Date" value={formatDate(enquiry.appointment.scheduledStart)} />
         <Info icon="time" label="Time" value={formatTime(enquiry.appointment.scheduledStart)} />
-        <Info icon="payment" label="Fees" value={practitioner?.sessionPrice ? `₹${Number(practitioner.sessionPrice).toLocaleString("en-IN")}` : "—"} />
+        <Info
+          icon="payment"
+          label="Fees"
+          value={
+            pendingProposal?.sessionFee != null
+              ? new Intl.NumberFormat(
+                "en-IN",
+                {
+                  style: "currency",
+                  currency:
+                    pendingProposal
+                      .currency ||
+                    "INR",
+                  maximumFractionDigits: 0,
+                }
+              ).format(
+                Number(
+                  pendingProposal
+                    .sessionFee
+                )
+              )
+              : "—"
+          }
+        />
+
         <div className="mk-status-actions">
           <span className="mk-pill mk-pill-ok">Scheduled</span>
           <div className="mk-status-action-row">

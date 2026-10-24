@@ -94,7 +94,28 @@ export default function SessionCard({ appointment, onChanged }) {
 
         <SessionInfo icon="date" label="Date" value={localDate(appointment.scheduledStart)} />
         <SessionInfo icon="time" label="Time" value={localTime(appointment.scheduledStart)} />
-        <SessionInfo icon="payment" label="Fees" value={practitioner?.sessionPrice ? `₹${Number(practitioner.sessionPrice).toLocaleString("en-IN")}` : "—"} />
+        <SessionInfo
+          icon="payment"
+          label="Fees"
+          value={
+            appointment?.sessionFee != null
+              ? new Intl.NumberFormat(
+                "en-IN",
+                {
+                  style: "currency",
+                  currency:
+                    appointment.currency ||
+                    "INR",
+                  maximumFractionDigits: 0,
+                }
+              ).format(
+                Number(
+                  appointment.sessionFee
+                )
+              )
+              : "—"
+          }
+        />
 
         <div className="mk-session-actions">
           <div className="mk-session-status-row">

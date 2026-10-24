@@ -33,7 +33,10 @@ function formatCurrency(value, currency = "INR") {
   }
 }
 
-export default function PractitionerSessionCard({ appointment, fee, compact = false }) {
+export default function PractitionerSessionCard({
+  appointment,
+  compact = false
+}) {
   const navigate = useNavigate();
   const name = appointment?.user?.fullName || "User";
 
@@ -59,7 +62,13 @@ export default function PractitionerSessionCard({ appointment, fee, compact = fa
 
       <div className="pr-row-info">
         <div className="pr-row-label"><MarketplaceIcon name="payment" /><span>Fees</span></div>
-        <strong>{formatCurrency(fee)}</strong>
+        <strong>
+  {formatCurrency(
+    appointment?.sessionFee,
+    appointment?.currency ||
+      "INR"
+  )}
+</strong>
       </div>
 
       <div className="pr-upcoming-actions">

@@ -163,10 +163,19 @@ function RequireMoodBeforeDashboard({ children }) {
 }
 
 function MarketplaceRoleEntry() {
-  const user = getStoredAuthUser();
+  const user =
+    getStoredAuthUser();
 
-  if (user?.role === "PRACTITIONER") {
-    return <Navigate to="/marketplace/practitioner" replace />;
+  if (
+    user?.role ===
+    "PRACTITIONER"
+  ) {
+    return (
+      <Navigate
+        to="/marketplace/practitioner/sessions?tab=new"
+        replace
+      />
+    );
   }
 
   return <MarketplaceEntryPage />;
@@ -263,7 +272,14 @@ function App() {
         {/* MARKETPLACE - PRACTITIONER ONLY */}
         <Route
           path="/marketplace/practitioner"
-          element={<RequirePractitioner><AppLayout><PractitionerMarketplacePage /></AppLayout></RequirePractitioner>}
+          element={
+            <RequirePractitioner>
+              <Navigate
+                to="/marketplace/practitioner/sessions?tab=new"
+                replace
+              />
+            </RequirePractitioner>
+          }
         />
         <Route
           path="/marketplace/practitioner/sessions"

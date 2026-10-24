@@ -976,3 +976,35 @@
     padding-left: 28px;
   }
 }
+
+.pr-fee-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pr-fee-prefix {
+  position: absolute;
+  left: 16px;
+  z-index: 1;
+  color: #60657c;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.pr-fee-input-wrap input {
+  padding-left: 38px;
+}
+
+.pr-field select {
+  cursor: pointer;
+}
+
+.pr-field select:focus,
+.pr-fee-input-wrap input:focus {
+  border-color: var(--pr-primary);
+  outline: none;
+  box-shadow:
+    0 0 0 2px
+    rgba(139, 53, 34, 0.08);
+}

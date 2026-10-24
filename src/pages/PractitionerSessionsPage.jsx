@@ -120,12 +120,11 @@ export default function PractitionerSessionsPage() {
             {activeTab === "upcoming" && (
               buckets.upcoming.length
                 ? <div className="pr-session-stack">{buckets.upcoming.map((appointment) => (
-                    <PractitionerSessionCard
-                      key={appointment.id}
-                      appointment={appointment}
-                      fee={profile?.sessionPrice}
-                    />
-                  ))}</div>
+                  <PractitionerSessionCard
+                    key={appointment.id}
+                    appointment={appointment}
+                  />
+                ))}</div>
                 : <EmptyState tab="upcoming" />
             )}
 
