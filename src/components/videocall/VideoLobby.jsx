@@ -4,8 +4,16 @@ import {
   useState,
 } from "react";
 
+import micOnIcon from "../../assets/videocall/mic-on.png";
+import micOffIcon from "../../assets/videocall/mic-off.png";
+import cameraOnIcon from "../../assets/videocall/camera-on.png";
+import cameraOffIcon from "../../assets/videocall/camera-off.png";
+
+
 function formatSessionDate(value) {
-  if (!value) return "";
+  if (!value) {
+    return "";
+  }
 
   return new Intl.DateTimeFormat(
     "en-GB",
@@ -14,34 +22,55 @@ function formatSessionDate(value) {
       month: "long",
       year: "numeric",
     }
-  ).format(new Date(value));
+  ).format(
+    new Date(value)
+  );
 }
+
 
 function getStatusCopy(status) {
   if (!status) {
     return {
-      title: "Preparing session",
-      body: "Checking whether the session is ready.",
+      title:
+        "Preparing session",
+
+      body:
+        "Checking whether the session is ready.",
     };
   }
 
-  if (status.callStatus === "ENDED") {
+
+  if (
+    status.callStatus ===
+    "ENDED"
+  ) {
     return {
-      title: "Session ended",
-      body: "This video session has already finished.",
+      title:
+        "Session ended",
+
+      body:
+        "This video session has already finished.",
     };
   }
 
-  if (!status.joinAllowed) {
+
+  if (
+    !status.joinAllowed
+  ) {
     return {
-      title: "Not ready yet",
+      title:
+        "Not ready yet",
+
       body:
         status.joinOpensAt
           ? `You can join from ${new Intl.DateTimeFormat(
               "en-GB",
               {
-                hour: "2-digit",
-                minute: "2-digit",
+                hour:
+                  "2-digit",
+
+                minute:
+                  "2-digit",
               }
             ).format(
               new Date(
@@ -52,14 +81,19 @@ function getStatusCopy(status) {
     };
   }
 
+
   return {
-    title: "Ready to Join?",
+    title:
+      "Ready to Join?",
+
     body:
-      status.participantCount > 0
+      status.participantCount >
+      0
         ? "The other participant is already here."
         : "No one else is here",
   };
 }
+
 
 export default function VideoLobby({
   appointment,
@@ -68,214 +102,318 @@ export default function VideoLobby({
   joining,
   error,
 }) {
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
+  const videoRef =
+    useRef(null);
 
-  const [micOn, setMicOn] =
+  const streamRef =
+    useRef(null);
+
+
+  const [
+    micOn,
+    setMicOn,
+  ] =
     useState(true);
 
-  const [cameraOn, setCameraOn] =
+
+  const [
+    cameraOn,
+    setCameraOn,
+  ] =
     useState(true);
+
 
   const [
     permissionMessage,
     setPermissionMessage,
-  ] = useState("");
+  ] =
+    useState("");
+
 
   useEffect(() => {
-    let cancelled = false;
+    let cancelled =
+      false;
 
-    const preparePreview =
-      async () => {
-        try {
-          const stream =
-            await navigator.mediaDevices.getUserMedia(
-              {
-                audio: true,
-                video: true,
-              }
+
+    async function preparePreview() {
+      try {
+        const stream =
+          await navigator
+            .mediaDevices
+            .getUserMedia({
+              audio:
+                true,
+
+              video:
+                true,
+            });
+
+
+        if (
+          cancelled
+        ) {
+          stream
+            .getTracks()
+            .forEach(
+              (
+                track
+              ) =>
+                track.stop()
             );
 
-          if (cancelled) {
-            stream
-              .getTracks()
-              .forEach((track) =>
-                track.stop()
-              );
-            return;
-          }
-
-          streamRef.current =
-            stream;
-
-          if (videoRef.current) {
-            videoRef.current.srcObject =
-              stream;
-          }
-        } catch {
-          setMicOn(false);
-          setCameraOn(false);
-
-          setPermissionMessage(
-            "Camera and microphone access is off. You can enable permission in your browser and try again."
-          );
+          return;
         }
-      };
+
+
+        streamRef.current =
+          stream;
+
+
+        if (
+          videoRef.current
+        ) {
+          videoRef.current.srcObject =
+            stream;
+        }
+
+      } catch {
+        setMicOn(
+          false
+        );
+
+        setCameraOn(
+          false
+        );
+
+
+        setPermissionMessage(
+          "Camera and microphone access is off. Enable permission in your browser to use them."
+        );
+      }
+    }
+
 
     preparePreview();
 
+
     return () => {
-      cancelled = true;
+      cancelled =
+        true;
+
 
       streamRef.current
         ?.getTracks()
-        .forEach((track) =>
-          track.stop()
+        .forEach(
+          (
+            track
+          ) =>
+            track.stop()
         );
 
-      streamRef.current = null;
+
+      streamRef.current =
+        null;
     };
   }, []);
+
 
   useEffect(() => {
     streamRef.current
       ?.getAudioTracks()
-      .forEach((track) => {
-        track.enabled =
-          micOn;
-      });
-  }, [micOn]);
+      .forEach(
+        (
+          track
+        ) => {
+          track.enabled =
+            micOn;
+        }
+      );
+  }, [
+    micOn,
+  ]);
+
 
   useEffect(() => {
     streamRef.current
       ?.getVideoTracks()
-      .forEach((track) => {
-        track.enabled =
-          cameraOn;
-      });
-  }, [cameraOn]);
+      .forEach(
+        (
+          track
+        ) => {
+          track.enabled =
+            cameraOn;
+        }
+      );
+  }, [
+    cameraOn,
+  ]);
 
-  const practitioner =
-    appointment?.practitioner;
 
   const sessionTitle =
-    appointment?.enquiry
+    appointment
+      ?.enquiry
       ?.supportTopic
       ? `${appointment.enquiry.supportTopic} session`
       : "Wellbeing session";
 
+
   const copy =
-    getStatusCopy(status);
+    getStatusCopy(
+      status
+    );
+
 
   return (
-    <main className="vc-lobby">
-      <header className="vc-lobby-heading">
-        <h1>{sessionTitle}</h1>
+    <main
+      className="vc-lobby"
+    >
+
+      <header
+        className="vc-lobby-heading"
+      >
+        <h1>
+          {sessionTitle}
+        </h1>
 
         <p>
           {formatSessionDate(
-            appointment?.scheduledStart
+            appointment
+              ?.scheduledStart
           )}
         </p>
       </header>
 
-      <section className="vc-lobby-grid">
-        <div className="vc-preview">
+
+      <section
+        className="vc-lobby-grid"
+      >
+
+        <div
+          className="vc-preview"
+        >
+
           <video
-            ref={videoRef}
+            ref={
+              videoRef
+            }
             autoPlay
             playsInline
             muted
           />
 
+
           {!cameraOn && (
-            <div className="vc-video-placeholder">
+            <div
+              className="vc-video-placeholder"
+            >
               Camera is off
             </div>
           )}
 
-          <div className="vc-preview-controls">
-            <button
-              type="button"
-              className={
-                micOn
-                  ? ""
-                  : "is-off"
-              }
-              onClick={() =>
-                setMicOn(
-                  (value) =>
-                    !value
-                )
-              }
-              aria-label={
-                micOn
-                  ? "Turn microphone off"
-                  : "Turn microphone on"
-              }
-            >
-              {micOn ? "🎙" : "🔇"}
-            </button>
+
+          <div
+            className="vc-preview-controls"
+          >
 
             <button
               type="button"
-              className={
-                cameraOn
-                  ? ""
-                  : "is-off"
-              }
+
               onClick={() =>
-                setCameraOn(
-                  (value) =>
+                setMicOn(
+                  (
+                    value
+                  ) =>
                     !value
                 )
               }
+
+              aria-label={
+                micOn
+                  ? "Mute microphone"
+                  : "Unmute microphone"
+              }
+            >
+              <img
+                src={
+                  micOn
+                    ? micOnIcon
+                    : micOffIcon
+                }
+                alt=""
+              />
+            </button>
+
+
+            <button
+              type="button"
+
+              onClick={() =>
+                setCameraOn(
+                  (
+                    value
+                  ) =>
+                    !value
+                )
+              }
+
               aria-label={
                 cameraOn
                   ? "Turn camera off"
                   : "Turn camera on"
               }
             >
-              {cameraOn ? "▣" : "□"}
+              <img
+                src={
+                  cameraOn
+                    ? cameraOnIcon
+                    : cameraOffIcon
+                }
+                alt=""
+              />
             </button>
+
           </div>
+
         </div>
 
-        <aside className="vc-ready-panel">
-          <h2>{copy.title}</h2>
-          <p>{copy.body}</p>
+
+        <aside
+          className="vc-ready-panel"
+        >
+
+          <h2>
+            {copy.title}
+          </h2>
+
+
+          <p>
+            {copy.body}
+          </p>
+
 
           {permissionMessage && (
             <small>
-              {permissionMessage}
+              {
+                permissionMessage
+              }
             </small>
           )}
 
-          {practitioner?.slug && (
-            <button
-              type="button"
-              className="vc-secondary-button"
-              onClick={() =>
-                window.open(
-                  `/marketplace/practitioners/${practitioner.slug}`,
-                  "_blank",
-                  "noopener,noreferrer"
-                )
-              }
-            >
-              View profile
-            </button>
-          )}
 
           <button
             type="button"
+
             className="vc-join-button"
+
             disabled={
               joining ||
-              !status?.joinAllowed ||
-              status?.callStatus ===
+              !status
+                ?.joinAllowed ||
+              status
+                ?.callStatus ===
                 "ENDED"
             }
+
             onClick={() =>
               onJoin({
                 micOn,
@@ -288,13 +426,19 @@ export default function VideoLobby({
               : "Join call"}
           </button>
 
+
           {error && (
-            <div className="vc-error">
+            <div
+              className="vc-error"
+            >
               {error}
             </div>
           )}
+
         </aside>
+
       </section>
+
     </main>
   );
 }

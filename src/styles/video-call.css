@@ -55,8 +55,7 @@
   margin: 62px auto 0;
   display: grid;
   grid-template-columns:
-    minmax(0, 760px)
-    minmax(260px, 1fr);
+    minmax(0, 760px) minmax(260px, 1fr);
   gap: 62px;
   align-items: center;
 }
@@ -212,10 +211,8 @@
   width: 100%;
   max-width: 1324px;
 
-  height: min(
-    72vh,
-    717px
-  );
+  height: min(72vh,
+      717px);
 
   min-height: 560px;
 
@@ -255,7 +252,7 @@
   gap: 10px;
 }
 
-.vc-participant-placeholder > div {
+.vc-participant-placeholder>div {
   width: 76px;
   height: 76px;
   display: grid;
@@ -295,22 +292,16 @@
   border-radius: 14px;
 
   border:
-    1px solid
-    rgba(
+    1px solid rgba(255,
       255,
       255,
-      255,
-      0.3
-    );
+      0.3);
 
   box-shadow:
-    0 8px 24px
-    rgba(
+    0 8px 24px rgba(0,
       0,
       0,
-      0,
-      0.2
-    );
+      0.2);
 }
 
 .vc-waiting-badge {
@@ -401,6 +392,7 @@
 }
 
 @media (max-width: 1000px) {
+
   .vc-lobby,
   .vc-room-page {
     padding-left: 84px;
@@ -423,6 +415,7 @@
 }
 
 @media (max-width: 720px) {
+
   .vc-lobby,
   .vc-room-page {
     padding: 18px 16px 110px;
@@ -483,8 +476,7 @@
   background: #101010;
 
   box-shadow:
-    0 10px 32px
-    rgba(0, 0, 0, 0.18);
+    0 10px 32px rgba(0, 0, 0, 0.18);
 }
 
 .vc-control-button,
@@ -541,4 +533,825 @@
 
   transform:
     rotate(135deg);
+}
+
+:root {
+  --vc-primary: #712e1e;
+  --vc-heading: #0c1421;
+  --vc-muted: #818a98;
+  --vc-bg: #fcfaf7;
+}
+
+
+/* =====================================================
+   SHARED
+   ===================================================== */
+
+.vc-loading {
+  min-height: calc(100vh - 64px);
+
+  display: grid;
+  place-items: center;
+
+  background: var(--vc-bg);
+
+  color: #60657c;
+}
+
+
+.vc-lobby,
+.vc-room-page {
+  width: 100%;
+  min-height: calc(100vh - 64px);
+
+  box-sizing: border-box;
+
+  background: var(--vc-bg);
+
+  color: var(--vc-heading);
+
+  padding:
+    24px
+    28px
+    70px
+    92px;
+}
+
+
+
+/* =====================================================
+   HEADINGS
+   ===================================================== */
+
+.vc-lobby-heading,
+.vc-room-heading {
+  width: min(
+    1324px,
+    100%
+  );
+
+  margin:
+    0
+    auto;
+}
+
+
+.vc-lobby-heading h1,
+.vc-room-heading h1 {
+  margin: 0;
+
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 400;
+
+  color: #0c1421;
+}
+
+
+.vc-lobby-heading p,
+.vc-room-heading p {
+  margin:
+    8px
+    0
+    0;
+
+  font-size: 18px;
+  line-height: 27px;
+
+  color: #818a98;
+}
+
+
+
+/* =====================================================
+   LOBBY
+   ===================================================== */
+
+.vc-lobby-grid {
+  width: min(
+    1324px,
+    100%
+  );
+
+  margin:
+    80px
+    auto
+    0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      916px
+    )
+    minmax(
+      260px,
+      1fr
+    );
+
+  align-items: center;
+
+  gap: 0;
+}
+
+
+.vc-preview {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio:
+    916 /
+    642;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  background: #20272d;
+}
+
+
+.vc-preview video {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transform:
+    scaleX(-1);
+}
+
+
+.vc-video-placeholder {
+  position: absolute;
+
+  inset: 0;
+
+  display: grid;
+  place-items: center;
+
+  background: #20272d;
+
+  color: white;
+
+  font-size: 16px;
+}
+
+
+.vc-preview-controls {
+  position: absolute;
+
+  z-index: 5;
+
+  left: 50%;
+  bottom: 38px;
+
+  transform:
+    translateX(-50%);
+
+  display: flex;
+
+  gap: 20px;
+}
+
+
+.vc-preview-controls button {
+  width: 87px;
+  height: 87px;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: transparent;
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+}
+
+
+.vc-preview-controls img {
+  display: block;
+
+  width: 87px;
+  height: 87px;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+
+
+/* =====================================================
+   READY PANEL
+   ===================================================== */
+
+.vc-ready-panel {
+  min-height: 300px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+.vc-ready-panel h2 {
+  margin:
+    0
+    0
+    12px;
+
+  font-size: 36px;
+  line-height: 42px;
+
+  font-weight: 600;
+
+  color: #0c1421;
+}
+
+
+.vc-ready-panel p {
+  margin:
+    0
+    0
+    32px;
+
+  font-size: 20px;
+  line-height: 24px;
+
+  color: #5c626a;
+}
+
+
+.vc-ready-panel small {
+  max-width: 300px;
+
+  margin-bottom: 16px;
+
+  color: #818a98;
+
+  font-size: 12px;
+}
+
+
+.vc-join-button {
+  min-width: 126px;
+  height: 41px;
+
+  padding:
+    0
+    24px;
+
+  border:
+    1px solid
+    #712e1e;
+
+  border-radius: 8px;
+
+  background:
+    #712e1e;
+
+  color: white;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+.vc-join-button:disabled {
+  opacity: 0.45;
+
+  cursor:
+    not-allowed;
+}
+
+
+.vc-error {
+  margin-top: 16px;
+
+  max-width: 320px;
+
+  color: #8b3522;
+
+  font-size: 12px;
+}
+
+
+
+/* =====================================================
+   ROOM
+   ===================================================== */
+
+.vc-room-page {
+  padding-bottom: 140px;
+}
+
+
+.vc-room-heading {
+  margin-bottom: 22px;
+}
+
+
+.vc-room-stage-wrap {
+  position: relative;
+
+  width: min(
+    1324px,
+    100%
+  );
+
+  margin:
+    0
+    auto;
+}
+
+
+.vc-stage {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio:
+    1324 /
+    717;
+
+  max-height:
+    717px;
+
+  overflow: hidden;
+
+  background:
+    #20272d;
+
+  border-radius:
+    20px;
+}
+
+
+
+/* =====================================================
+   PARTICIPANTS
+   ===================================================== */
+
+.vc-participant-tile {
+  position: relative;
+
+  overflow: hidden;
+
+  background:
+    #20272d;
+}
+
+
+.vc-participant-tile video {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.vc-main-tile {
+  width: 100%;
+  height: 100%;
+}
+
+
+.vc-participant-placeholder {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  color: white;
+
+  background:
+    #20272d;
+}
+
+
+.vc-participant-placeholder > div {
+  width: 76px;
+  height: 76px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    #712e1e;
+
+  font-size: 28px;
+  font-weight: 600;
+}
+
+
+.vc-participant-name {
+  position: absolute;
+
+  z-index: 5;
+
+  left: 20px;
+  bottom: 20px;
+
+  min-height: 41px;
+
+  padding:
+    0
+    20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.53
+    );
+
+  color: white;
+
+  font-size: 18px;
+}
+
+
+
+/* =====================================================
+   PIP
+   ===================================================== */
+
+.vc-pip-stack {
+  position: absolute;
+
+  z-index: 8;
+
+  right: 24px;
+  bottom: 22px;
+}
+
+
+.vc-pip-tile {
+  width: 329px;
+  height: 186px;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0
+    8px
+    24px
+    rgba(
+      0,
+      0,
+      0,
+      0.22
+    );
+}
+
+
+.vc-pip-tile
+.vc-participant-name {
+  left: 18px;
+  bottom: 18px;
+
+  min-height: 35px;
+
+  font-size: 14px;
+}
+
+
+
+/* =====================================================
+   WAITING
+   ===================================================== */
+
+.vc-waiting-badge {
+  position: absolute;
+
+  z-index: 10;
+
+  top: 18px;
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    8px
+    14px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      0.6
+    );
+
+  color: white;
+
+  font-size: 12px;
+}
+
+
+.vc-empty-stage {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+
+  place-items: center;
+
+  color: white;
+}
+
+
+
+/* =====================================================
+   CALL CONTROL BAR
+   ===================================================== */
+
+.vc-controls {
+  position: absolute;
+
+  z-index: 30;
+
+  left: 50%;
+  bottom: -103px;
+
+  transform:
+    translateX(-50%);
+
+  width: 288px;
+  height: 69px;
+
+  box-sizing: border-box;
+
+  padding:
+    9px
+    12px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+  border-radius:
+    35px;
+
+  background:
+    #030200;
+
+  box-shadow:
+    0
+    10px
+    30px
+    rgba(
+      0,
+      0,
+      0,
+      0.18
+    );
+}
+
+
+.vc-control-button {
+  width: 51px;
+  height: 51px;
+
+  flex:
+    0
+    0
+    51px;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background:
+    transparent;
+
+  display: grid;
+
+  place-items: center;
+
+  cursor: pointer;
+}
+
+
+.vc-control-image {
+  display: block;
+
+  width: 51px;
+  height: 51px;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+
+.vc-control-button:hover {
+  transform:
+    translateY(
+      -1px
+    );
+}
+
+
+.vc-control-button:disabled {
+  opacity: 0.55;
+
+  cursor:
+    not-allowed;
+}
+
+
+
+/* =====================================================
+   ERRORS
+   ===================================================== */
+
+.vc-floating-error {
+  position: fixed;
+
+  z-index: 100;
+
+  top: 76px;
+  right: 22px;
+
+  max-width: 360px;
+
+  padding:
+    12px
+    16px;
+
+  border:
+    1px solid
+    #efc1b7;
+
+  border-radius: 8px;
+
+  background:
+    #fff2ef;
+
+  color:
+    #8b3522;
+
+  font-size:
+    13px;
+}
+
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (
+  max-width:
+    1100px
+) {
+
+  .vc-lobby,
+  .vc-room-page {
+    padding-left:
+      90px;
+  }
+
+
+  .vc-lobby-grid {
+    grid-template-columns:
+      1fr;
+
+    gap: 35px;
+
+    margin-top:
+      36px;
+  }
+
+
+  .vc-ready-panel {
+    min-height:
+      180px;
+  }
+
+
+  .vc-pip-tile {
+    width:
+      230px;
+
+    height:
+      130px;
+  }
+
+}
+
+
+@media (
+  max-width:
+    720px
+) {
+
+  .vc-lobby,
+  .vc-room-page {
+    padding:
+      20px
+      16px
+      130px
+      82px;
+  }
+
+
+  .vc-preview-controls button,
+  .vc-preview-controls img {
+    width:
+      64px;
+
+    height:
+      64px;
+  }
+
+
+  .vc-ready-panel h2 {
+    font-size:
+      28px;
+  }
+
+
+  .vc-ready-panel p {
+    font-size:
+      16px;
+  }
+
+
+  .vc-pip-tile {
+    width:
+      145px;
+
+    height:
+      90px;
+  }
+
+
+  .vc-participant-name {
+    font-size:
+      13px;
+  }
+
+
+  .vc-controls {
+    bottom:
+      -88px;
+
+    transform:
+      translateX(-50%)
+      scale(0.9);
+  }
+
 }

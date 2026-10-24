@@ -6,13 +6,21 @@ import {
   useLocalParticipant,
 } from "@livekit/components-react";
 
-import VideoControlIcon from "./VideoControlIcon";
+
+import micOnIcon from "../../assets/videocall/mic-on.png";
+import micOffIcon from "../../assets/videocall/mic-off.png";
+
+import cameraOnIcon from "../../assets/videocall/camera-on.png";
+import cameraOffIcon from "../../assets/videocall/camera-off.png";
+
+import settingsIcon from "../../assets/videocall/settings.png";
+import endCallIcon from "../../assets/videocall/end-call.png";
 
 
 export default function CallControls({
   onEndSession,
-  onLeave,
-  ending = false,
+  ending =
+    false,
 }) {
   const {
     localParticipant,
@@ -30,19 +38,24 @@ export default function CallControls({
 
 
   async function toggleMic() {
-    if (busy) {
+    if (
+      busy
+    ) {
       return;
     }
+
 
     try {
       setBusy(
         true
       );
 
+
       await localParticipant
         .setMicrophoneEnabled(
           !isMicrophoneEnabled
         );
+
     } finally {
       setBusy(
         false
@@ -52,19 +65,24 @@ export default function CallControls({
 
 
   async function toggleCamera() {
-    if (busy) {
+    if (
+      busy
+    ) {
       return;
     }
+
 
     try {
       setBusy(
         true
       );
 
+
       await localParticipant
         .setCameraEnabled(
           !isCameraEnabled
         );
+
     } finally {
       setBusy(
         false
@@ -74,83 +92,119 @@ export default function CallControls({
 
 
   return (
-    <div className="vc-controls">
+    <div
+      className="vc-controls"
+    >
 
       <button
         type="button"
+
         className="vc-control-button"
+
         onClick={
           toggleMic
         }
+
         disabled={
           busy
         }
+
         aria-label={
           isMicrophoneEnabled
             ? "Mute microphone"
             : "Unmute microphone"
         }
       >
-        <VideoControlIcon
-          name={
+        <img
+          className="vc-control-image"
+
+          src={
             isMicrophoneEnabled
-              ? "mic"
-              : "micOff"
+              ? micOnIcon
+              : micOffIcon
           }
+
+          alt=""
         />
       </button>
 
 
       <button
         type="button"
+
         className="vc-control-button"
+
         onClick={
           toggleCamera
         }
+
         disabled={
           busy
         }
+
         aria-label={
           isCameraEnabled
             ? "Turn camera off"
             : "Turn camera on"
         }
       >
-        <VideoControlIcon
-          name={
+        <img
+          className="vc-control-image"
+
+          src={
             isCameraEnabled
-              ? "camera"
-              : "cameraOff"
+              ? cameraOnIcon
+              : cameraOffIcon
           }
+
+          alt=""
         />
       </button>
 
 
       <button
         type="button"
+
         className="vc-control-button"
+
         aria-label="Call settings"
       >
-        <VideoControlIcon
-          name="settings"
+        <img
+          className="vc-control-image"
+
+          src={
+            settingsIcon
+          }
+
+          alt=""
         />
       </button>
 
 
       <button
         type="button"
-        className="vc-end-button"
+
+        className="vc-control-button"
+
         onClick={
           onEndSession
         }
+
         disabled={
           ending
         }
+
         aria-label="End session"
       >
-        <span className="vc-end-phone">
-          ☎
-        </span>
+        <img
+          className="vc-control-image"
+
+          src={
+            endCallIcon
+          }
+
+          alt=""
+        />
       </button>
 
     </div>
