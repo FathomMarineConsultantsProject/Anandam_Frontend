@@ -99,16 +99,25 @@
 }
 
 .vc-preview-controls button {
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
+
   display: grid;
   place-items: center;
+
+  padding: 0;
+
   border: 0;
   border-radius: 50%;
+
   background: #2c2c2c;
-  color: #fff;
   cursor: pointer;
-  font-size: 18px;
+}
+.vc-preview-controls button img {
+  width: 52px;
+  height: 52px;
+  display: block;
+  object-fit: contain;
 }
 
 .vc-preview-controls button.is-off {
