@@ -3,27 +3,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
-
   ArrowLeft,
-
   Info,
-
   Lightbulb,
-
   Pause,
-
   Play,
-
   Shuffle,
-
   Eraser,
-
   RotateCcw,
-
   Undo2,
-
+  Redo2,
   X,
-
 } from "lucide-react";
 
 
@@ -66,6 +56,20 @@ import puzzleImage4 from "../assets/brain games/image 225.png";
 
 import puzzleImage5 from "../assets/brain games/image 224.png";
 
+// ======================================================
+// MANDALA COLORING
+// ======================================================
+
+import mandalaBanner from "../assets/brain games/mandala.png";
+
+import mandalaWheel from "../assets/brain games/👑 main character needs a title 👑 1.png";
+import mandalaRound from "../assets/brain games/👑 main character needs a title 👑 (1) 1.png";
+import mandalaTurtle from "../assets/brain games/👑 main character needs a title 👑 (2) 1.png";
+import mandalaFeather from "../assets/brain games/👑 main character needs a title 👑 (3) 1.png";
+import mandalaMoon from "../assets/brain games/👑 main character needs a title 👑 (4) 1.png";
+import mandalaFlower from "../assets/brain games/👑 main character needs a title 👑 (5) 1.png";
+import mandalaAnchor from "../assets/brain games/👑 main character needs a title 👑 (6) 1.png";
+import mandalaStar from "../assets/brain games/👑 main character needs a title 👑 2.png";
 
 
 import "../styles/brain-games.css";
@@ -75,22 +79,15 @@ import "../styles/brain-games.css";
 const ROOT_ROUTE = "/app/brain-games";
 
 
-
 const GAME_ROUTES = {
-
   sudoku: `${ROOT_ROUTE}/sudoku`,
-
   "tic-tac-toe": `${ROOT_ROUTE}/tic-tac-toe`,
-
   "sliding-puzzle": `${ROOT_ROUTE}/sliding-puzzle`,
-
   "classic-snake": `${ROOT_ROUTE}/classic-snake`,
-
   "word-scramble": `${ROOT_ROUTE}/word-scramble`,
 
+  mandala: `${ROOT_ROUTE}/mandala`,
 };
-
-
 
 /* ========================================================================== */
 
@@ -418,6 +415,15 @@ function BrainGamesHome({ onOpenGame }) {
             image={snakeBanner}
             imageAlt="Classic Snake game preview"
             onPlay={() => onOpenGame("classic-snake")}
+          />
+
+          <GameCard
+            size="large"
+            title="Mandala coloring"
+            description="Choose a design, pick your colours and make it your own."
+            image={mandalaBanner}
+            imageAlt="Mandala coloring game preview"
+            onPlay={() => onOpenGame("mandala")}
           />
         </div>
 
@@ -976,23 +982,17 @@ function SudokuGame({ onBack }) {
 
                   role="gridcell"
 
-                  className={`sudoku-cell${isGiven ? " is-given" : ""}${
+                  className={`sudoku-cell${isGiven ? " is-given" : ""}${isSelected ? " is-selected" : ""
 
-                    isSelected ? " is-selected" : ""
+                    }${sameRowOrColumn || sameBox ? " is-related" : ""}${sameNumber ? " is-same-number" : ""
 
-                  }${sameRowOrColumn || sameBox ? " is-related" : ""}${
-
-                    sameNumber ? " is-same-number" : ""
-
-                  }${wrong ? " is-wrong" : ""}`}
+                    }${wrong ? " is-wrong" : ""}`}
 
                   onClick={() => setSelected([rowIndex, columnIndex])}
 
-                  aria-label={`Row ${rowIndex + 1}, column ${columnIndex + 1}${
+                  aria-label={`Row ${rowIndex + 1}, column ${columnIndex + 1}${value ? `, ${value}` : ", empty"
 
-                    value ? `, ${value}` : ", empty"
-
-                  }`}
+                    }`}
 
                 >
 
@@ -2510,12 +2510,12 @@ function ClassicSnakeGame({ onBack }) {
         pausedRef.current || gameOverRef.current
           ? 1
           : Math.max(
-              0,
-              Math.min(
-                (now - lastStepAtRef.current) / SNAKE_SPEEDS[speedRef.current],
-                1
-              )
-            );
+            0,
+            Math.min(
+              (now - lastStepAtRef.current) / SNAKE_SPEEDS[speedRef.current],
+              1
+            )
+          );
 
       drawSnakeCanvas({
         canvas: canvasRef.current,
@@ -2904,6 +2904,1388 @@ function WordScrambleGame({ onBack }) {
 
 /* ========================================================================== */
 
+/* ========================================================================== */
+/* MANDALA COLORING                                                           */
+/* ========================================================================== */
+
+const MANDALA_DESIGNS = [
+  {
+    id: "wheel",
+    src: mandalaWheel,
+    alt: "Ship wheel mandala",
+  },
+  {
+    id: "round",
+    src: mandalaRound,
+    alt: "Circular floral mandala",
+  },
+  {
+    id: "turtle",
+    src: mandalaTurtle,
+    alt: "Turtle mandala",
+  },
+  {
+    id: "feather",
+    src: mandalaFeather,
+    alt: "Feather mandala",
+  },
+  {
+    id: "star",
+    src: mandalaStar,
+    alt: "Geometric star mandala",
+  },
+  {
+    id: "moon",
+    src: mandalaMoon,
+    alt: "Moon mandala",
+  },
+  {
+    id: "flower",
+    src: mandalaFlower,
+    alt: "Flower mandala",
+  },
+  {
+    id: "anchor",
+    src: mandalaAnchor,
+    alt: "Anchor mandala",
+  },
+];
+
+
+const MANDALA_COLORS = [
+  "#C7002A",
+  "#FF2436",
+  "#FF6765",
+  "#FF7A00",
+  "#FFAA00",
+  "#FFCC00",
+
+  "#FFE600",
+  "#80E51F",
+  "#15A83A",
+  "#086A3E",
+  "#82E5C1",
+  "#0CA7AE",
+
+  "#29BFD0",
+  "#12AEE5",
+  "#4CA7F5",
+  "#0E5CE4",
+  "#153D8E",
+  "#4B31E1",
+
+  "#8846FF",
+  "#8A2ABE",
+  "#A77FF1",
+  "#F20E8C",
+  "#F45B8F",
+  "#F49CB9",
+
+  "#FFFFFF",
+  "#C8C9CB",
+  "#5A5A5A",
+  "#A95F2B",
+  "#F4E1B8",
+];
+
+
+/* -------------------------------------------------------------------------- */
+/* COLOR HELPERS                                                              */
+/* -------------------------------------------------------------------------- */
+
+function hexToRgb(hex) {
+  const clean = String(hex)
+    .replace("#", "")
+    .trim();
+
+  if (clean.length !== 6) {
+    return [255, 255, 255];
+  }
+
+  return [
+    parseInt(clean.slice(0, 2), 16),
+    parseInt(clean.slice(2, 4), 16),
+    parseInt(clean.slice(4, 6), 16),
+  ];
+}
+
+
+function hslToHex(h, s, l) {
+  const saturation = s / 100;
+  const lightness = l / 100;
+
+  const chroma =
+    (1 - Math.abs(2 * lightness - 1)) *
+    saturation;
+
+  const x =
+    chroma *
+    (1 -
+      Math.abs(
+        ((h / 60) % 2) - 1
+      ));
+
+  const m =
+    lightness - chroma / 2;
+
+  let r = 0;
+  let g = 0;
+  let b = 0;
+
+  if (h < 60) {
+    r = chroma;
+    g = x;
+  } else if (h < 120) {
+    r = x;
+    g = chroma;
+  } else if (h < 180) {
+    g = chroma;
+    b = x;
+  } else if (h < 240) {
+    g = x;
+    b = chroma;
+  } else if (h < 300) {
+    r = x;
+    b = chroma;
+  } else {
+    r = chroma;
+    b = x;
+  }
+
+  const toHex = (value) =>
+    Math.round(
+      (value + m) * 255
+    )
+      .toString(16)
+      .padStart(2, "0");
+
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+
+function createCustomColorGrid() {
+  const colors = [];
+
+  const hues = [
+    345,
+    325,
+    300,
+    270,
+    240,
+    215,
+    195,
+    175,
+    150,
+    120,
+    85,
+    55,
+    30,
+    10,
+  ];
+
+  const lightnessRows = [
+    95,
+    86,
+    76,
+    66,
+    56,
+    46,
+    36,
+    26,
+  ];
+
+  lightnessRows.forEach(
+    (lightness, rowIndex) => {
+      hues.forEach((hue) => {
+        colors.push(
+          hslToHex(
+            hue,
+            rowIndex < 2 ? 55 : 78,
+            lightness
+          )
+        );
+      });
+    }
+  );
+
+  return colors;
+}
+
+function getMandalaArtworkBounds(image) {
+  const tempCanvas = document.createElement("canvas");
+
+  tempCanvas.width = image.naturalWidth;
+  tempCanvas.height = image.naturalHeight;
+
+  const context = tempCanvas.getContext("2d", {
+    willReadFrequently: true,
+  });
+
+  context.fillStyle = "#ffffff";
+  context.fillRect(
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height
+  );
+
+  context.drawImage(image, 0, 0);
+
+  const imageData = context.getImageData(
+    0,
+    0,
+    tempCanvas.width,
+    tempCanvas.height
+  );
+
+  const { data, width, height } = imageData;
+
+  let minX = width;
+  let minY = height;
+  let maxX = 0;
+  let maxY = 0;
+
+  let found = false;
+
+  /*
+    Anything noticeably darker than white
+    counts as part of the drawing.
+  */
+  const whiteThreshold = 244;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4;
+
+      const r = data[offset];
+      const g = data[offset + 1];
+      const b = data[offset + 2];
+      const a = data[offset + 3];
+
+      if (
+        a > 10 &&
+        (
+          r < whiteThreshold ||
+          g < whiteThreshold ||
+          b < whiteThreshold
+        )
+      ) {
+        found = true;
+
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    }
+  }
+
+  if (!found) {
+    return {
+      x: 0,
+      y: 0,
+      width,
+      height,
+    };
+  }
+
+  /*
+    Keep some breathing room around the drawing.
+  */
+  const padding = Math.max(
+    12,
+    Math.round(
+      Math.min(width, height) * 0.025
+    )
+  );
+
+  minX = Math.max(0, minX - padding);
+  minY = Math.max(0, minY - padding);
+
+  maxX = Math.min(
+    width - 1,
+    maxX + padding
+  );
+
+  maxY = Math.min(
+    height - 1,
+    maxY + padding
+  );
+
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX + 1,
+    height: maxY - minY + 1,
+  };
+}
+
+function MandalaGame({
+  onBack,
+}) {
+  const canvasRef =
+    useRef(null);
+
+  const undoHistoryRef =
+    useRef([]);
+
+  const redoHistoryRef =
+    useRef([]);
+
+  const [
+    selectedDesign,
+    setSelectedDesign,
+  ] = useState(null);
+
+  const [
+    selectedColor,
+    setSelectedColor,
+  ] = useState(
+    MANDALA_COLORS[0]
+  );
+
+  const [
+    tool,
+    setTool,
+  ] = useState("paint");
+
+  const [
+    customPickerOpen,
+    setCustomPickerOpen,
+  ] = useState(false);
+
+  const [
+    canUndo,
+    setCanUndo,
+  ] = useState(false);
+
+  const [
+    canRedo,
+    setCanRedo,
+  ] = useState(false);
+
+  const [
+    complete,
+    setComplete,
+  ] = useState(false);
+
+
+  function updateHistoryState() {
+    setCanUndo(
+      undoHistoryRef.current
+        .length > 0
+    );
+
+    setCanRedo(
+      redoHistoryRef.current
+        .length > 0
+    );
+  }
+
+
+  function loadDesign(
+  design = selectedDesign
+) {
+  if (!design) {
+    return;
+  }
+
+  const canvas =
+    canvasRef.current;
+
+  if (!canvas) {
+    return;
+  }
+
+  const image = new Image();
+
+  image.onload = () => {
+    const bounds =
+      getMandalaArtworkBounds(
+        image
+      );
+
+    canvas.width =
+      bounds.width;
+
+    canvas.height =
+      bounds.height;
+
+    const context =
+      canvas.getContext(
+        "2d",
+        {
+          willReadFrequently: true,
+        }
+      );
+
+    context.fillStyle =
+      "#ffffff";
+
+    context.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    /*
+      Draw only the useful artwork area,
+      removing unnecessary white margins.
+    */
+    context.drawImage(
+      image,
+
+      bounds.x,
+      bounds.y,
+      bounds.width,
+      bounds.height,
+
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    undoHistoryRef.current =
+      [];
+
+    redoHistoryRef.current =
+      [];
+
+    updateHistoryState();
+
+    setTool("paint");
+    setComplete(false);
+  };
+
+  image.src = design.src;
+}
+
+
+  useEffect(() => {
+    if (
+      selectedDesign
+    ) {
+      loadDesign(
+        selectedDesign
+      );
+    }
+  }, [selectedDesign]);
+
+
+  function handleCanvasClick(
+    event
+  ) {
+    const canvas =
+      canvasRef.current;
+
+    if (!canvas) {
+      return;
+    }
+
+    const rectangle =
+      canvas.getBoundingClientRect();
+
+    const scaleX =
+      canvas.width /
+      rectangle.width;
+
+    const scaleY =
+      canvas.height /
+      rectangle.height;
+
+    const x =
+  Math.max(
+    0,
+    Math.min(
+      canvas.width - 1,
+      Math.floor(
+        (
+          event.clientX -
+          rectangle.left
+        ) *
+        scaleX
+      )
+    )
+  );
+
+
+const y =
+  Math.max(
+    0,
+    Math.min(
+      canvas.height - 1,
+      Math.floor(
+        (
+          event.clientY -
+          rectangle.top
+        ) *
+        scaleY
+      )
+    )
+  );
+
+    const context =
+      canvas.getContext(
+        "2d",
+        {
+          willReadFrequently: true,
+        }
+      );
+
+    /*
+      Save BEFORE state for undo.
+    */
+    const previous =
+      context.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+    const fillColor =
+      tool === "erase"
+        ? "#FFFFFF"
+        : selectedColor;
+
+    const changed =
+      floodFillCanvas(
+        canvas,
+        x,
+        y,
+        fillColor
+      );
+
+    if (!changed) {
+      return;
+    }
+
+    /*
+      Keep latest 25 operations only.
+      This prevents large canvas images
+      building unlimited browser memory.
+    */
+    undoHistoryRef.current =
+      [
+        ...undoHistoryRef.current,
+        previous,
+      ].slice(-25);
+
+    redoHistoryRef.current =
+      [];
+
+    updateHistoryState();
+  }
+
+
+  function undo() {
+    const canvas =
+      canvasRef.current;
+
+    if (
+      !canvas ||
+      !undoHistoryRef.current
+        .length
+    ) {
+      return;
+    }
+
+    const context =
+      canvas.getContext("2d");
+
+    const current =
+      context.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+    const previous =
+      undoHistoryRef.current.pop();
+
+    redoHistoryRef.current.push(
+      current
+    );
+
+    context.putImageData(
+      previous,
+      0,
+      0
+    );
+
+    updateHistoryState();
+  }
+
+
+  function redo() {
+    const canvas =
+      canvasRef.current;
+
+    if (
+      !canvas ||
+      !redoHistoryRef.current
+        .length
+    ) {
+      return;
+    }
+
+    const context =
+      canvas.getContext("2d");
+
+    const current =
+      context.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+    const next =
+      redoHistoryRef.current.pop();
+
+    undoHistoryRef.current.push(
+      current
+    );
+
+    context.putImageData(
+      next,
+      0,
+      0
+    );
+
+    updateHistoryState();
+  }
+
+
+  function selectColor(
+    color
+  ) {
+    setSelectedColor(
+      color
+    );
+
+    setTool("paint");
+
+    setCustomPickerOpen(
+      false
+    );
+  }
+
+
+  function playAgain() {
+    setComplete(false);
+
+    loadDesign(
+      selectedDesign
+    );
+  }
+
+
+  /* ======================================================
+     DESIGN SELECTOR
+     ====================================================== */
+
+  if (!selectedDesign) {
+    return (
+      <div className="brain-game-page brain-mandala-page">
+
+        <header className="mandala-page-heading">
+          <h1>
+            Mandala Coloring
+          </h1>
+
+          <p>
+            Choose a design and make it your own, one colour at a time.
+          </p>
+        </header>
+
+
+        <section className="mandala-gallery-shell">
+
+          <div className="mandala-gallery-grid">
+
+            {MANDALA_DESIGNS.map(
+              (design) => (
+                <button
+                  key={
+                    design.id
+                  }
+                  type="button"
+                  className="mandala-design-card"
+                  onClick={() =>
+                    setSelectedDesign(
+                      design
+                    )
+                  }
+                >
+                  <img
+                    src={
+                      design.src
+                    }
+                    alt={
+                      design.alt
+                    }
+                    draggable="false"
+                  />
+                </button>
+              )
+            )}
+
+          </div>
+
+        </section>
+
+      </div>
+    );
+  }
+
+
+  /* ======================================================
+     COLORING EDITOR
+     ====================================================== */
+
+  return (
+    <div className="brain-game-page brain-mandala-page">
+
+      <div className="mandala-editor-heading-row">
+
+        <header className="mandala-page-heading">
+          <h1>
+            Mandala Coloring
+          </h1>
+
+          <p>
+            Choose a design and make it your own, one colour at a time.
+          </p>
+        </header>
+
+
+        <button
+          type="button"
+          className="brain-button brain-button--primary mandala-finish-button"
+          onClick={() =>
+            setComplete(true)
+          }
+        >
+          Finish colouring
+        </button>
+
+      </div>
+
+
+      <section className="mandala-editor-shell">
+
+        {/* =========================================
+            CANVAS
+            ========================================= */}
+
+        <div className="mandala-canvas-card">
+
+          <canvas
+            ref={canvasRef}
+            className="mandala-canvas"
+            onClick={
+              handleCanvasClick
+            }
+            aria-label="Mandala colouring canvas"
+          />
+
+        </div>
+
+
+        {/* =========================================
+            CONTROLS
+            ========================================= */}
+
+        <aside className="mandala-controls">
+
+          <div className="mandala-history-row">
+
+            <button
+              type="button"
+              className="mandala-tool-button"
+              onClick={undo}
+              disabled={!canUndo}
+            >
+              <Undo2
+                size={21}
+                strokeWidth={1.5}
+              />
+
+              <span>
+                Undo
+              </span>
+            </button>
+
+
+            <button
+              type="button"
+              className="mandala-tool-button"
+              onClick={redo}
+              disabled={!canRedo}
+            >
+              <Redo2
+                size={21}
+                strokeWidth={1.5}
+              />
+
+              <span>
+                Redo
+              </span>
+            </button>
+
+          </div>
+
+
+          <button
+            type="button"
+            className={`mandala-tool-button mandala-remove-button ${tool === "erase"
+              ? "is-active"
+              : ""
+              }`}
+            onClick={() =>
+              setTool(
+                tool === "erase"
+                  ? "paint"
+                  : "erase"
+              )
+            }
+          >
+            <Eraser
+              size={19}
+              strokeWidth={1.5}
+            />
+
+            <span>
+              Remove color
+            </span>
+          </button>
+
+
+          {/* =======================================
+              COLORS
+              ======================================= */}
+
+          <div className="mandala-colors-card">
+
+            <div className="mandala-colors-card__heading">
+              Colors
+            </div>
+
+
+            <div className="mandala-color-grid">
+
+              {MANDALA_COLORS.map(
+                (color) => (
+                  <button
+                    key={
+                      color
+                    }
+                    type="button"
+                    className={`mandala-color-swatch ${tool ===
+                      "paint" &&
+                      selectedColor ===
+                      color
+                      ? "is-selected"
+                      : ""
+                      }`}
+                    style={{
+                      background:
+                        color,
+                    }}
+                    onClick={() =>
+                      selectColor(
+                        color
+                      )
+                    }
+                    aria-label={`Use colour ${color}`}
+                  />
+                )
+              )}
+
+
+              {/* CUSTOM COLOR */}
+
+              <button
+                type="button"
+                className="mandala-custom-color-trigger"
+                onClick={() =>
+                  setCustomPickerOpen(
+                    (current) =>
+                      !current
+                  )
+                }
+                aria-label="Choose custom colour"
+              />
+
+            </div>
+
+
+            {/* =====================================
+                CUSTOM COLOR PICKER
+                ===================================== */}
+
+            {customPickerOpen && (
+              <div className="mandala-custom-color-popover">
+
+                <div className="mandala-custom-color-popover__header">
+
+                  <strong>
+                    Choose a colour
+                  </strong>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCustomPickerOpen(
+                        false
+                      )
+                    }
+                    aria-label="Close colour picker"
+                  >
+                    <X
+                      size={17}
+                    />
+                  </button>
+
+                </div>
+
+
+                <div className="mandala-custom-color-grid">
+
+                  {CUSTOM_MANDALA_COLORS.map(
+                    (
+                      color,
+                      index
+                    ) => (
+                      <button
+                        key={`${color}-${index}`}
+                        type="button"
+                        style={{
+                          background:
+                            color,
+                        }}
+                        onClick={() =>
+                          selectColor(
+                            color
+                          )
+                        }
+                        aria-label={`Choose ${color}`}
+                      />
+                    )
+                  )}
+
+                </div>
+
+              </div>
+            )}
+
+          </div>
+
+        </aside>
+
+      </section>
+
+
+      {/* EXISTING SHARED GAME RESULT POPUP */}
+
+      <ResultModal
+        open={complete}
+        title="You Did It!"
+        description="Great job! You made this design your own with creativity and focus."
+        onBack={onBack}
+        onPlayAgain={
+          playAgain
+        }
+        onClose={() =>
+          setComplete(false)
+        }
+      />
+
+    </div>
+  );
+}
+
+
+const CUSTOM_MANDALA_COLORS =
+  createCustomColorGrid();
+
+
+/* -------------------------------------------------------------------------- */
+/* FLOOD FILL                                                                 */
+/* -------------------------------------------------------------------------- */
+
+function floodFillCanvas(
+  canvas,
+  startX,
+  startY,
+  fillColor
+) {
+  const context =
+    canvas.getContext(
+      "2d",
+      {
+        willReadFrequently: true,
+      }
+    );
+
+  const width =
+    canvas.width;
+
+  const height =
+    canvas.height;
+
+  /*
+    Prevent coordinates outside the bitmap.
+  */
+  if (
+    startX < 0 ||
+    startX >= width ||
+    startY < 0 ||
+    startY >= height
+  ) {
+    return false;
+  }
+
+  const imageData =
+    context.getImageData(
+      0,
+      0,
+      width,
+      height
+    );
+
+  const data =
+    imageData.data;
+
+  const startPosition =
+    startY * width +
+    startX;
+
+  const startOffset =
+    startPosition * 4;
+
+  const target = [
+    data[startOffset],
+    data[startOffset + 1],
+    data[startOffset + 2],
+  ];
+
+  const replacement =
+    hexToRgb(fillColor);
+
+
+  /*
+    --------------------------------------------------
+    BLACK / GREY LINE DETECTION
+    --------------------------------------------------
+
+    The PNG outlines contain anti-aliased grey pixels,
+    not just pure black.
+
+    Therefore we must treat darker near-grey pixels
+    as boundaries too.
+  */
+
+  function isOutlinePixel(
+    r,
+    g,
+    b
+  ) {
+    const maximum =
+      Math.max(r, g, b);
+
+    const minimum =
+      Math.min(r, g, b);
+
+    const spread =
+      maximum - minimum;
+
+    const luminance =
+      (
+        r * 0.299 +
+        g * 0.587 +
+        b * 0.114
+      );
+
+    /*
+      Low colour spread = grey/black.
+
+      Grey pixels below this brightness
+      belong to the anti-aliased outline.
+    */
+    return (
+      spread < 22 &&
+      luminance < 238
+    );
+  }
+
+
+  /*
+    If the click itself lands on a line,
+    do nothing.
+
+    This is safer than guessing a nearby region.
+  */
+  if (
+    isOutlinePixel(
+      target[0],
+      target[1],
+      target[2]
+    )
+  ) {
+    return false;
+  }
+
+
+  /*
+    Already this colour.
+  */
+  if (
+    Math.abs(
+      target[0] -
+      replacement[0]
+    ) <= 3 &&
+    Math.abs(
+      target[1] -
+      replacement[1]
+    ) <= 3 &&
+    Math.abs(
+      target[2] -
+      replacement[2]
+    ) <= 3
+  ) {
+    return false;
+  }
+
+
+  /*
+    Much tighter than the previous 28.
+
+    This is deliberately conservative so
+    the colour cannot leak through outlines.
+  */
+  const tolerance = 12;
+
+
+  function matchesTarget(
+    offset
+  ) {
+    const r =
+      data[offset];
+
+    const g =
+      data[offset + 1];
+
+    const b =
+      data[offset + 2];
+
+
+    /*
+      Never cross line pixels.
+    */
+    if (
+      isOutlinePixel(
+        r,
+        g,
+        b
+      )
+    ) {
+      return false;
+    }
+
+
+    return (
+      Math.abs(
+        r - target[0]
+      ) <= tolerance &&
+
+      Math.abs(
+        g - target[1]
+      ) <= tolerance &&
+
+      Math.abs(
+        b - target[2]
+      ) <= tolerance
+    );
+  }
+
+
+  const visited =
+    new Uint8Array(
+      width * height
+    );
+
+  const stack = [
+    startPosition,
+  ];
+
+  const fillPositions = [];
+
+  let touchesCanvasEdge =
+    false;
+
+
+  while (
+    stack.length
+  ) {
+    const position =
+      stack.pop();
+
+    if (
+      position < 0 ||
+      position >=
+        width * height ||
+      visited[position]
+    ) {
+      continue;
+    }
+
+
+    visited[position] = 1;
+
+
+    const offset =
+      position * 4;
+
+
+    if (
+      !matchesTarget(
+        offset
+      )
+    ) {
+      continue;
+    }
+
+
+    const x =
+      position % width;
+
+    const y =
+      Math.floor(
+        position / width
+      );
+
+
+    /*
+      Detect the huge outside/background area.
+
+      We don't want a click outside the actual
+      Mandala to colour the entire canvas.
+    */
+    if (
+      x === 0 ||
+      y === 0 ||
+      x === width - 1 ||
+      y === height - 1
+    ) {
+      touchesCanvasEdge =
+        true;
+    }
+
+
+    fillPositions.push(
+      position
+    );
+
+
+    if (x > 0) {
+      stack.push(
+        position - 1
+      );
+    }
+
+    if (
+      x <
+      width - 1
+    ) {
+      stack.push(
+        position + 1
+      );
+    }
+
+    if (y > 0) {
+      stack.push(
+        position - width
+      );
+    }
+
+    if (
+      y <
+      height - 1
+    ) {
+      stack.push(
+        position + width
+      );
+    }
+  }
+
+
+  if (
+    !fillPositions.length
+  ) {
+    return false;
+  }
+
+
+  /*
+    White region connected to the outside edge
+    = canvas background, not a Mandala section.
+
+    Don't colour it.
+  */
+  const targetIsNearWhite =
+    target[0] > 242 &&
+    target[1] > 242 &&
+    target[2] > 242;
+
+
+  if (
+    touchesCanvasEdge &&
+    targetIsNearWhite
+  ) {
+    return false;
+  }
+
+
+  /*
+    Apply colour only AFTER we know
+    the region is safe.
+  */
+  fillPositions.forEach(
+    (position) => {
+      const offset =
+        position * 4;
+
+      data[offset] =
+        replacement[0];
+
+      data[offset + 1] =
+        replacement[1];
+
+      data[offset + 2] =
+        replacement[2];
+
+      data[offset + 3] =
+        255;
+    }
+  );
+
+
+  context.putImageData(
+    imageData,
+    0,
+    0
+  );
+
+
+  return true;
+}
+
 
 
 function GamePageHeading({ title, subtitle, onBack }) {
@@ -2961,19 +4343,31 @@ function BrainGamesPage() {
 
 
   const currentGame = useMemo(() => {
+    if (location.pathname.endsWith("/sudoku")) {
+      return "sudoku";
+    }
 
-    if (location.pathname.endsWith("/sudoku")) return "sudoku";
+    if (location.pathname.endsWith("/tic-tac-toe")) {
+      return "tic-tac-toe";
+    }
 
-    if (location.pathname.endsWith("/tic-tac-toe")) return "tic-tac-toe";
+    if (location.pathname.endsWith("/sliding-puzzle")) {
+      return "sliding-puzzle";
+    }
 
-    if (location.pathname.endsWith("/sliding-puzzle")) return "sliding-puzzle";
+    if (location.pathname.endsWith("/classic-snake")) {
+      return "classic-snake";
+    }
 
-    if (location.pathname.endsWith("/classic-snake")) return "classic-snake";
+    if (location.pathname.endsWith("/word-scramble")) {
+      return "word-scramble";
+    }
 
-    if (location.pathname.endsWith("/word-scramble")) return "word-scramble";
+    if (location.pathname.endsWith("/mandala")) {
+      return "mandala";
+    }
 
     return null;
-
   }, [location.pathname]);
 
 
@@ -3033,6 +4427,12 @@ function BrainGamesPage() {
 
           <WordScrambleGame onBack={backToGames} />
 
+        ) : null}
+
+        {currentGame === "mandala" ? (
+          <MandalaGame
+            onBack={backToGames}
+          />
         ) : null}
 
       </div>
