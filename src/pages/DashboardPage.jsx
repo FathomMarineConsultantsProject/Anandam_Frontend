@@ -43,6 +43,7 @@ import scheduleIcon from "../assets/dashboard/schedule.png";
 import sleepStoriesIcon from "../assets/dashboard/sleep stories.png";
 import whatsappIcon from "../assets/dashboard/whatsapp.png";
 import wisdomIcon from "../assets/dashboard/wisdom.png";
+import journalIcon from "../assets/dashboard/journalicon.png";
 
 /* =====================================================
    PROFILE AVATARS
@@ -140,6 +141,17 @@ const TOOLKIT_ITEMS = [
   background: "#F6F8E7",
   route: "/app/brain-games",
 },
+
+{
+  id: "journal",
+  title: "Journal",
+  subtitle: "Write, reflect and unwind",
+  icon: journalIcon,
+  background: "#FFF1E8",
+  route: "/app/journal",
+},
+
+
 ];
 
 const EMERGENCY_ITEMS = [

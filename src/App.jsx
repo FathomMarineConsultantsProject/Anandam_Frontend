@@ -47,6 +47,17 @@ import VideoCallLobbyPage from "./pages/VideoCallLobbyPage";
 import VideoCallRoomPage from "./pages/VideoCallRoomPage";
 import PractitionerOnboardingPage from "./pages/PractitionerOnboardingPage";
 import AppLayout from "./components/layout/AppLayout";
+import JournalPage
+  from "./pages/JournalPage";
+
+import JournalTemplatePage
+  from "./pages/JournalTemplatePage";
+
+import JournalCustomPage
+  from "./pages/JournalCustomPage";
+
+import JournalEntriesPage
+  from "./pages/JournalEntriesPage";
 
 import {
   hasCompletedMoodGate,
@@ -219,6 +230,73 @@ function App() {
         <Route path="/app/brain-games/*" element={<RequireAuth><BrainGamesPage /></RequireAuth>} />
         <Route path="/app/sleep-stories" element={<RequireAuth><SleepStoriesPage /></RequireAuth>} />
         <Route path="/app/sleep-stories/:slug" element={<RequireAuth><SleepPlayerPage /></RequireAuth>} />
+        <Route
+          path="/app/journal"
+          element={
+            <RequireAuth>
+              <AppLayout>
+                <JournalPage />
+              </AppLayout>
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/journal/template/:slug"
+          element={
+            <RequireAuth>
+              <AppLayout>
+                <JournalTemplatePage />
+              </AppLayout>
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/journal/template/:slug/:entryId"
+          element={
+            <RequireAuth>
+              <AppLayout>
+                <JournalTemplatePage />
+              </AppLayout>
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/journal/write"
+          element={
+            <RequireAuth>
+              <AppLayout>
+                <JournalCustomPage />
+              </AppLayout>
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/journal/write/:entryId"
+          element={
+            <RequireAuth>
+              <AppLayout>
+                <JournalCustomPage />
+              </AppLayout>
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/journal/entries"
+          element={
+            <RequireAuth>
+              <AppLayout>
+                <JournalEntriesPage />
+              </AppLayout>
+            </RequireAuth>
+          }
+        />
+
+
 
         {/* BLOGS */}
         <Route path="/app/blogs" element={<RequireAuth><BlogsPage /></RequireAuth>} />
