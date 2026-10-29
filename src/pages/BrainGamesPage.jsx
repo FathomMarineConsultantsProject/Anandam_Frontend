@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   ArrowLeft,
+  Check,
+  Cloud,
   Info,
   Lightbulb,
   Pause,
@@ -37,6 +39,7 @@ import ticTacBanner from "../assets/brain games/Frame 2147240213 (2).png";
 import snakeBanner from "../assets/brain games/Frame 2147240213 (3).png";
 
 import wordBanner from "../assets/brain games/Frame 2147240213 (4).png";
+import wordSearchBanner from "../assets/brain games/word cross.png";
 
 
 
@@ -71,6 +74,8 @@ import mandalaFlower from "../assets/brain games/👑 main character needs a tit
 import mandalaAnchor from "../assets/brain games/👑 main character needs a title 👑 (6) 1.png";
 import mandalaStar from "../assets/brain games/👑 main character needs a title 👑 2.png";
 
+import { WORD_SEARCH_WORDS } from "../data/wordSearchWords";
+
 
 import "../styles/brain-games.css";
 
@@ -85,6 +90,7 @@ const GAME_ROUTES = {
   "sliding-puzzle": `${ROOT_ROUTE}/sliding-puzzle`,
   "classic-snake": `${ROOT_ROUTE}/classic-snake`,
   "word-scramble": `${ROOT_ROUTE}/word-scramble`,
+  "word-search": `${ROOT_ROUTE}/word-search`,
 
   mandala: `${ROOT_ROUTE}/mandala`,
 };
@@ -443,6 +449,14 @@ function BrainGamesHome({ onOpenGame }) {
             image={wordBanner}
             imageAlt="Word Scramble game preview"
             onPlay={() => onOpenGame("word-scramble")}
+          />
+
+          <GameCard
+            title="Word Search"
+            description="Find the hidden words at your own pace."
+            image={wordSearchBanner}
+            imageAlt="Word Search game preview"
+            onPlay={() => onOpenGame("word-search")}
           />
 
           <GameCard
@@ -4288,6 +4302,660 @@ function floodFillCanvas(
 
 
 
+/* ========================================================================== */
+/* WORD SEARCH                                                                */
+/* ========================================================================== */
+
+const WORD_SEARCH_GRID_SIZE = 18;
+const WORD_SEARCH_MIN_WORDS = 15;
+const WORD_SEARCH_MAX_WORDS = 20;
+const WORD_SEARCH_STORAGE_KEY = "anandam-word-search-v1";
+
+const WORD_SEARCH_DIRECTIONS = [
+  [0, 1],
+  [1, 0],
+  [1, 1],
+  [1, -1],
+  [0, -1],
+  [-1, 0],
+  [-1, -1],
+  [-1, 1],
+];
+
+const WORD_SEARCH_HIGHLIGHTS = [
+  "#DDEFEA",
+  "#F7E3DE",
+  "#F8E7AE",
+  "#DDEBF8",
+  "#E7DFF6",
+  "#DFF0E2",
+];
+
+function wordSearchRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function wordSearchCellKey(row, column) {
+  return `${row}-${column}`;
+}
+
+function createEmptyWordSearchGrid(size) {
+  return Array.from({ length: size }, () => Array(size).fill(""));
+}
+
+function getWordSearchLine(start, end) {
+  if (!start || !end) return [];
+
+  const rowDelta = end.row - start.row;
+  const columnDelta = end.column - start.column;
+  const absRow = Math.abs(rowDelta);
+  const absColumn = Math.abs(columnDelta);
+
+  const isStraight =
+    rowDelta === 0 ||
+    columnDelta === 0 ||
+    absRow === absColumn;
+
+  if (!isStraight) return [];
+
+  const steps = Math.max(absRow, absColumn);
+  const rowStep = steps === 0 ? 0 : rowDelta / steps;
+  const columnStep = steps === 0 ? 0 : columnDelta / steps;
+
+  return Array.from({ length: steps + 1 }, (_, index) => ({
+    row: start.row + rowStep * index,
+    column: start.column + columnStep * index,
+  }));
+}
+
+function tryPlaceWordSearchWord(grid, word) {
+  const size = grid.length;
+  let bestPlacement = null;
+
+  for (let attempt = 0; attempt < 280; attempt += 1) {
+    const [rowStep, columnStep] =
+      WORD_SEARCH_DIRECTIONS[
+        Math.floor(Math.random() * WORD_SEARCH_DIRECTIONS.length)
+      ];
+
+    const row = Math.floor(Math.random() * size);
+    const column = Math.floor(Math.random() * size);
+    const endRow = row + rowStep * (word.length - 1);
+    const endColumn = column + columnStep * (word.length - 1);
+
+    if (
+      endRow < 0 ||
+      endRow >= size ||
+      endColumn < 0 ||
+      endColumn >= size
+    ) {
+      continue;
+    }
+
+    let overlap = 0;
+    let valid = true;
+    const cells = [];
+
+    for (let index = 0; index < word.length; index += 1) {
+      const nextRow = row + rowStep * index;
+      const nextColumn = column + columnStep * index;
+      const existing = grid[nextRow][nextColumn];
+      const letter = word[index];
+
+      if (existing && existing !== letter) {
+        valid = false;
+        break;
+      }
+
+      if (existing === letter) overlap += 1;
+
+      cells.push({ row: nextRow, column: nextColumn });
+    }
+
+    if (!valid) continue;
+
+    if (!bestPlacement || overlap > bestPlacement.overlap) {
+      bestPlacement = { cells, overlap };
+    }
+
+    if (overlap >= 2) break;
+  }
+
+  if (!bestPlacement) return null;
+
+  bestPlacement.cells.forEach((cell, index) => {
+    grid[cell.row][cell.column] = word[index];
+  });
+
+  return bestPlacement.cells;
+}
+
+function createWordSearchPuzzle() {
+  const availableWords = WORD_SEARCH_WORDS.filter(
+    (word) => word.length >= 4 && word.length <= WORD_SEARCH_GRID_SIZE
+  );
+
+  for (let boardAttempt = 0; boardAttempt < 35; boardAttempt += 1) {
+    const targetCount = wordSearchRandomInt(
+      WORD_SEARCH_MIN_WORDS,
+      WORD_SEARCH_MAX_WORDS
+    );
+
+    const selectedWords = shuffle(availableWords)
+      .slice(0, targetCount)
+      .sort((a, b) => b.length - a.length);
+
+    const grid = createEmptyWordSearchGrid(WORD_SEARCH_GRID_SIZE);
+    const targets = [];
+    let failed = false;
+
+    selectedWords.forEach((word, index) => {
+      if (failed) return;
+
+      const cells = tryPlaceWordSearchWord(grid, word);
+
+      if (!cells) {
+        failed = true;
+        return;
+      }
+
+      targets.push({
+        word,
+        cells,
+        color: WORD_SEARCH_HIGHLIGHTS[index % WORD_SEARCH_HIGHLIGHTS.length],
+      });
+    });
+
+    if (failed) continue;
+
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    for (let row = 0; row < WORD_SEARCH_GRID_SIZE; row += 1) {
+      for (let column = 0; column < WORD_SEARCH_GRID_SIZE; column += 1) {
+        if (!grid[row][column]) {
+          grid[row][column] =
+            alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+      }
+    }
+
+    return {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      size: WORD_SEARCH_GRID_SIZE,
+      grid,
+      targets: shuffle(targets),
+    };
+  }
+
+  // 18 x 18 with <= 20 words should almost never reach this fallback.
+  // Retrying once more keeps the game usable even after an unlucky random run.
+  return createWordSearchPuzzle();
+}
+
+function readSavedWordSearch() {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(WORD_SEARCH_STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+
+    if (
+      parsed?.version !== 1 ||
+      !parsed?.puzzle ||
+      !Array.isArray(parsed?.puzzle?.grid) ||
+      !Array.isArray(parsed?.puzzle?.targets) ||
+      !Array.isArray(parsed?.foundEntries)
+    ) {
+      return null;
+    }
+
+    return {
+      puzzle: parsed.puzzle,
+      foundEntries: parsed.foundEntries,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function WordSearchRestartModal({ open, onKeepPlaying, onRestart }) {
+  if (!open) return null;
+
+  return (
+    <div className="word-search-modal-backdrop" role="presentation">
+      <section
+        className="word-search-restart-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="word-search-restart-title"
+      >
+        <button
+          type="button"
+          className="word-search-modal-close"
+          onClick={onKeepPlaying}
+          aria-label="Close restart dialog"
+        >
+          <X size={17} strokeWidth={1.5} />
+        </button>
+
+        <RotateCcw
+          className="word-search-restart-icon"
+          size={42}
+          strokeWidth={1.5}
+        />
+
+        <h2 id="word-search-restart-title">Restart this puzzle?</h2>
+        <p>Your progress for this puzzle will be cleared.</p>
+
+        <div className="word-search-restart-actions">
+          <button
+            type="button"
+            className="brain-button brain-button--outline"
+            onClick={onKeepPlaying}
+          >
+            Keep playing
+          </button>
+
+          <button
+            type="button"
+            className="brain-button brain-button--primary"
+            onClick={onRestart}
+          >
+            Restart puzzle
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function WordSearchGame({ onBack }) {
+  const initialStateRef = useRef(null);
+
+  if (!initialStateRef.current) {
+    initialStateRef.current =
+      readSavedWordSearch() || {
+        puzzle: createWordSearchPuzzle(),
+        foundEntries: [],
+      };
+  }
+
+  const [puzzle, setPuzzle] = useState(initialStateRef.current.puzzle);
+  const [foundEntries, setFoundEntries] = useState(
+    initialStateRef.current.foundEntries
+  );
+  const [activeCells, setActiveCells] = useState([]);
+  const [hintWord, setHintWord] = useState(null);
+  const [restartOpen, setRestartOpen] = useState(false);
+  const [complete, setComplete] = useState(false);
+
+  const gridRef = useRef(null);
+  const dragStartRef = useRef(null);
+  const draggingRef = useRef(false);
+  const activeCellsRef = useRef([]);
+  const hintTimerRef = useRef(null);
+
+  const foundWords = useMemo(
+    () => new Set(foundEntries.map((entry) => entry.word)),
+    [foundEntries]
+  );
+
+  const foundCellColors = useMemo(() => {
+    const map = new Map();
+
+    foundEntries.forEach((entry) => {
+      entry.cells.forEach((cell) => {
+        map.set(wordSearchCellKey(cell.row, cell.column), entry.color);
+      });
+    });
+
+    return map;
+  }, [foundEntries]);
+
+  const activeCellKeys = useMemo(
+    () =>
+      new Set(
+        activeCells.map((cell) =>
+          wordSearchCellKey(cell.row, cell.column)
+        )
+      ),
+    [activeCells]
+  );
+
+  const progress =
+    puzzle.targets.length > 0
+      ? (foundEntries.length / puzzle.targets.length) * 100
+      : 0;
+
+  function updateActiveCells(cells) {
+    activeCellsRef.current = cells;
+    setActiveCells(cells);
+  }
+
+  function clearSelection() {
+    draggingRef.current = false;
+    dragStartRef.current = null;
+    updateActiveCells([]);
+  }
+
+  function finishSelection(cells = activeCellsRef.current) {
+    if (!cells.length) {
+      clearSelection();
+      return;
+    }
+
+    const selectedText = cells
+      .map((cell) => puzzle.grid[cell.row][cell.column])
+      .join("");
+    const reversedText = selectedText.split("").reverse().join("");
+
+    const target = puzzle.targets.find(
+      (item) =>
+        !foundWords.has(item.word) &&
+        (item.word === selectedText || item.word === reversedText)
+    );
+
+    if (target) {
+      const nextFound = [
+        ...foundEntries,
+        {
+          word: target.word,
+          color: target.color,
+          cells: [...cells],
+        },
+      ];
+
+      setFoundEntries(nextFound);
+
+      if (nextFound.length === puzzle.targets.length) {
+        window.setTimeout(() => setComplete(true), 220);
+      }
+    }
+
+    clearSelection();
+  }
+
+  function handlePointerDown(event, row, column) {
+    if (event.button !== undefined && event.button !== 0) return;
+
+    event.preventDefault();
+    draggingRef.current = true;
+    dragStartRef.current = { row, column };
+    updateActiveCells([{ row, column }]);
+  }
+
+  function handlePointerMove(event) {
+    if (!draggingRef.current || !dragStartRef.current) return;
+
+    const element = document
+      .elementFromPoint(event.clientX, event.clientY)
+      ?.closest?.("[data-word-search-cell]");
+
+    if (!element || !gridRef.current?.contains(element)) return;
+
+    const row = Number(element.dataset.row);
+    const column = Number(element.dataset.column);
+
+    if (!Number.isInteger(row) || !Number.isInteger(column)) return;
+
+    const nextCells = getWordSearchLine(dragStartRef.current, {
+      row,
+      column,
+    });
+
+    if (nextCells.length) updateActiveCells(nextCells);
+  }
+
+  function handlePointerEnd() {
+    if (!draggingRef.current) return;
+
+    draggingRef.current = false;
+    finishSelection(activeCellsRef.current);
+  }
+
+  function showHint() {
+    const remaining = puzzle.targets.filter(
+      (target) => !foundWords.has(target.word)
+    );
+
+    if (!remaining.length) return;
+
+    const target = remaining[Math.floor(Math.random() * remaining.length)];
+
+    if (hintTimerRef.current) {
+      window.clearTimeout(hintTimerRef.current);
+    }
+
+    setHintWord(target.word);
+    updateActiveCells(target.cells);
+
+    hintTimerRef.current = window.setTimeout(() => {
+      setHintWord(null);
+      updateActiveCells([]);
+    }, 1700);
+  }
+
+  function restartCurrentPuzzle() {
+    if (hintTimerRef.current) {
+      window.clearTimeout(hintTimerRef.current);
+    }
+
+    setFoundEntries([]);
+    setHintWord(null);
+    setComplete(false);
+    setRestartOpen(false);
+    clearSelection();
+  }
+
+  function startNewPuzzle() {
+    if (hintTimerRef.current) {
+      window.clearTimeout(hintTimerRef.current);
+    }
+
+    setPuzzle(createWordSearchPuzzle());
+    setFoundEntries([]);
+    setHintWord(null);
+    setComplete(false);
+    setRestartOpen(false);
+    clearSelection();
+  }
+
+  useEffect(() => {
+    function endPointerSelection() {
+      handlePointerEnd();
+    }
+
+    window.addEventListener("pointerup", endPointerSelection);
+    window.addEventListener("pointercancel", endPointerSelection);
+
+    return () => {
+      window.removeEventListener("pointerup", endPointerSelection);
+      window.removeEventListener("pointercancel", endPointerSelection);
+    };
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        WORD_SEARCH_STORAGE_KEY,
+        JSON.stringify({
+          version: 1,
+          puzzle,
+          foundEntries,
+        })
+      );
+    } catch {
+      // The game still works if storage is unavailable.
+    }
+  }, [puzzle, foundEntries]);
+
+  useEffect(
+    () => () => {
+      if (hintTimerRef.current) {
+        window.clearTimeout(hintTimerRef.current);
+      }
+    },
+    []
+  );
+
+  return (
+    <div className="brain-game-page brain-word-search-page">
+      <header className="word-search-heading-row">
+        <div className="word-search-heading-copy">
+          <button
+            type="button"
+            className="brain-back-button"
+            onClick={onBack}
+          >
+            <ArrowLeft size={17} strokeWidth={1.6} />
+            <span>Back to games</span>
+          </button>
+
+          <h1>Word Search</h1>
+          <p>Find the hidden words at your own pace.</p>
+        </div>
+
+        <div className="word-search-saved-status" aria-live="polite">
+          <Cloud size={17} strokeWidth={1.5} />
+          <span>Progress saved</span>
+        </div>
+      </header>
+
+      <section className="word-search-shell">
+        <div className="word-search-board-card">
+          <div
+            ref={gridRef}
+            className="word-search-grid"
+            role="grid"
+            aria-label="Word search puzzle"
+            style={{ "--word-search-size": puzzle.size }}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerEnd}
+          >
+            {puzzle.grid.map((row, rowIndex) =>
+              row.map((letter, columnIndex) => {
+                const key = wordSearchCellKey(rowIndex, columnIndex);
+                const foundColor = foundCellColors.get(key);
+                const active = activeCellKeys.has(key);
+
+                return (
+                  <div
+                    key={key}
+                    role="gridcell"
+                    data-word-search-cell
+                    data-row={rowIndex}
+                    data-column={columnIndex}
+                    className={`word-search-cell${
+                      foundColor ? " is-found" : ""
+                    }${active ? " is-active" : ""}${
+                      active && hintWord ? " is-hint" : ""
+                    }`}
+                    style={
+                      foundColor
+                        ? { "--word-search-highlight": foundColor }
+                        : undefined
+                    }
+                    onPointerDown={(event) =>
+                      handlePointerDown(event, rowIndex, columnIndex)
+                    }
+                  >
+                    <span>{letter}</span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        <aside className="word-search-sidebar">
+          <div className="word-search-sidebar__header">
+            <h2>Words to find</h2>
+            <p>
+              {foundEntries.length} of {puzzle.targets.length} words found
+            </p>
+
+            <div className="word-search-progress" aria-hidden="true">
+              <span style={{ width: `${progress}%` }} />
+            </div>
+          </div>
+
+          <div className="word-search-list">
+            {puzzle.targets.map((target) => {
+              const found = foundWords.has(target.word);
+              const hinted = hintWord === target.word;
+
+              return (
+                <div
+                  key={target.word}
+                  className={`word-search-list-item${
+                    found ? " is-found" : ""
+                  }${hinted ? " is-hinted" : ""}`}
+                >
+                  <span
+                    className="word-search-check"
+                    style={
+                      found
+                        ? { "--word-search-check-color": target.color }
+                        : undefined
+                    }
+                    aria-hidden="true"
+                  >
+                    {found ? <Check size={13} strokeWidth={2.2} /> : null}
+                  </span>
+
+                  <span className="word-search-list-word">
+                    {target.word}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="word-search-actions">
+            <button
+              type="button"
+              className="word-search-hint-button"
+              onClick={showHint}
+              disabled={foundEntries.length === puzzle.targets.length}
+            >
+              <Lightbulb size={18} strokeWidth={1.6} />
+              <span>Hint</span>
+            </button>
+
+            <button
+              type="button"
+              className="word-search-restart-button"
+              onClick={() => setRestartOpen(true)}
+            >
+              <RotateCcw size={18} strokeWidth={1.6} />
+              <span>Restart puzzle</span>
+            </button>
+          </div>
+        </aside>
+      </section>
+
+      <WordSearchRestartModal
+        open={restartOpen}
+        onKeepPlaying={() => setRestartOpen(false)}
+        onRestart={restartCurrentPuzzle}
+      />
+
+      <ResultModal
+        open={complete}
+        title="You found every word!"
+        description="Great job! You found every word. Ready for another puzzle?"
+        onBack={onBack}
+        onPlayAgain={startNewPuzzle}
+        onClose={() => setComplete(false)}
+      />
+    </div>
+  );
+}
+
+
+
 function GamePageHeading({ title, subtitle, onBack }) {
 
   return (
@@ -4363,6 +5031,10 @@ function BrainGamesPage() {
       return "word-scramble";
     }
 
+    if (location.pathname.endsWith("/word-search")) {
+      return "word-search";
+    }
+
     if (location.pathname.endsWith("/mandala")) {
       return "mandala";
     }
@@ -4427,6 +5099,10 @@ function BrainGamesPage() {
 
           <WordScrambleGame onBack={backToGames} />
 
+        ) : null}
+
+        {currentGame === "word-search" ? (
+          <WordSearchGame onBack={backToGames} />
         ) : null}
 
         {currentGame === "mandala" ? (
