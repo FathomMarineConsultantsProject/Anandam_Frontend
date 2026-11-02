@@ -118,6 +118,12 @@ export const PSYCHOMETRIC_ENDPOINTS = {
       attemptId
     )}/result`,
 
+unlockAnswers: (
+  attemptId
+) =>
+  `/psychometrics/attempts/${encodeURIComponent(
+    attemptId
+  )}/unlock-answers`,
 
   /*
     GET
@@ -746,8 +752,30 @@ export async function getPsychometricHistory() {
   =========================================================
 */
 
-export async function unlockPsychometricAnswers() {
-  throw new Error(
-    "Correct-answer unlocking has not yet been enabled on the backend."
+export async function unlockPsychometricAnswers(
+  attemptId
+) {
+  const response =
+    await apiRequest(
+      PSYCHOMETRIC_ENDPOINTS.unlockAnswers(
+        attemptId
+      ),
+      {
+        method:
+          "POST",
+
+        body:
+          JSON.stringify(
+            {}
+          ),
+      }
+    );
+
+
+  return unwrap(
+    response,
+    [
+      "result",
+    ]
   );
 }

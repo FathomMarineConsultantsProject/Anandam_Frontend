@@ -15,11 +15,18 @@ import AppLayout
 import PsychometricTokenModal
   from "../components/psychometrics/PsychometricTokenModal";
 
+import tokenCoin
+  from "../assets/token coin.png";
+
 import {
   getPsychometricResults,
   unlockPsychometricAnswers,
   getPsychometricErrorMessage,
 } from "../api/psychometricApi";
+
+import {
+  getMyTokenSummary,
+} from "../api/tokenApi";
 
 import "../styles/psychometrics.css";
 
@@ -42,33 +49,40 @@ export default function PsychometricResultPage() {
     attemptId,
   } = useParams();
 
+
   const navigate =
     useNavigate();
+
 
   const [
     results,
     setResults,
   ] = useState(null);
 
+
   const [
     loading,
     setLoading,
   ] = useState(true);
+
 
   const [
     error,
     setError,
   ] = useState("");
 
+
   const [
     tokenModal,
     setTokenModal,
   ] = useState(false);
 
+
   const [
     unlocking,
     setUnlocking,
   ] = useState(false);
+
 
   const [
     unlockError,
@@ -76,20 +90,111 @@ export default function PsychometricResultPage() {
   ] = useState("");
 
 
-  async function load() {
-    try {
-      setLoading(true);
-      setError("");
+  const [
+    walletBalance,
+    setWalletBalance,
+  ] = useState(0);
 
-      const data =
-        await getPsychometricResults(
-          attemptId
+
+  const [
+    walletLoading,
+    setWalletLoading,
+  ] = useState(false);
+
+
+  // Correct-answer unlock costs
+  // exactly one token.
+  const ANSWER_UNLOCK_COST =
+    1;
+
+
+  async function loadWallet() {
+    try {
+      setWalletLoading(
+        true
+      );
+
+
+      const wallet =
+        await getMyTokenSummary();
+
+
+      const balance =
+        Number(
+          wallet?.balance ??
+          0
         );
 
-      setResults(
-        data
+
+      setWalletBalance(
+        balance
       );
-    } catch (loadError) {
+
+
+      return balance;
+    } catch (
+      walletError
+    ) {
+      console.error(
+        "Unable to load token balance:",
+        walletError
+      );
+
+
+      return 0;
+    } finally {
+      setWalletLoading(
+        false
+      );
+    }
+  }
+
+
+  async function load() {
+    try {
+      setLoading(
+        true
+      );
+
+      setError(
+        ""
+      );
+
+
+      const [
+        resultData,
+        walletData,
+      ] =
+        await Promise.all([
+          getPsychometricResults(
+            attemptId
+          ),
+
+          getMyTokenSummary()
+            .catch(
+              () => ({
+                balance:
+                  0,
+              })
+            ),
+        ]);
+
+
+      setResults(
+        resultData
+      );
+
+
+      setWalletBalance(
+        Number(
+          walletData
+            ?.balance ??
+          0
+        )
+      );
+    } catch (
+      loadError
+    ) {
       setError(
         getPsychometricErrorMessage(
           loadError,
@@ -97,19 +202,27 @@ export default function PsychometricResultPage() {
         )
       );
     } finally {
-      setLoading(false);
+      setLoading(
+        false
+      );
     }
   }
 
 
-  useEffect(() => {
-    load();
-  }, [attemptId]);
+  useEffect(
+    () => {
+      load();
+    },
+    [
+      attemptId,
+    ]
+  );
 
 
   const test =
     results?.test ||
-    results?.attempt?.test ||
+    results?.attempt
+      ?.test ||
     {};
 
 
@@ -134,7 +247,9 @@ export default function PsychometricResultPage() {
         results?.attempt
           ?.sections ||
         [],
-      [results]
+      [
+        results,
+      ]
     );
 
 
@@ -146,7 +261,9 @@ export default function PsychometricResultPage() {
         results
           ?.traitScores ||
         [],
-      [results]
+      [
+        results,
+      ]
     );
 
 
@@ -170,68 +287,140 @@ export default function PsychometricResultPage() {
   const isMaritime =
     test?.type ===
       "MARITIME_HUMAN_PERFORMANCE" ||
-    sections.length > 0;
+    sections.length >
+      0;
+
+
+  const hasEnoughTokens =
+    walletBalance >=
+    ANSWER_UNLOCK_COST;
+
+
+  async function openUnlockModal() {
+    setUnlockError(
+      ""
+    );
+
+
+    // Always get a fresh balance
+    // before opening the popup.
+    await loadWallet();
+
+
+    setTokenModal(
+      true
+    );
+  }
 
 
   async function unlockAnswers() {
-    if (unlocking) {
+    if (
+      unlocking
+    ) {
       return;
     }
 
+
+    if (
+      walletBalance <
+      ANSWER_UNLOCK_COST
+    ) {
+      setUnlockError(
+        "Insufficient token balance. You need 1 token to unlock the correct answers."
+      );
+
+      return;
+    }
+
+
     try {
-      setUnlocking(true);
-      setUnlockError("");
+      setUnlocking(
+        true
+      );
+
+      setUnlockError(
+        ""
+      );
+
 
       const updated =
         await unlockPsychometricAnswers(
           attemptId
         );
 
+
       setResults(
-        (current) => ({
+        (
+          current
+        ) => ({
           ...current,
+
           ...updated,
 
           answersUnlocked:
             true,
+
+          correctAnswersUnlocked:
+            true,
+
+          answers:
+            updated?.answers ||
+            updated
+              ?.answerReview ||
+            current?.answers ||
+            [],
         })
       );
+
+
+      if (
+        updated
+          ?.walletBalance !==
+        undefined
+      ) {
+        setWalletBalance(
+          Number(
+            updated
+              .walletBalance
+          )
+        );
+      } else {
+        await loadWallet();
+      }
+
 
       setTokenModal(
         false
       );
-    } catch (unlockErrorValue) {
-      setUnlockError(
+    } catch (
+      unlockErrorValue
+    ) {
+      const message =
         getPsychometricErrorMessage(
           unlockErrorValue,
           "Unable to unlock the correct answers."
-        )
-      );
-    } finally {
-      setUnlocking(false);
-    }
-  }
+        );
 
 
-  function contactAnandam() {
-    const email =
-      import.meta.env
-        .VITE_ANANDAM_CONTACT_EMAIL;
-
-    if (!email) {
       setUnlockError(
-        "Anandam contact email is not configured."
+        message
       );
 
-      return;
-    }
 
-    window.location.href =
-      `mailto:${email}`;
+      // Refresh balance in case
+      // it changed elsewhere.
+      await loadWallet();
+    } finally {
+      setUnlocking(
+        false
+      );
+    }
   }
 
 
-  if (loading) {
+  if (
+    loading
+  ) {
     return (
       <AppLayout>
         <main className="psychometric-page">
@@ -244,7 +433,9 @@ export default function PsychometricResultPage() {
   }
 
 
-  if (error) {
+  if (
+    error
+  ) {
     return (
       <AppLayout>
         <main className="psychometric-page">
@@ -292,6 +483,7 @@ export default function PsychometricResultPage() {
                   Score Breakdown
                 </h2>
 
+
                 <div className="psychometric-score-grid">
                   {sections.map(
                     (
@@ -303,6 +495,7 @@ export default function PsychometricResultPage() {
                           ?.section ||
                         section;
 
+
                       return (
                         <div
                           className="psychometric-score-card"
@@ -313,14 +506,18 @@ export default function PsychometricResultPage() {
                           }
                         >
                           <span>
-                            {info.title ||
-                              section.title}
+                            {
+                              info.title ||
+                              section.title
+                            }
                           </span>
 
                           <strong>
                             {scoreText(
-                              section.score,
-                              section.maxScore
+                              section
+                                .score,
+                              section
+                                .maxScore
                             )}
                           </strong>
                         </div>
@@ -335,6 +532,7 @@ export default function PsychometricResultPage() {
                   Your Results
                 </h2>
 
+
                 <div className="psychometric-score-grid">
                   {traitResults.map(
                     (
@@ -346,6 +544,7 @@ export default function PsychometricResultPage() {
                         key={
                           trait.key ||
                           trait.name ||
+                          trait.trait ||
                           index
                         }
                       >
@@ -353,6 +552,7 @@ export default function PsychometricResultPage() {
                           {
                             trait.label ||
                             trait.name ||
+                            trait.trait ||
                             trait.key
                           }
                         </span>
@@ -361,9 +561,13 @@ export default function PsychometricResultPage() {
                           {trait.percentage !==
                           undefined
                             ? `${Math.round(
-                                trait.percentage
+                                trait
+                                  .percentage
                               )}%`
-                            : trait.score}
+                            : trait.average !==
+                                undefined
+                              ? trait.average
+                              : trait.score}
                         </strong>
                       </div>
                     )
@@ -382,40 +586,239 @@ export default function PsychometricResultPage() {
                 }`}
               >
                 <div className="psychometric-answer-review__content">
-                  {answerReview.length ? (
-                    answerReview.map(
-                      (
-                        item,
-                        index
-                      ) => (
-                        <div
-                          className="psychometric-review-row"
-                          key={
-                            item.id ||
-                            item.questionId ||
-                            index
-                          }
-                        >
-                          <strong>
-                            Question{" "}
-                            {index + 1}
-                          </strong>
+                  {answersUnlocked &&
+answerReview.length ? (
+  answerReview.map(
+    (
+      item,
+      index
+    ) => {
+      const selectedOption =
+        String(
+          item?.selectedOption ||
+          ""
+        ).toUpperCase();
 
-                          <span>
-                            Your answer:{" "}
-                            {item.selectedOption ||
-                              "—"}
-                          </span>
 
-                          <span>
-                            Correct answer:{" "}
-                            {item.correctOption ||
-                              "—"}
+      const correctOption =
+        String(
+          item?.correctOption ||
+          ""
+        ).toUpperCase();
+
+
+      const options =
+        Array.isArray(
+          item?.options
+        ) &&
+        item.options.length
+          ? item.options.map(
+              (
+                option
+              ) => ({
+                key:
+                  String(
+                    option?.key ||
+                    option?.value ||
+                    ""
+                  ).toUpperCase(),
+
+                text:
+                  option?.text ||
+                  option?.label ||
+                  "",
+              })
+            )
+          : [
+              {
+                key: "A",
+                text:
+                  item?.optionA ||
+                  "",
+              },
+
+              {
+                key: "B",
+                text:
+                  item?.optionB ||
+                  "",
+              },
+
+              {
+                key: "C",
+                text:
+                  item?.optionC ||
+                  "",
+              },
+
+              {
+                key: "D",
+                text:
+                  item?.optionD ||
+                  "",
+              },
+            ].filter(
+              (
+                option
+              ) =>
+                Boolean(
+                  option.text
+                )
+            );
+
+
+      const isCorrect =
+        selectedOption &&
+        correctOption &&
+        selectedOption ===
+          correctOption;
+
+
+      return (
+        <div
+          className="psychometric-review-row psychometric-review-question"
+          key={
+            item.id ||
+            item.questionId ||
+            index
+          }
+        >
+          <div className="psychometric-review-question__header">
+            <strong>
+              Question{" "}
+              {
+                item
+                  .questionNumber ||
+                index +
+                  1
+              }
+            </strong>
+
+
+            {selectedOption ? (
+              <span
+                className={`psychometric-review-result-badge ${
+                  isCorrect
+                    ? "is-correct"
+                    : "is-incorrect"
+                }`}
+              >
+                {isCorrect
+                  ? "Correct"
+                  : "Incorrect"}
+              </span>
+            ) : (
+              <span className="psychometric-review-result-badge is-unanswered">
+                Unanswered
+              </span>
+            )}
+          </div>
+
+
+          {item.questionText ? (
+            <p className="psychometric-review-question__text">
+              {
+                item.questionText
+              }
+            </p>
+          ) : null}
+
+
+          {options.length ? (
+            <div className="psychometric-review-options">
+              {options.map(
+                (
+                  option
+                ) => {
+                  const isSelected =
+                    option.key ===
+                    selectedOption;
+
+
+                  const isCorrectOption =
+                    option.key ===
+                    correctOption;
+
+
+                  return (
+                    <div
+                      key={
+                        option.key
+                      }
+                      className={`psychometric-review-option ${
+                        isCorrectOption
+                          ? "is-correct"
+                          : ""
+                      } ${
+                        isSelected
+                          ? "is-selected"
+                          : ""
+                      } ${
+                        isSelected &&
+                        !isCorrectOption
+                          ? "is-wrong"
+                          : ""
+                      }`}
+                    >
+                      <div className="psychometric-review-option__letter">
+                        {
+                          option.key
+                        }
+                      </div>
+
+
+                      <div className="psychometric-review-option__text">
+                        {
+                          option.text
+                        }
+                      </div>
+
+
+                      <div className="psychometric-review-option__labels">
+                        {isSelected ? (
+                          <span className="psychometric-review-option__your-answer">
+                            Your answer
                           </span>
-                        </div>
-                      )
-                    )
-                  ) : (
+                        ) : null}
+
+
+                        {isCorrectOption ? (
+                          <span className="psychometric-review-option__correct-answer">
+                            Correct answer
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          ) : null}
+
+
+          <div className="psychometric-review-answer-summary">
+            <span>
+              Your answer:{" "}
+              <strong>
+                {selectedOption ||
+                  "Not answered"}
+              </strong>
+            </span>
+
+
+            <span>
+              Correct answer:{" "}
+              <strong>
+                {correctOption ||
+                  "—"}
+              </strong>
+            </span>
+          </div>
+        </div>
+      );
+    }
+  )
+) : (
                     <>
                       <div className="psychometric-review-placeholder" />
                       <div className="psychometric-review-placeholder" />
@@ -428,16 +831,20 @@ export default function PsychometricResultPage() {
 
                 {!answersUnlocked ? (
                   <div className="psychometric-unlock-card">
-                    <div className="psychometric-token-coin">
-                      <span>
-                        U
-                      </span>
-                    </div>
+                    <img
+                      src={
+                        tokenCoin
+                      }
+                      alt="Anandam token"
+                      className="psychometric-token-image"
+                    />
+
 
                     <h2>
                       View Correct
                       Answers
                     </h2>
+
 
                     <p>
                       Unlock the correct
@@ -445,24 +852,13 @@ export default function PsychometricResultPage() {
                       assessment.
                     </p>
 
+
                     <div className="psychometric-unlock-card__actions">
                       <button
                         type="button"
-                        className="psychometric-button psychometric-button--outline"
-                        onClick={
-                          contactAnandam
-                        }
-                      >
-                        Contact anandam
-                      </button>
-
-                      <button
-                        type="button"
                         className="psychometric-button"
-                        onClick={() =>
-                          setTokenModal(
-                            true
-                          )
+                        onClick={
+                          openUnlockModal
                         }
                       >
                         Use 1 Token
@@ -497,13 +893,40 @@ export default function PsychometricResultPage() {
           open={
             tokenModal
           }
+
           loading={
-            unlocking
+            unlocking ||
+            walletLoading
           }
+
+          title="View Correct Answers"
+
+          description="Use 1 token to unlock the correct answers for this completed assessment."
+
+          tokenCost={
+            ANSWER_UNLOCK_COST
+          }
+
+          walletBalance={
+            walletBalance
+          }
+
+          hasEnoughTokens={
+            hasEnoughTokens
+          }
+
           error={
             unlockError
           }
+
           onClose={() => {
+            if (
+              unlocking
+            ) {
+              return;
+            }
+
+
             setTokenModal(
               false
             );
@@ -512,10 +935,8 @@ export default function PsychometricResultPage() {
               ""
             );
           }}
-          onContact={
-            contactAnandam
-          }
-          onUnlock={
+
+          onConfirm={
             unlockAnswers
           }
         />

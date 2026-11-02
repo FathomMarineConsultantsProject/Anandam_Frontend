@@ -1864,3 +1864,243 @@
     gap: 12px;
   }
 }
+
+/* ======================================================
+   PSYCHOMETRIC ANSWER REVIEW
+   ====================================================== */
+
+.psychometric-review-question {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 0;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.psychometric-review-question:last-child {
+  border-bottom: 0;
+}
+
+
+.psychometric-review-question__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+
+.psychometric-review-question__header > strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: #181f2a;
+}
+
+
+.psychometric-review-question__text {
+  margin: 0;
+  max-width: 820px;
+
+  font-size: 16px;
+  line-height: 1.55;
+  color: #181f2a;
+}
+
+
+.psychometric-review-result-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 28px;
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.psychometric-review-result-badge.is-correct {
+  background: #eaf8ef;
+  color: #16803b;
+}
+
+
+.psychometric-review-result-badge.is-incorrect {
+  background: #fff0ed;
+  color: #b42318;
+}
+
+
+.psychometric-review-result-badge.is-unanswered {
+  background: #f2f4f7;
+  color: #667085;
+}
+
+
+/* OPTIONS */
+
+.psychometric-review-options {
+  display: grid;
+  gap: 10px;
+}
+
+
+.psychometric-review-option {
+  display: grid;
+
+  grid-template-columns:
+    38px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px 14px;
+
+  border: 1px solid #e2e4e8;
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+
+.psychometric-review-option__letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+
+  background: #f3f4f6;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  color: #344054;
+}
+
+
+.psychometric-review-option__text {
+  font-size: 14px;
+  line-height: 1.45;
+
+  color: #344054;
+}
+
+
+.psychometric-review-option__labels {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.psychometric-review-option__your-answer,
+.psychometric-review-option__correct-answer {
+  white-space: nowrap;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.psychometric-review-option__your-answer {
+  background: #f5eee9;
+  color: #8b3522;
+}
+
+
+.psychometric-review-option__correct-answer {
+  background: #eaf8ef;
+  color: #16803b;
+}
+
+
+/* CORRECT OPTION */
+
+.psychometric-review-option.is-correct {
+  border-color: #61b87a;
+  background: #f5fbf7;
+}
+
+
+.psychometric-review-option.is-correct
+.psychometric-review-option__letter {
+  background: #16803b;
+  color: #ffffff;
+}
+
+
+/* USER SELECTED WRONG OPTION */
+
+.psychometric-review-option.is-wrong {
+  border-color: #e7988e;
+  background: #fff7f5;
+}
+
+
+.psychometric-review-option.is-wrong
+.psychometric-review-option__letter {
+  background: #b42318;
+  color: #ffffff;
+}
+
+
+/* USER SELECTED CORRECT */
+
+.psychometric-review-option.is-selected.is-correct {
+  border-width: 2px;
+}
+
+
+/* SUMMARY */
+
+.psychometric-review-answer-summary {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 18px;
+
+  padding-top: 4px;
+
+  font-size: 13px;
+  color: #667085;
+}
+
+
+.psychometric-review-answer-summary strong {
+  color: #181f2a;
+}
+
+
+@media (max-width: 720px) {
+  .psychometric-review-option {
+    grid-template-columns:
+      34px
+      minmax(0, 1fr);
+  }
+
+
+  .psychometric-review-option__labels {
+    grid-column:
+      1 / -1;
+
+    padding-left:
+      46px;
+
+    flex-wrap:
+      wrap;
+  }
+}
