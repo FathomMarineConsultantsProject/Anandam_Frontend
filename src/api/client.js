@@ -188,13 +188,16 @@ export function getUserFriendlyError(
 
   switch (status) {
     case 400:
-      return "Some of the information entered is not valid. Please check it and try again.";
+  return "Some of the information entered is not valid. Please check it and try again.";
 
-    case 401:
-      return "Your login session has expired. Please sign in again.";
+case 401:
+  return "Your login session has expired. Please sign in again.";
 
-    case 403:
-      return "You do not have permission to perform this action.";
+case 402:
+  return "You do not have enough tokens to start another attempt.";
+
+case 403:
+  return "You do not have permission to perform this action.";
 
     case 404:
       return "The requested information could not be found.";

@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -13,7 +14,11 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import AppLayout from "../components/layout/AppLayout";
+import AppLayout
+  from "../components/layout/AppLayout";
+
+import PsychometricCard
+  from "../components/psychometrics/PsychometricCard";
 
 import {
   getWellbeingQuestionnaires,
@@ -21,10 +26,17 @@ import {
 } from "../api/wellbeingQuestionnaireApi";
 
 import {
+  getPsychometricTests,
+  startPsychometricAttempt,
+  getPsychometricErrorMessage,
+} from "../api/psychometricApi";
+
+import {
   getQuestionnaireIllustration,
 } from "../utils/questionnaireAssets";
 
 import "../styles/wellbeing-questionnaires.css";
+import "../styles/psychometrics.css";
 
 
 function QuestionnaireCard({
@@ -38,11 +50,13 @@ function QuestionnaireCard({
     questionnaire?.eligibility;
 
   const canSubmit =
-    eligibility?.canSubmit !== false;
+    eligibility?.canSubmit !==
+    false;
 
   const daysRemaining =
     Number(
-      eligibility?.daysRemaining || 0
+      eligibility?.daysRemaining ||
+        0
     );
 
   const illustration =
@@ -52,92 +66,68 @@ function QuestionnaireCard({
 
 
   return (
-    <article className="wellbeing-list-card">
+    <article className="pad-wellbeing-card">
+      {illustration ? (
+        <img
+          src={illustration}
+          alt=""
+          aria-hidden="true"
+          className="pad-wellbeing-card__image"
+        />
+      ) : null}
 
-      <div className="wellbeing-list-card__main">
+      <div className="pad-wellbeing-card__content">
+        <h2>
+          {version.title ||
+            "Wellbeing check-in"}
+        </h2>
 
-        {illustration ? (
-          <img
-            src={illustration}
-            alt=""
-            aria-hidden="true"
-            className="wellbeing-list-card__illustration"
-          />
-        ) : null}
+        <p>
+          {version.subtitle ||
+            version.description ||
+            "Take a moment to check in with yourself."}
+        </p>
 
-
-        <div className="wellbeing-list-card__content">
-
-          <h2>
-            {version.title ||
-              "Wellbeing check-in"}
-          </h2>
-
-          <p className="wellbeing-list-card__description">
-            {version.subtitle ||
-              version.description ||
-              "Take a moment to check in with yourself."}
-          </p>
-
-
-          <div className="wellbeing-list-card__questions">
+        <div className="pad-wellbeing-card__footer">
+          <span>
             <ClipboardList
-              size={18}
-              strokeWidth={1.5}
-              aria-hidden="true"
+              size={17}
+              strokeWidth={1.4}
             />
 
-            <span>
-              {questionnaire?.questionCount || 0}{" "}
-              {(questionnaire?.questionCount || 0) === 1
-                ? "question"
-                : "questions"}
-            </span>
-          </div>
+            {questionnaire
+              ?.questionCount || 0}{" "}
+            {(questionnaire
+              ?.questionCount ||
+              0) === 1
+              ? "question"
+              : "questions"}
+          </span>
 
+          <button
+            type="button"
+            className="psychometric-button"
+            disabled={!canSubmit}
+            onClick={() =>
+              onOpen(
+                questionnaire
+              )
+            }
+          >
+            {canSubmit
+              ? "Get started"
+              : daysRemaining > 0
+              ? `Available in ${daysRemaining} ${
+                  daysRemaining ===
+                  1
+                    ? "day"
+                    : "days"
+                }`
+              : "Completed"}
+          </button>
         </div>
       </div>
-
-
-      <div className="wellbeing-list-card__action">
-
-        <button
-          type="button"
-          className="wellbeing-primary-button"
-          disabled={!canSubmit}
-          onClick={() =>
-            onOpen(questionnaire)
-          }
-        >
-          {canSubmit
-            ? "Start Check-in"
-            : daysRemaining > 0
-            ? `Available in ${daysRemaining} ${
-                daysRemaining === 1
-                  ? "day"
-                  : "days"
-              }`
-            : "Completed"}
-        </button>
-
-      </div>
-
     </article>
-  );
-}
-
-
-function QuestionnaireSkeleton() {
-  return (
-    <div className="wellbeing-list-card wellbeing-list-card--skeleton">
-      <div className="wellbeing-skeleton wellbeing-skeleton--illustration" />
-
-      <div className="wellbeing-list-card__content">
-        <div className="wellbeing-skeleton wellbeing-skeleton--title" />
-        <div className="wellbeing-skeleton wellbeing-skeleton--text" />
-        <div className="wellbeing-skeleton wellbeing-skeleton--small" />
-      </div>
-    </div>
   );
 }
 
@@ -155,9 +145,19 @@ export default function WellbeingQuestionnairesPage() {
   ] = useState([]);
 
   const [
+    psychometricTests,
+    setPsychometricTests,
+  ] = useState([]);
+
+  const [
     loading,
     setLoading,
   ] = useState(true);
+
+  const [
+    startingId,
+    setStartingId,
+  ] = useState(null);
 
   const [
     error,
@@ -168,29 +168,48 @@ export default function WellbeingQuestionnairesPage() {
     notice,
     setNotice,
   ] = useState(
-    location.state?.questionnaireToast ||
+    location.state
+      ?.questionnaireToast ||
       ""
   );
 
 
-  async function loadQuestionnaires() {
+  async function loadPage() {
     setLoading(true);
     setError("");
 
     try {
-      const data =
-        await getWellbeingQuestionnaires();
+      const [
+        wellbeingData,
+        psychometricData,
+      ] = await Promise.all([
+        getWellbeingQuestionnaires(),
+        getPsychometricTests(),
+      ]);
 
       setQuestionnaires(
-        Array.isArray(data)
-          ? data
+        Array.isArray(
+          wellbeingData
+        )
+          ? wellbeingData
+          : []
+      );
+
+      setPsychometricTests(
+        Array.isArray(
+          psychometricData
+        )
+          ? psychometricData
           : []
       );
     } catch (loadError) {
       setError(
-        getWellbeingQuestionnaireErrorMessage(
+        getPsychometricErrorMessage(
           loadError,
-          "We couldn't load your wellbeing check-ins right now."
+          getWellbeingQuestionnaireErrorMessage(
+            loadError,
+            "We couldn't load Personal Analysis & Development right now."
+          )
         )
       );
     } finally {
@@ -200,7 +219,7 @@ export default function WellbeingQuestionnairesPage() {
 
 
   useEffect(() => {
-    loadQuestionnaires();
+    loadPage();
   }, []);
 
 
@@ -211,24 +230,58 @@ export default function WellbeingQuestionnairesPage() {
 
     const timer =
       window.setTimeout(
-        () => setNotice(""),
+        () => {
+          setNotice("");
+        },
         3500
       );
 
     return () =>
-      window.clearTimeout(timer);
+      window.clearTimeout(
+        timer
+      );
   }, [notice]);
 
 
-  function handleOpen(
+  const maritimeTest =
+    useMemo(
+      () =>
+        psychometricTests.find(
+          (test) =>
+            test.type ===
+            "MARITIME_HUMAN_PERFORMANCE"
+        ) || null,
+      [psychometricTests]
+    );
+
+
+  const personalTests =
+    useMemo(
+      () =>
+        [
+          "BIG_FIVE",
+          "PERSONALITY_16PF",
+          "MOTIVATION_VALUES",
+        ]
+          .map((type) =>
+            psychometricTests.find(
+              (test) =>
+                test.type ===
+                type
+            )
+          )
+          .filter(Boolean),
+      [psychometricTests]
+    );
+
+
+  function openWellbeing(
     questionnaire
   ) {
-    if (!questionnaire?.slug) {
-      return;
-    }
-
     if (
-      questionnaire?.eligibility
+      !questionnaire?.slug ||
+      questionnaire
+        ?.eligibility
         ?.canSubmit === false
     ) {
       return;
@@ -242,12 +295,86 @@ export default function WellbeingQuestionnairesPage() {
   }
 
 
+  async function openPsychometric(
+    test
+  ) {
+    if (
+      !test?.code ||
+      startingId
+    ) {
+      return;
+    }
+
+    /*
+      Maritime has a Figma
+      introduction / overview
+      screen before starting.
+    */
+
+    if (
+      test.type ===
+      "MARITIME_HUMAN_PERFORMANCE"
+    ) {
+      navigate(
+        `/app/wellbeing/psychometrics/${encodeURIComponent(
+          test.code
+        )}/overview`
+      );
+
+      return;
+    }
+
+
+    /*
+      Personality tests go
+      directly into their
+      questionnaire, matching
+      the supplied Figma.
+    */
+
+    try {
+      setStartingId(
+        test.id ||
+          test.code
+      );
+
+      setError("");
+
+      const attempt =
+        await startPsychometricAttempt(
+          test.code
+        );
+
+      if (!attempt?.id) {
+        throw new Error(
+          "Assessment attempt was not created."
+        );
+      }
+
+      navigate(
+        `/app/wellbeing/psychometrics/${encodeURIComponent(
+          test.code
+        )}/attempts/${encodeURIComponent(
+          attempt.id
+        )}`
+      );
+    } catch (startError) {
+      setError(
+        getPsychometricErrorMessage(
+          startError,
+          "Unable to start this assessment."
+        )
+      );
+    } finally {
+      setStartingId(null);
+    }
+  }
+
+
   return (
     <AppLayout>
-      <main className="wellbeing-page">
-
-        <div className="wellbeing-shell">
-
+      <main className="pad-page">
+        <div className="pad-shell">
           {notice ? (
             <div
               className="wellbeing-toast"
@@ -257,27 +384,34 @@ export default function WellbeingQuestionnairesPage() {
             </div>
           ) : null}
 
-
-          <header className="wellbeing-page-header">
-            <h1>Your Wellbeing</h1>
+          <header className="pad-page-header">
+            <h1>
+              Personal Analysis &amp;
+              Development
+            </h1>
 
             <p>
-              A little perspective for your day.
+              Understand yourself
+              better
             </p>
           </header>
 
 
           {error ? (
-            <div className="wellbeing-error-panel">
-              <span>{error}</span>
+            <div className="pad-error">
+              <span>
+                {error}
+              </span>
 
               <button
                 type="button"
-                onClick={loadQuestionnaires}
+                onClick={
+                  loadPage
+                }
               >
                 <RefreshCw
                   size={16}
-                  strokeWidth={1.6}
+                  strokeWidth={1.5}
                 />
 
                 Retry
@@ -286,56 +420,66 @@ export default function WellbeingQuestionnairesPage() {
           ) : null}
 
 
-          <section
-            className="wellbeing-list"
-            aria-busy={loading}
-          >
-
-            {loading ? (
-              <>
-                <QuestionnaireSkeleton />
-                <QuestionnaireSkeleton />
-                <QuestionnaireSkeleton />
-              </>
-            ) : (
-              questionnaires.map(
-                (questionnaire) => (
-                  <QuestionnaireCard
-                    key={
-                      questionnaire.id ||
-                      questionnaire.slug
-                    }
-                    questionnaire={
-                      questionnaire
-                    }
-                    onOpen={
-                      handleOpen
-                    }
-                  />
-                )
-              )
-            )}
-
-          </section>
-
-
-          {!loading &&
-          !error &&
-          questionnaires.length === 0 ? (
-            <div className="wellbeing-empty">
-              <h2>
-                No wellbeing check-ins available
-              </h2>
-
-              <p>
-                New questionnaires will
-                appear here when available.
-              </p>
+          {loading ? (
+            <div className="pad-loading">
+              Loading...
             </div>
-          ) : null}
+          ) : (
+            <>
+              {maritimeTest ? (
+                <PsychometricCard
+                  test={
+                    maritimeTest
+                  }
+                  featured
+                  onOpen={
+                    openPsychometric
+                  }
+                />
+              ) : null}
 
+
+              <section className="pad-card-grid">
+                {personalTests.map(
+                  (test) => (
+                    <PsychometricCard
+                      key={
+                        test.id ||
+                        test.code
+                      }
+                      test={test}
+                      onOpen={
+                        openPsychometric
+                      }
+                    />
+                  )
+                )}
+              </section>
+
+
+              <section className="pad-card-grid pad-card-grid--wellbeing">
+                {questionnaires.map(
+                  (
+                    questionnaire
+                  ) => (
+                    <QuestionnaireCard
+                      key={
+                        questionnaire.id ||
+                        questionnaire.slug
+                      }
+                      questionnaire={
+                        questionnaire
+                      }
+                      onOpen={
+                        openWellbeing
+                      }
+                    />
+                  )
+                )}
+              </section>
+            </>
+          )}
         </div>
-
       </main>
     </AppLayout>
   );

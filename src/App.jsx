@@ -59,6 +59,18 @@ import JournalCustomPage
 import JournalEntriesPage
   from "./pages/JournalEntriesPage";
 
+import PsychometricOverviewPage
+  from "./pages/PsychometricOverviewPage";
+
+import PsychometricTestIntroPage
+  from "./pages/PsychometricTestIntroPage";
+
+import PsychometricAssessmentPage
+  from "./pages/PsychometricAssessmentPage";
+
+import PsychometricResultPage
+  from "./pages/PsychometricResultPage";
+
 import {
   hasCompletedMoodGate,
   isAuthenticated,
@@ -305,9 +317,90 @@ function App() {
         <Route path="/app/blogs/:blogId" element={<RequireAuth><BlogDetailPage /></RequireAuth>} />
         <Route path="/app/daily-wisdom" element={<RequireAuth><DailyWisdomPage /></RequireAuth>} />
 
-        {/* WELLBEING QUESTIONNAIRES */}
-        <Route path="/app/wellbeing" element={<RequireAuth><WellbeingQuestionnairesPage /></RequireAuth>} />
-        <Route path="/app/wellbeing/:slug" element={<RequireAuth><WellbeingQuestionnairePage /></RequireAuth>} />
+        {/* =====================================================
+    PERSONAL ANALYSIS / WELLBEING
+    ===================================================== */}
+
+<Route
+  path="/app/wellbeing"
+  element={
+    <RequireAuth>
+      <WellbeingQuestionnairesPage />
+    </RequireAuth>
+  }
+/>
+
+
+{/* =====================================================
+    PSYCHOMETRIC TEST ENTRY
+    ===================================================== */}
+
+<Route
+  path="/app/wellbeing/psychometrics/:testCode"
+  element={
+    <RequireAuth>
+      <PsychometricTestIntroPage />
+    </RequireAuth>
+  }
+/>
+
+
+{/* =====================================================
+    MARITIME INTRO / OVERVIEW
+    ===================================================== */}
+
+<Route
+  path="/app/wellbeing/psychometrics/:testCode/overview"
+  element={
+    <RequireAuth>
+      <PsychometricOverviewPage />
+    </RequireAuth>
+  }
+/>
+
+
+{/* =====================================================
+    PSYCHOMETRIC QUESTIONNAIRE
+    ===================================================== */}
+
+<Route
+  path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId"
+  element={
+    <RequireAuth>
+      <PsychometricAssessmentPage />
+    </RequireAuth>
+  }
+/>
+
+
+{/* =====================================================
+    PSYCHOMETRIC RESULTS
+    ===================================================== */}
+
+<Route
+  path="/app/wellbeing/psychometrics/:testCode/results/:attemptId"
+  element={
+    <RequireAuth>
+      <PsychometricResultPage />
+    </RequireAuth>
+  }
+/>
+
+
+{/* =====================================================
+    EXISTING WELLBEING QUESTIONNAIRE
+
+    KEEP THIS AFTER PSYCHOMETRIC ROUTES.
+    ===================================================== */}
+
+<Route
+  path="/app/wellbeing/:slug"
+  element={
+    <RequireAuth>
+      <WellbeingQuestionnairePage />
+    </RequireAuth>
+  }
+/>
 
         {/* MARKETPLACE ENTRY - role aware */}
         <Route
