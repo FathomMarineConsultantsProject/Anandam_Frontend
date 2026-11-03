@@ -36,48 +36,48 @@ import "../styles/psychometrics.css";
 
 
 function normaliseQuestion(
-  item
+    item
 ) {
-  if (!item) {
-    return item;
-  }
+    if (!item) {
+        return item;
+    }
 
 
-  const question =
-    item?.question ||
-    item;
+    const question =
+        item?.question ||
+        item;
 
 
-  return {
-    ...question,
+    return {
+        ...question,
 
-    /*
-      Original PsychometricQuestion ID
-    */
-    id:
-      question?.id ||
-      item?.questionId ||
-      item?.id,
+        /*
+          Original PsychometricQuestion ID
+        */
+        id:
+            question?.id ||
+            item?.questionId ||
+            item?.id,
 
-    questionId:
-      item?.questionId ||
-      question?.id ||
-      null,
+        questionId:
+            item?.questionId ||
+            question?.id ||
+            null,
 
-    /*
-      PsychometricAttemptQuestion ID.
-
-      This is the safest identifier
-      when saving an answer.
-    */
-    attemptQuestionId:
-      item?.attemptQuestionId ||
-      (
-        item?.question
-          ? item?.id
-          : null
-      ),
-  };
+        /*
+          PsychometricAttemptQuestion ID.
+    
+          This is the safest identifier
+          when saving an answer.
+        */
+        attemptQuestionId:
+            item?.attemptQuestionId ||
+            (
+                item?.question
+                    ? item?.id
+                    : null
+            ),
+    };
 }
 
 
@@ -118,18 +118,18 @@ function buildSubmission(
                 }
 
                 return {
-  attemptQuestionId:
-    question
-      ?.attemptQuestionId ||
-    undefined,
+                    attemptQuestionId:
+                        question
+                            ?.attemptQuestionId ||
+                        undefined,
 
-  questionId:
-    question
-      ?.questionId ||
-    question.id,
+                    questionId:
+                        question
+                            ?.questionId ||
+                        question.id,
 
-  likertValue,
-};
+                    likertValue,
+                };
             }
 
 
@@ -141,19 +141,19 @@ function buildSubmission(
             }
 
             return {
-  attemptQuestionId:
-    question
-      ?.attemptQuestionId ||
-    undefined,
+                attemptQuestionId:
+                    question
+                        ?.attemptQuestionId ||
+                    undefined,
 
-  questionId:
-    question
-      ?.questionId ||
-    question.id,
+                questionId:
+                    question
+                        ?.questionId ||
+                    question.id,
 
-  selectedOption:
-    answer.selectedOption,
-};
+                selectedOption:
+                    answer.selectedOption,
+            };
         })
         .filter(Boolean);
 }
@@ -294,14 +294,6 @@ export default function PsychometricAssessmentPage() {
             "section"
         );
 
-
-    const isTimed =
-        Boolean(
-            activeSection?.code ||
-            selectedSectionCode
-        );
-
-
     const testType =
         attempt?.test?.type ||
         attempt?.testType ||
@@ -310,8 +302,7 @@ export default function PsychometricAssessmentPage() {
 
     const isMaritime =
         testType ===
-        "MARITIME_HUMAN_PERFORMANCE" ||
-        isTimed;
+        "MARITIME_HUMAN_PERFORMANCE";
 
 
     const answeredCount =
@@ -465,6 +456,60 @@ export default function PsychometricAssessmentPage() {
                     setAttempt(
                         loadedAttempt
                     );
+
+                    const loadedTestType =
+    loadedAttempt?.test?.type ||
+    loadedAttempt?.testType ||
+    null;
+
+const loadedIsMaritime =
+    loadedTestType ===
+    "MARITIME_HUMAN_PERFORMANCE";
+
+
+/*
+    =====================================================
+    STANDALONE PSYCHOMETRIC TESTS
+
+    BIG_FIVE
+    PERSONALITY_16PF
+    MOTIVATION_VALUES
+
+    These DO NOT use sections.
+    =====================================================
+*/
+if (!loadedIsMaritime) {
+    setActiveSection(null);
+    setSecondsRemaining(null);
+
+    /*
+      Remove any stale Maritime section parameter
+      from the URL.
+    */
+    if (selectedSectionCode) {
+        setSearchParams(
+            {},
+            {
+                replace: true,
+            }
+        );
+    }
+
+    const sourceQuestions =
+        loadedAttempt?.questions || [];
+
+    setQuestions(
+        sourceQuestions.map(
+            normaliseQuestion
+        )
+    );
+
+    hydrateAnswers(
+        sourceQuestions
+    );
+
+    return;
+}
 
 
                     const attemptSections =
