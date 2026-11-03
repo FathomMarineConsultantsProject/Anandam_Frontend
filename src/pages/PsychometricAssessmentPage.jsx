@@ -453,63 +453,95 @@ export default function PsychometricAssessmentPage() {
                             attemptId
                         );
 
+                        /*
+  =====================================================
+  DISCLAIMER GATE
+
+  Never allow the assessment UI to open before
+  acknowledgement.
+  =====================================================
+*/
+
+if (
+  loadedAttempt
+    ?.requiresDisclaimer ===
+    true ||
+  loadedAttempt
+    ?.canBeginAssessment ===
+    false
+) {
+  navigate(
+    `/app/wellbeing/psychometrics/${encodeURIComponent(
+      testCode
+    )}/attempts/${encodeURIComponent(
+      attemptId
+    )}/disclaimer`,
+    {
+      replace: true,
+    }
+  );
+
+
+  return;
+}
+
                     setAttempt(
                         loadedAttempt
                     );
 
                     const loadedTestType =
-    loadedAttempt?.test?.type ||
-    loadedAttempt?.testType ||
-    null;
+                        loadedAttempt?.test?.type ||
+                        loadedAttempt?.testType ||
+                        null;
 
-const loadedIsMaritime =
-    loadedTestType ===
-    "MARITIME_HUMAN_PERFORMANCE";
+                    const loadedIsMaritime =
+                        loadedTestType ===
+                        "MARITIME_HUMAN_PERFORMANCE";
 
 
-/*
-    =====================================================
-    STANDALONE PSYCHOMETRIC TESTS
+                    /*
+                        =====================================================
+                        STANDALONE PSYCHOMETRIC TESTS
+                    
+                        BIG_FIVE
+                        PERSONALITY_16PF
+                        MOTIVATION_VALUES
+                    
+                        These DO NOT use sections.
+                        =====================================================
+                    */
+                    if (!loadedIsMaritime) {
+                        setActiveSection(null);
+                        setSecondsRemaining(null);
 
-    BIG_FIVE
-    PERSONALITY_16PF
-    MOTIVATION_VALUES
+                        /*
+                          Remove any stale Maritime section parameter
+                          from the URL.
+                        */
+                        if (selectedSectionCode) {
+                            setSearchParams(
+                                {},
+                                {
+                                    replace: true,
+                                }
+                            );
+                        }
 
-    These DO NOT use sections.
-    =====================================================
-*/
-if (!loadedIsMaritime) {
-    setActiveSection(null);
-    setSecondsRemaining(null);
+                        const sourceQuestions =
+                            loadedAttempt?.questions || [];
 
-    /*
-      Remove any stale Maritime section parameter
-      from the URL.
-    */
-    if (selectedSectionCode) {
-        setSearchParams(
-            {},
-            {
-                replace: true,
-            }
-        );
-    }
+                        setQuestions(
+                            sourceQuestions.map(
+                                normaliseQuestion
+                            )
+                        );
 
-    const sourceQuestions =
-        loadedAttempt?.questions || [];
+                        hydrateAnswers(
+                            sourceQuestions
+                        );
 
-    setQuestions(
-        sourceQuestions.map(
-            normaliseQuestion
-        )
-    );
-
-    hydrateAnswers(
-        sourceQuestions
-    );
-
-    return;
-}
+                        return;
+                    }
 
 
                     const attemptSections =

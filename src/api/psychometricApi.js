@@ -56,6 +56,24 @@ export const PSYCHOMETRIC_ENDPOINTS = {
       attemptId
     )}`,
 
+      /*
+    GET
+    /api/psychometrics/attempts/:attemptId/disclaimer
+  */
+  disclaimer: (attemptId) =>
+    `/psychometrics/attempts/${encodeURIComponent(
+      attemptId
+    )}/disclaimer`,
+
+
+  /*
+    POST
+    /api/psychometrics/attempts/:attemptId/disclaimer/acknowledge
+  */
+  acknowledgeDisclaimer: (attemptId) =>
+    `/psychometrics/attempts/${encodeURIComponent(
+      attemptId
+    )}/disclaimer/acknowledge`,
 
   /*
     POST
@@ -396,6 +414,64 @@ export async function getPsychometricAttempt(
   );
 }
 
+/*
+  =========================================================
+  DISCLAIMER
+  =========================================================
+*/
+
+export async function getPsychometricDisclaimer(
+  attemptId
+) {
+  const response =
+    await apiRequest(
+      PSYCHOMETRIC_ENDPOINTS.disclaimer(
+        attemptId
+      )
+    );
+
+
+  return unwrap(
+    response,
+    [
+      "disclaimer",
+    ]
+  );
+}
+
+
+/*
+  =========================================================
+  ACKNOWLEDGE DISCLAIMER
+  =========================================================
+*/
+
+export async function acknowledgePsychometricDisclaimer(
+  attemptId
+) {
+  const response =
+    await apiRequest(
+      PSYCHOMETRIC_ENDPOINTS.acknowledgeDisclaimer(
+        attemptId
+      ),
+      {
+        method: "POST",
+
+        body:
+          JSON.stringify({
+            accepted: true,
+          }),
+      }
+    );
+
+
+  return unwrap(
+    response,
+    [
+      "acknowledgement",
+    ]
+  );
+}
 
 /*
   =========================================================

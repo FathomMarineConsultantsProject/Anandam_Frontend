@@ -190,44 +190,23 @@ export default function PsychometricOverviewPage() {
 
 
   function navigateToAttempt(
-    attempt
+  attempt
+) {
+  if (
+    !attempt?.id
   ) {
-    if (
-      !attempt?.id
-    ) {
-      return;
-    }
-
-
-    const firstSection =
-      attempt
-        ?.currentSectionCode ||
-      attempt
-        ?.sections?.find(
-          (
-            section
-          ) =>
-            !section
-              ?.submittedAt &&
-            !section?.locked
-        )
-        ?.code ||
-      attempt
-        ?.sections?.[0]
-        ?.code ||
-      "PJS";
-
-
-    navigate(
-      `/app/wellbeing/psychometrics/${encodeURIComponent(
-        testCode
-      )}/attempts/${encodeURIComponent(
-        attempt.id
-      )}?section=${encodeURIComponent(
-        firstSection
-      )}`
-    );
+    return;
   }
+
+
+  navigate(
+    `/app/wellbeing/psychometrics/${encodeURIComponent(
+      testCode
+    )}/attempts/${encodeURIComponent(
+      attempt.id
+    )}/disclaimer`
+  );
+}
 
 
   function showTokenModal(

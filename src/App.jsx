@@ -62,6 +62,9 @@ import JournalEntriesPage
 import PsychometricOverviewPage
   from "./pages/PsychometricOverviewPage";
 
+  import PsychometricDisclaimerPage
+  from "./pages/PsychometricDisclaimerPage";
+
 import PsychometricTestIntroPage
   from "./pages/PsychometricTestIntroPage";
 
@@ -358,6 +361,18 @@ function App() {
   }
 />
 
+{/* =====================================================
+    PSYCHOMETRIC DISCLAIMER
+    ===================================================== */}
+
+<Route
+  path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId/disclaimer"
+  element={
+    <RequireAuth>
+      <PsychometricDisclaimerPage />
+    </RequireAuth>
+  }
+/>
 
 {/* =====================================================
     PSYCHOMETRIC QUESTIONNAIRE

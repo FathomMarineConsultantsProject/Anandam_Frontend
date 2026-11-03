@@ -419,25 +419,25 @@ export default function WellbeingQuestionnairesPage() {
 
 
   function navigateToPsychometricAttempt(
-    test,
-    attempt
+  test,
+  attempt
+) {
+  if (
+    !test?.code ||
+    !attempt?.id
   ) {
-    if (
-      !test?.code ||
-      !attempt?.id
-    ) {
-      return;
-    }
-
-
-    navigate(
-      `/app/wellbeing/psychometrics/${encodeURIComponent(
-        test.code
-      )}/attempts/${encodeURIComponent(
-        attempt.id
-      )}`
-    );
+    return;
   }
+
+
+  navigate(
+    `/app/wellbeing/psychometrics/${encodeURIComponent(
+      test.code
+    )}/attempts/${encodeURIComponent(
+      attempt.id
+    )}/disclaimer`
+  );
+}
 
 
   function showTokenModal(
