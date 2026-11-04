@@ -136,6 +136,21 @@ export const PSYCHOMETRIC_ENDPOINTS = {
       attemptId
     )}/result`,
 
+    analysis: (
+  attemptId
+) =>
+  `/psychometrics/attempts/${encodeURIComponent(
+    attemptId
+  )}/analysis`,
+
+
+report: (
+  attemptId
+) =>
+  `/psychometrics/attempts/${encodeURIComponent(
+    attemptId
+  )}/report.pdf`,
+
 unlockAnswers: (
   attemptId
 ) =>
@@ -779,6 +794,69 @@ export async function getPsychometricResult(
   );
 }
 
+/*
+  =========================================================
+  GET ANALYTICAL RESULT
+
+  Maritime:
+  score + sections + analytics + responses
+
+  Other 3 tests:
+  profile analytics + dimensions + responses
+  =========================================================
+*/
+
+export async function getPsychometricAnalysis(
+  attemptId
+) {
+  const response =
+    await apiRequest(
+      PSYCHOMETRIC_ENDPOINTS.analysis(
+        attemptId
+      )
+    );
+
+
+  return unwrap(
+    response,
+    [
+      "analysis",
+    ]
+  );
+}
+
+/*
+  =========================================================
+  DOWNLOAD PDF REPORT
+
+  Backend returns:
+  application/pdf
+
+  apiRequest responseType="blob"
+  prevents the PDF from being parsed as JSON.
+  =========================================================
+*/
+
+export async function downloadPsychometricReport(
+  attemptId
+) {
+  return apiRequest(
+    PSYCHOMETRIC_ENDPOINTS.report(
+      attemptId
+    ),
+    {
+      method: "GET",
+
+      responseType:
+        "blob",
+
+      headers: {
+        Accept:
+          "application/pdf",
+      },
+    }
+  );
+}
 
 /*
   =========================================================

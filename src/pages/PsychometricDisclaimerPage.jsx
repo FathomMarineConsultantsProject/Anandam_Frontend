@@ -133,7 +133,7 @@ export default function PsychometricDisclaimerPage() {
   const [
     secondsRemaining,
     setSecondsRemaining,
-  ] = useState(45);
+  ] = useState(5);
 
 
   const [

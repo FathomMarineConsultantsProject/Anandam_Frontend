@@ -141,7 +141,7 @@ export function getUserFriendlyError(
   if (
     status === 401 &&
     backendMessage ===
-      "Invalid credentials"
+    "Invalid credentials"
   ) {
     return "The email or password you entered is incorrect.";
   }
@@ -149,7 +149,7 @@ export function getUserFriendlyError(
   if (
     status === 404 &&
     backendMessage ===
-      "User not found"
+    "User not found"
   ) {
     return "No account was found with this email address.";
   }
@@ -188,16 +188,16 @@ export function getUserFriendlyError(
 
   switch (status) {
     case 400:
-  return "Some of the information entered is not valid. Please check it and try again.";
+      return "Some of the information entered is not valid. Please check it and try again.";
 
-case 401:
-  return "Your login session has expired. Please sign in again.";
+    case 401:
+      return "Your login session has expired. Please sign in again.";
 
-case 402:
-  return "You do not have enough tokens to start another attempt.";
+    case 402:
+      return "You do not have enough tokens to start another attempt.";
 
-case 403:
-  return "You do not have permission to perform this action.";
+    case 403:
+      return "You do not have permission to perform this action.";
 
     case 404:
       return "The requested information could not be found.";
@@ -268,7 +268,7 @@ function redirectToLogin(message) {
     sessionStorage.setItem(
       "anandam_auth_notice",
       message ||
-        "Your session has expired. Please sign in again."
+      "Your session has expired. Please sign in again."
     );
   } catch {
     // Ignore browser storage errors.
@@ -297,7 +297,7 @@ function expireLocalSession(message) {
 
   redirectToLogin(
     message ||
-      "Your session has expired. Please sign in again."
+    "Your session has expired. Please sign in again."
   );
 }
 
@@ -425,15 +425,19 @@ export async function apiRequest(
   options = {}
 ) {
   const {
-    skipAuthRefresh = false,
-    skipAuth = false,
-    _retry = false,
-    headers: customHeaders = {},
-    ...fetchOptions
-  } = options;
+  skipAuthRefresh = false,
+  skipAuth = false,
+  _retry = false,
+
+  responseType = "json",
+
+  headers: customHeaders = {},
+
+  ...fetchOptions
+} = options;
 
   const accessToken =
-  getStoredToken();
+    getStoredToken();
 
   const isFormData =
     fetchOptions.body instanceof FormData;
@@ -442,18 +446,18 @@ export async function apiRequest(
     Accept: "application/json",
 
     ...(!isFormData &&
-    fetchOptions.body !== undefined
+      fetchOptions.body !== undefined
       ? {
-          "Content-Type":
-            "application/json",
-        }
+        "Content-Type":
+          "application/json",
+      }
       : {}),
 
     ...(!skipAuth && accessToken
       ? {
-          Authorization:
-            `Bearer ${accessToken}`,
-        }
+        Authorization:
+          `Bearer ${accessToken}`,
+      }
       : {}),
 
     ...customHeaders,
@@ -475,12 +479,46 @@ export async function apiRequest(
     );
   }
 
-  const data =
-    await parseResponse(response);
+  /*
+  =====================================================
+  BINARY / PDF RESPONSE
 
-  if (response.ok) {
-    return data;
+  Successful PDF responses must NOT go through
+  parseResponse(), because parseResponse expects text/JSON.
+  =====================================================
+*/
+
+  if (
+    response.ok &&
+    responseType === "blob"
+  ) {
+    return response.blob();
   }
+
+
+  /*
+  PDF / BINARY RESPONSE
+
+  Do not pass a successful PDF through
+  parseResponse(), because that parser
+  expects text / JSON.
+*/
+
+if (
+  response.ok &&
+  responseType === "blob"
+) {
+  return response.blob();
+}
+
+
+const data =
+  await parseResponse(response);
+
+
+if (response.ok) {
+  return data;
+}
 
 
   /* ===================================================
@@ -494,9 +532,9 @@ export async function apiRequest(
     (
       data?.shouldRefresh === true ||
       data?.action ===
-        "REFRESH_ACCESS_TOKEN" ||
+      "REFRESH_ACCESS_TOKEN" ||
       data?.code ===
-        "ACCESS_TOKEN_EXPIRED"
+      "ACCESS_TOKEN_EXPIRED"
     );
 
   if (shouldRefresh) {
@@ -525,9 +563,9 @@ export async function apiRequest(
 
       const shouldLogout =
         refreshError?.data?.shouldLogout ===
-          true ||
+        true ||
         refreshError?.action ===
-          "LOGIN_REQUIRED" ||
+        "LOGIN_REQUIRED" ||
         refreshStatus === 401;
 
       if (shouldLogout) {

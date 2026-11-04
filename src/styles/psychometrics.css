@@ -2413,3 +2413,2400 @@
     width: 100%;
   }
 }
+
+/* =========================================================
+   PERSONAL ANALYSIS - NEW RESULT PAGE
+   ========================================================= */
+
+.pa-result-page {
+  width: 100%;
+  min-height: 100vh;
+
+  padding:
+    22px
+    34px
+    48px;
+
+  background: #fcfaf7;
+}
+
+
+.pa-result-shell {
+  width: 100%;
+  max-width: 1320px;
+
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.pa-result-header {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 22px;
+}
+
+
+.pa-result-header h1 {
+  margin: 0;
+
+  color: #0d1522;
+
+  font-size: 24px;
+  line-height: 31px;
+
+  font-weight: 500;
+}
+
+
+.pa-result-header p {
+  margin:
+    3px
+    0
+    0;
+
+  color: #60657c;
+
+  font-size: 14px;
+  line-height: 20px;
+}
+
+
+.pa-download-report {
+  min-height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  padding:
+    10px
+    22px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: #7c2f1d;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  line-height: 20px;
+
+  cursor: pointer;
+
+  transition:
+    background
+    0.2s ease;
+}
+
+
+.pa-download-report:hover:not(:disabled) {
+  background: #682618;
+}
+
+
+.pa-download-report:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.pa-result-card {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 22px;
+
+  padding:
+    22px
+    28px;
+
+  border:
+    1px solid
+    #d8d8d8;
+
+  border-radius: 18px;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   INSIGHT BANNER
+   ========================================================= */
+
+.pa-result-insight {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 17px;
+
+  padding:
+    31px
+    25px;
+
+  border:
+    1px solid
+    #ddd7eb;
+
+  border-radius: 7px;
+
+  background: #f5f2fb;
+
+  color: #8e7aad;
+}
+
+
+.pa-result-insight svg {
+  flex:
+    0
+    0
+    auto;
+
+  margin-top: 4px;
+}
+
+
+.pa-result-insight h2 {
+  margin:
+    0
+    0
+    7px;
+
+  color: #111927;
+
+  font-size: 18px;
+  line-height: 25px;
+
+  font-weight: 600;
+}
+
+
+.pa-result-insight p {
+  margin: 0;
+
+  color: #656a75;
+
+  font-size: 14px;
+  line-height: 21px;
+}
+
+
+.pa-result-insight--maritime {
+  border-color: #eadcd5;
+
+  background: #fff7f3;
+
+  color: #8c3422;
+}
+
+
+/* =========================================================
+   TOP 3 CARDS
+   ========================================================= */
+
+.pa-result-summary-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap: 12px;
+}
+
+
+.pa-result-summary-card {
+  min-height: 103px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  padding:
+    18px
+    22px;
+
+  border:
+    1px solid
+    #c8dddd;
+
+  border-radius: 7px;
+
+  background: #edf8f7;
+}
+
+
+.pa-result-summary-card h3 {
+  margin: 0;
+
+  color: #101826;
+
+  font-size: 16px;
+  line-height: 22px;
+
+  font-weight: 600;
+}
+
+
+.pa-result-summary-card__bottom {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 16px;
+}
+
+
+.pa-result-summary-card__bottom strong {
+  color: #101826;
+
+  font-size: 24px;
+  line-height: 29px;
+
+  font-weight: 500;
+}
+
+
+.pa-result-summary-card__bottom span {
+  color: #454d59;
+
+  font-size: 11px;
+  line-height: 15px;
+
+  text-align: right;
+}
+
+
+/* =========================================================
+   DIMENSION CARD
+   ========================================================= */
+
+.pa-result-dimensions,
+.pa-answer-review {
+  width: 100%;
+
+  padding:
+    22px
+    24px;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+}
+
+
+.pa-result-section-heading {
+  padding-bottom: 20px;
+
+  border-bottom:
+    1px solid
+    #e3e3e3;
+}
+
+
+.pa-result-section-heading h2 {
+  margin: 0;
+
+  color: #0d1522;
+
+  font-size: 21px;
+  line-height: 27px;
+
+  font-weight: 500;
+}
+
+
+.pa-result-section-heading p {
+  margin:
+    4px
+    0
+    0;
+
+  color: #60657c;
+
+  font-size: 12px;
+  line-height: 18px;
+}
+
+
+/* =========================================================
+   DIMENSIONS
+   ========================================================= */
+
+.pa-result-dimension-list {
+  width: 100%;
+}
+
+
+.pa-result-dimension {
+  width: 100%;
+
+  padding:
+    20px
+    0;
+
+  border-bottom:
+    1px solid
+    #e5e5e5;
+}
+
+
+.pa-result-dimension:last-child {
+  padding-bottom: 0;
+
+  border-bottom: 0;
+}
+
+
+.pa-result-dimension__top {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 28px;
+
+  margin-bottom: 9px;
+}
+
+
+.pa-result-dimension__top > div:first-child {
+  flex:
+    1
+    1
+    auto;
+
+  min-width: 0;
+}
+
+
+.pa-result-dimension__top h3 {
+  margin:
+    0
+    0
+    5px;
+
+  color: #131b28;
+
+  font-size: 13px;
+  line-height: 18px;
+
+  font-weight: 600;
+}
+
+
+.pa-result-dimension__top p {
+  margin: 0;
+
+  color: #60657c;
+
+  font-size: 11px;
+  line-height: 17px;
+}
+
+
+.pa-result-dimension__score {
+  flex:
+    0
+    0
+    auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+}
+
+
+.pa-result-dimension__score strong {
+  min-width: 50px;
+
+  color: #101826;
+
+  font-size: 13px;
+  line-height: 18px;
+
+  text-align: right;
+}
+
+
+.pa-result-dimension__score span {
+  min-width: 104px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    6px
+    13px;
+
+  border-radius: 999px;
+
+  color: #ffffff;
+
+  font-size: 10px;
+  line-height: 13px;
+
+  white-space: nowrap;
+}
+
+
+.pa-result-progress {
+  width: 100%;
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: 99px;
+
+  background: #e4e7ee;
+}
+
+
+.pa-result-progress > div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  transition:
+    width
+    0.25s ease;
+}
+
+
+/* =========================================================
+   DISCLAIMER NOTE
+   ========================================================= */
+
+.pa-result-note {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  padding:
+    14px
+    16px;
+
+  border:
+    1px dashed
+    #cfcfcf;
+
+  border-radius: 7px;
+
+  background: #fafafa;
+
+  color: #747983;
+}
+
+
+.pa-result-note svg {
+  flex:
+    0
+    0
+    auto;
+
+  margin-top: 1px;
+}
+
+
+.pa-result-note p {
+  margin: 0;
+
+  font-size: 11px;
+  line-height: 16px;
+}
+
+
+/* =========================================================
+   MARITIME SCORE
+   ========================================================= */
+
+.pa-maritime-score {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    250px
+    minmax(
+      0,
+      1fr
+    );
+
+  gap: 28px;
+
+  padding:
+    26px;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+
+.pa-maritime-score__overall {
+  min-height: 155px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding-right: 28px;
+
+  border-right:
+    1px solid
+    #e5e5e5;
+
+  text-align: center;
+}
+
+
+.pa-maritime-score__overall strong {
+  color: #8c3422;
+
+  font-size: 46px;
+  line-height: 54px;
+
+  font-weight: 600;
+}
+
+
+.pa-maritime-score__overall span {
+  margin-top: 4px;
+
+  color: #202936;
+
+  font-size: 14px;
+  line-height: 20px;
+
+  font-weight: 500;
+}
+
+
+.pa-maritime-score__overall small {
+  margin-top: 7px;
+
+  color: #777b83;
+
+  font-size: 11px;
+}
+
+
+.pa-maritime-score__sections {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap: 12px;
+}
+
+
+.pa-maritime-score__sections article {
+  min-height: 125px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding:
+    18px;
+
+  border:
+    1px solid
+    #e3ded9;
+
+  border-radius: 7px;
+
+  background: #fcfaf7;
+}
+
+
+.pa-maritime-score__sections span {
+  color: #60657c;
+
+  font-size: 12px;
+  line-height: 17px;
+}
+
+
+.pa-maritime-score__sections strong {
+  color: #101826;
+
+  font-size: 24px;
+  line-height: 30px;
+
+  font-weight: 500;
+}
+
+
+.pa-maritime-score__sections small {
+  color: #8c3422;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   MARITIME INSIGHTS
+   ========================================================= */
+
+.pa-maritime-insights {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap: 14px;
+}
+
+
+.pa-maritime-insights > article {
+  padding:
+    22px;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+
+.pa-maritime-insights__heading {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 17px;
+}
+
+
+.pa-maritime-insights__heading h2 {
+  margin: 0;
+
+  color: #111927;
+
+  font-size: 17px;
+  line-height: 22px;
+
+  font-weight: 600;
+}
+
+
+.pa-maritime-insights__heading.is-strength {
+  color: #238158;
+}
+
+
+.pa-maritime-insights__heading.is-development {
+  color: #b27835;
+}
+
+
+.pa-maritime-insight {
+  padding:
+    13px
+    0;
+
+  border-bottom:
+    1px solid
+    #eeeeee;
+}
+
+
+.pa-maritime-insight:last-child {
+  border-bottom: 0;
+}
+
+
+.pa-maritime-insight > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+}
+
+
+.pa-maritime-insight strong {
+  color: #17202d;
+
+  font-size: 13px;
+}
+
+
+.pa-maritime-insight span {
+  color: #8c3422;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+
+.pa-maritime-insight p {
+  margin:
+    5px
+    0
+    0;
+
+  color: #60657c;
+
+  font-size: 11px;
+  line-height: 17px;
+}
+
+
+.pa-empty {
+  color: #777b83;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   MARITIME LEVEL
+   ========================================================= */
+
+.pa-maritime-level {
+  background: #ad7243;
+}
+
+
+.pa-result-progress--maritime {
+  background: #8c3422;
+}
+
+
+/* =========================================================
+   ANSWERS
+   ========================================================= */
+
+.pa-answer-list {
+  width: 100%;
+}
+
+
+.pa-answer-question {
+  padding:
+    22px
+    0;
+
+  border-bottom:
+    1px solid
+    #e5e5e5;
+}
+
+
+.pa-answer-question:last-child {
+  border-bottom: 0;
+}
+
+
+.pa-answer-question__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 10px;
+}
+
+
+.pa-answer-question__heading > strong {
+  color: #111927;
+
+  font-size: 14px;
+}
+
+
+.pa-answer-status {
+  padding:
+    5px
+    11px;
+
+  border-radius: 99px;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
+.pa-answer-status.is-correct {
+  background: #e8f7ef;
+
+  color: #20754f;
+}
+
+
+.pa-answer-status.is-incorrect {
+  background: #fff0ee;
+
+  color: #a33a30;
+}
+
+
+.pa-answer-status.is-unanswered {
+  background: #f1f2f4;
+
+  color: #666c76;
+}
+
+
+.pa-answer-question__text {
+  margin:
+    0
+    0
+    14px;
+
+  color: #242c38;
+
+  font-size: 14px;
+  line-height: 21px;
+}
+
+
+.pa-answer-options {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+
+.pa-answer-option {
+  display: grid;
+
+  grid-template-columns:
+    34px
+    minmax(
+      0,
+      1fr
+    )
+    auto;
+
+  align-items: center;
+
+  gap: 11px;
+
+  min-height: 46px;
+
+  padding:
+    7px
+    11px;
+
+  border:
+    1px solid
+    #dedede;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+}
+
+
+.pa-answer-option__letter {
+  width: 30px;
+  height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 6px;
+
+  background: #f2f3f5;
+
+  color: #333b47;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+
+.pa-answer-option__text {
+  color: #363e49;
+
+  font-size: 13px;
+  line-height: 19px;
+}
+
+
+.pa-answer-option__tags {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+
+.pa-answer-option__tags small {
+  padding:
+    4px
+    8px;
+
+  border-radius: 99px;
+
+  background: #f1efff;
+
+  color: #6453a8;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+}
+
+
+.pa-answer-option__tags small.correct {
+  background: #e9f7ef;
+
+  color: #237a53;
+}
+
+
+.pa-answer-option.is-selected {
+  border-color: #9b8dd0;
+
+  background: #fbfaff;
+}
+
+
+.pa-answer-option.is-correct {
+  border-color: #55a77f;
+
+  background: #f4fbf7;
+}
+
+
+.pa-answer-option.is-correct
+.pa-answer-option__letter {
+  background: #26835a;
+
+  color: #ffffff;
+}
+
+
+.pa-answer-option.is-wrong {
+  border-color: #dc8d84;
+
+  background: #fff8f6;
+}
+
+
+.pa-answer-option.is-wrong
+.pa-answer-option__letter {
+  background: #b53e31;
+
+  color: #ffffff;
+}
+
+
+.pa-answer-summary {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap:
+    8px
+    24px;
+
+  margin-top: 12px;
+
+  color: #667085;
+
+  font-size: 12px;
+}
+
+
+.pa-answer-summary strong {
+  color: #1b2430;
+}
+
+
+/* =========================================================
+   TOKEN UNLOCK
+   ========================================================= */
+
+.pa-answer-unlock {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(
+      0,
+      1fr
+    )
+    auto;
+
+  align-items: center;
+
+  gap: 18px;
+
+  margin-top: 20px;
+
+  padding:
+    18px
+    20px;
+
+  border:
+    1px solid
+    #ead7bd;
+
+  border-radius: 8px;
+
+  background: #fffaf2;
+}
+
+
+.pa-answer-unlock > img {
+  width: 52px;
+  height: 52px;
+
+  object-fit: contain;
+}
+
+
+.pa-answer-unlock h3 {
+  margin:
+    0
+    0
+    4px;
+
+  color: #0d1522;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+
+.pa-answer-unlock p {
+  margin: 0;
+
+  color: #60657c;
+
+  font-size: 12px;
+  line-height: 17px;
+}
+
+
+.pa-answer-unlock
+.psychometric-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.pa-result-error {
+  margin-bottom: 18px;
+
+  padding:
+    12px
+    15px;
+
+  border:
+    1px solid
+    #efcccc;
+
+  border-radius: 7px;
+
+  background: #fff6f6;
+
+  color: #9f2d2d;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.pa-result-footer-actions {
+  display: flex;
+  justify-content: center;
+
+  padding-top: 22px;
+}
+
+
+.pa-back-button {
+  min-height: 40px;
+
+  padding:
+    9px
+    18px;
+
+  border:
+    1px solid
+    #7c2f1d;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #7c2f1d;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+
+.pa-back-button:hover {
+  background: #fff5f1;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (
+  max-width: 1050px
+) {
+  .pa-result-summary-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .pa-maritime-score {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .pa-maritime-score__overall {
+    padding:
+      0
+      0
+      24px;
+
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      #e5e5e5;
+  }
+
+
+  .pa-maritime-score__sections {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+
+@media (
+  max-width: 800px
+) {
+  .pa-result-page {
+    padding:
+      18px
+      16px
+      36px;
+  }
+
+
+  .pa-result-header {
+    flex-direction: column;
+  }
+
+
+  .pa-download-report {
+    width: 100%;
+  }
+
+
+  .pa-result-card {
+    padding:
+      17px;
+  }
+
+
+  .pa-maritime-insights {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .pa-result-dimension__top {
+    flex-direction: column;
+  }
+
+
+  .pa-result-dimension__score {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+
+  .pa-answer-unlock {
+    grid-template-columns:
+      1fr;
+
+    text-align: center;
+  }
+
+
+  .pa-answer-unlock > img {
+    margin: 0 auto;
+  }
+}
+
+
+@media (
+  max-width: 600px
+) {
+  .pa-result-card {
+    border-radius: 12px;
+  }
+
+
+  .pa-result-insight {
+    padding:
+      22px
+      18px;
+  }
+
+
+  .pa-result-dimensions,
+  .pa-answer-review {
+    padding:
+      18px;
+  }
+
+
+  .pa-answer-option {
+    grid-template-columns:
+      32px
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+
+  .pa-answer-option__tags {
+    grid-column:
+      1 /
+      -1;
+
+    padding-left: 43px;
+
+    flex-wrap: wrap;
+  }
+}
+
+/* =========================================================
+   FINAL FIGMA PSYCHOMETRIC RESULTS
+   ========================================================= */
+
+.psi-result-page {
+  width: 100%;
+  min-height: 100vh;
+
+  padding:
+    24px
+    24px
+    48px;
+
+  background:
+    #fcfaf7;
+}
+
+
+.psi-result-shell {
+  width: 100%;
+  max-width: 1324px;
+
+  margin:
+    0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.psi-result-header {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom:
+    20px;
+}
+
+
+.psi-result-header > div {
+  min-width: 0;
+}
+
+
+.psi-result-header h1 {
+  margin:
+    0;
+
+  color:
+    #0c1421;
+
+  font-size:
+    24px;
+
+  line-height:
+    28px;
+
+  font-weight:
+    400;
+}
+
+
+.psi-result-header p {
+  margin:
+    4px
+    0
+    0;
+
+  color:
+    #60657c;
+
+  font-size:
+    14px;
+
+  line-height:
+    16px;
+
+  font-weight:
+    400;
+}
+
+
+.psi-report-button {
+  width:
+    184px;
+
+  height:
+    42px;
+
+  flex:
+    0 0 auto;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    8px;
+
+  padding:
+    12px
+    24px;
+
+  border:
+    0;
+
+  border-radius:
+    8px;
+
+  background:
+    #712e1e;
+
+  color:
+    #ffffff;
+
+  font-family:
+    inherit;
+
+  font-size:
+    14px;
+
+  line-height:
+    16px;
+
+  letter-spacing:
+    0.01em;
+
+  cursor:
+    pointer;
+}
+
+
+.psi-report-button:hover:not(:disabled) {
+  background:
+    #602619;
+}
+
+
+.psi-report-button:disabled {
+  opacity:
+    0.6;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* =========================================================
+   FIGMA PROFILE OUTER CARD
+   ========================================================= */
+
+.psi-figma-profile {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap:
+    23px;
+
+  padding:
+    25px
+    32px;
+
+  background:
+    #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius:
+    20px;
+}
+
+
+/* =========================================================
+   FIGMA INSIGHT
+   ========================================================= */
+
+.psi-figma-insight {
+  width: 100%;
+  min-height: 183px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    center;
+
+  padding:
+    32px
+    26px;
+
+  gap:
+    15px;
+
+  background:
+    #f5f2fc;
+
+  border:
+    1px solid
+    #dce9e1;
+
+  border-radius:
+    8px;
+
+  color:
+    #9284b1;
+}
+
+
+.psi-figma-insight svg {
+  flex:
+    0 0 auto;
+}
+
+
+.psi-figma-insight > div {
+  width:
+    100%;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    8px;
+}
+
+
+.psi-figma-insight h2 {
+  margin:
+    0;
+
+  color:
+    #0c1421;
+
+  font-size:
+    20px;
+
+  line-height:
+    23px;
+
+  font-weight:
+    500;
+}
+
+
+.psi-figma-insight p {
+  margin:
+    0;
+
+  max-width:
+    1206px;
+
+  color:
+    #5d616b;
+
+  font-size:
+    16px;
+
+  line-height:
+    19px;
+
+  font-weight:
+    400;
+}
+
+
+/* =========================================================
+   FIGMA TOP CARDS
+   ========================================================= */
+
+.psi-figma-top-grid {
+  width:
+    100%;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap:
+    10px;
+}
+
+
+.psi-figma-top-card {
+  min-height:
+    111px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  justify-content:
+    space-between;
+
+  padding:
+    16px
+    24px;
+
+  background:
+    #eef8f7;
+
+  border:
+    1px solid
+    #cde1df;
+
+  border-radius:
+    8px;
+}
+
+
+.psi-figma-top-card h3 {
+  margin:
+    0;
+
+  color:
+    #0c1421;
+
+  font-size:
+    18px;
+
+  line-height:
+    21px;
+
+  font-weight:
+    500;
+}
+
+
+.psi-figma-top-card__footer {
+  width:
+    100%;
+
+  display:
+    flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  gap:
+    8px;
+}
+
+
+.psi-figma-top-card__footer strong {
+  color:
+    #0c1421;
+
+  font-size:
+    26px;
+
+  line-height:
+    30px;
+
+  font-weight:
+    500;
+}
+
+
+.psi-figma-top-card__footer span {
+  color:
+    #343a46;
+
+  font-size:
+    12px;
+
+  line-height:
+    14px;
+
+  font-weight:
+    400;
+
+  text-align:
+    right;
+}
+
+
+/* =========================================================
+   FIGMA DIMENSIONS CARD
+   ========================================================= */
+
+.psi-figma-dimensions {
+  width:
+    100%;
+
+  padding:
+    24px;
+
+  background:
+    #ffffff;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius:
+    8px;
+}
+
+
+.psi-figma-dimensions__header {
+  padding-bottom:
+    24px;
+
+  border-bottom:
+    1px solid
+    #d9d9d9;
+}
+
+
+.psi-figma-dimensions__header h2 {
+  margin:
+    0;
+
+  color:
+    #0c1421;
+
+  font-size:
+    24px;
+
+  line-height:
+    28px;
+
+  font-weight:
+    500;
+}
+
+
+.psi-figma-dimensions__header p {
+  margin:
+    4px
+    0
+    0;
+
+  color:
+    #60657c;
+
+  font-size:
+    14px;
+
+  line-height:
+    16px;
+
+  font-weight:
+    400;
+}
+
+
+.psi-figma-dimension-list {
+  width:
+    100%;
+}
+
+
+.psi-figma-dimension {
+  width:
+    100%;
+
+  padding:
+    20px
+    0;
+
+  border-bottom:
+    1px solid
+    #d9d9d9;
+}
+
+
+.psi-figma-dimension:last-child {
+  padding-bottom:
+    0;
+
+  border-bottom:
+    0;
+}
+
+
+.psi-figma-dimension__top {
+  width:
+    100%;
+
+  min-height:
+    28px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    20px;
+}
+
+
+.psi-figma-dimension__name {
+  color:
+    #0c1421;
+
+  font-size:
+    14px;
+
+  line-height:
+    16px;
+
+  font-weight:
+    500;
+}
+
+
+.psi-figma-dimension__score {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    flex-end;
+
+  gap:
+    16px;
+
+  flex:
+    0 0 auto;
+}
+
+
+.psi-figma-dimension__score > strong {
+  color:
+    #0c1421;
+
+  font-size:
+    14px;
+
+  line-height:
+    16px;
+
+  font-weight:
+    600;
+}
+
+
+.psi-figma-dimension__score > span {
+  min-width:
+    68px;
+
+  min-height:
+    28px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    7px
+    16px;
+
+  border-radius:
+    1900px;
+
+  color:
+    #ffffff;
+
+  font-size:
+    12px;
+
+  line-height:
+    14px;
+
+  font-weight:
+    400;
+
+  white-space:
+    nowrap;
+}
+
+
+.psi-figma-dimension__description {
+  margin:
+    0
+    0
+    6px;
+
+  color:
+    #60657c;
+
+  font-size:
+    12px;
+
+  line-height:
+    14px;
+
+  font-weight:
+    400;
+}
+
+
+.psi-figma-progress {
+  width:
+    100%;
+
+  height:
+    4px;
+
+  overflow:
+    hidden;
+
+  background:
+    #e1e4ee;
+}
+
+
+.psi-figma-progress > div {
+  height:
+    100%;
+
+  min-width:
+    0;
+
+  transition:
+    width
+    0.25s ease;
+}
+
+
+/* =========================================================
+   BOTTOM LEGAL NOTE
+   ========================================================= */
+
+.psi-figma-note {
+  width:
+    100%;
+
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  gap:
+    12px;
+
+  padding:
+    17px
+    18px;
+
+  background:
+    #fafafa;
+
+  border:
+    1px dashed
+    #c9c9c9;
+
+  border-radius:
+    8px;
+
+  color:
+    #777b83;
+}
+
+
+.psi-figma-note svg {
+  flex:
+    0 0 auto;
+
+  margin-top:
+    1px;
+}
+
+
+.psi-figma-note p {
+  margin:
+    0;
+
+  color:
+    #5d616b;
+
+  font-size:
+    12px;
+
+  line-height:
+    16px;
+}
+
+
+/* =========================================================
+   MARITIME
+
+   Keep the old score / answers styling,
+   only add spacing + the new analytics.
+   ========================================================= */
+
+.psi-maritime-result-card {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    24px;
+}
+
+
+.psi-maritime-analytics {
+  width:
+    100%;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    23px;
+
+  padding-top:
+    4px;
+}
+
+
+.psi-maritime-analytics-divider {
+  width:
+    100%;
+
+  padding-top:
+    24px;
+
+  border-top:
+    1px solid
+    #d9d9d9;
+}
+
+
+.psi-maritime-analytics-divider h2 {
+  margin:
+    0;
+
+  color:
+    #0c1421;
+
+  font-size:
+    24px;
+
+  line-height:
+    28px;
+
+  font-weight:
+    500;
+}
+
+
+.psi-maritime-analytics-divider p {
+  margin:
+    4px
+    0
+    0;
+
+  color:
+    #60657c;
+
+  font-size:
+    14px;
+
+  line-height:
+    18px;
+}
+
+
+.psi-maritime-answer-heading {
+  padding:
+    0
+    0
+    22px;
+
+  border-bottom:
+    1px solid
+    #d9d9d9;
+
+  margin-bottom:
+    4px;
+}
+
+
+.psi-maritime-answer-heading h2 {
+  margin:
+    0;
+
+  color:
+    #0c1421;
+
+  font-size:
+    24px;
+
+  line-height:
+    28px;
+
+  font-weight:
+    500;
+}
+
+
+.psi-maritime-answer-heading p {
+  margin:
+    4px
+    0
+    0;
+
+  color:
+    #60657c;
+
+  font-size:
+    14px;
+
+  line-height:
+    18px;
+}
+
+
+.psi-maritime-lock-section {
+  margin-top:
+    4px;
+}
+
+
+.psi-maritime-answer-review {
+  margin-top:
+    0;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.psi-result-error {
+  width:
+    100%;
+
+  margin-bottom:
+    16px;
+
+  padding:
+    12px
+    16px;
+
+  color:
+    #9c3328;
+
+  background:
+    #fff5f3;
+
+  border:
+    1px solid
+    #efc9c3;
+
+  border-radius:
+    8px;
+
+  font-size:
+    13px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (
+  max-width:
+    1000px
+) {
+  .psi-figma-top-grid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (
+  max-width:
+    700px
+) {
+  .psi-result-page {
+    padding:
+      18px
+      14px
+      36px;
+  }
+
+
+  .psi-result-header {
+    flex-direction:
+      column;
+
+    align-items:
+      stretch;
+  }
+
+
+  .psi-report-button {
+    width:
+      100%;
+  }
+
+
+  .psi-figma-profile {
+    padding:
+      18px;
+
+    border-radius:
+      14px;
+  }
+
+
+  .psi-figma-insight {
+    min-height:
+      auto;
+
+    padding:
+      24px
+      20px;
+  }
+
+
+  .psi-figma-insight h2 {
+    font-size:
+      18px;
+
+    line-height:
+      23px;
+  }
+
+
+  .psi-figma-insight p {
+    font-size:
+      14px;
+
+    line-height:
+      20px;
+  }
+
+
+  .psi-figma-top-card {
+    min-height:
+      105px;
+  }
+
+
+  .psi-figma-dimensions {
+    padding:
+      18px;
+  }
+
+
+  .psi-figma-dimension__top {
+    align-items:
+      flex-start;
+
+    gap:
+      12px;
+  }
+
+
+  .psi-figma-dimension__score {
+    gap:
+      8px;
+  }
+
+
+  .psi-figma-dimension__score > span {
+    min-width:
+      auto;
+
+    padding:
+      6px
+      10px;
+
+    font-size:
+      10px;
+  }
+}
