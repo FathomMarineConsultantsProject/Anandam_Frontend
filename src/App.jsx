@@ -74,6 +74,8 @@ import PsychometricAssessmentPage
 import PsychometricResultPage
   from "./pages/PsychometricResultPage";
 
+import WellnessReminder from "./components/reminders/WellnessReminder";
+
 import {
   hasCompletedMoodGate,
   isAuthenticated,
@@ -210,6 +212,9 @@ function MarketplaceRoleEntry() {
 function App() {
   return (
     <BrowserRouter>
+
+      <WellnessReminder />
+
       <Routes>
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<LandingPage />} />

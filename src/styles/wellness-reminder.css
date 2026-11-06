@@ -1,0 +1,601 @@
+/*
+  ============================================================
+  GLOBAL WELLNESS REMINDER
+  ============================================================
+*/
+
+
+/* ============================================================
+   BACKDROP
+   ============================================================ */
+
+.wellness-reminder-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 999999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(
+    15,
+    18,
+    22,
+    0.68
+  );
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+
+  animation:
+    wellnessReminderFadeIn
+    180ms ease-out;
+}
+
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.wellness-reminder-modal {
+  position: relative;
+
+  width: min(
+    620px,
+    calc(100vw - 32px)
+  );
+
+  max-height:
+    calc(100vh - 40px);
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  border-radius: 12px;
+
+  padding:
+    30px
+    32px
+    32px;
+
+  box-shadow:
+    0 24px 70px
+    rgba(0, 0, 0, 0.2);
+
+  animation:
+    wellnessReminderEnter
+    220ms
+    cubic-bezier(
+      0.2,
+      0.8,
+      0.2,
+      1
+    );
+}
+
+
+/* ============================================================
+   CLOSE
+   ============================================================ */
+
+.wellness-reminder-close {
+  position: absolute;
+
+  top: 26px;
+  right: 28px;
+
+  z-index: 2;
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #171717;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+
+.wellness-reminder-close:hover {
+  background: #f6f6f6;
+}
+
+
+.wellness-reminder-close:active {
+  transform: scale(0.94);
+}
+
+
+.wellness-reminder-close:focus-visible {
+  outline:
+    2px solid #712e1e;
+
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   REMINDER GIF
+   ========================================================= */
+
+.wellness-reminder-visual {
+  width: 100%;
+  height: 220px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 10px;
+
+  overflow: hidden;
+}
+
+
+.wellness-reminder-gif {
+  display: block;
+
+  object-fit: contain;
+  object-position: center;
+
+  max-width: 100%;
+  max-height: 100%;
+}
+
+
+/* Normal / square-ish GIF */
+
+.wellness-reminder-gif--normal {
+  width: auto;
+  height: 190px;
+
+  max-width: 300px;
+}
+
+
+/* Tall GIF
+   Example: standing yoga pose */
+
+.wellness-reminder-gif--vertical {
+  width: auto;
+  height: 215px;
+
+  max-width: 240px;
+  max-height: 215px;
+}
+
+
+/* Wide GIF */
+
+.wellness-reminder-gif--horizontal {
+  width: min(100%, 330px);
+  height: auto;
+
+  max-height: 190px;
+}
+
+
+/*
+  Some movement GIFs are narrower vertically.
+*/
+.wellness-reminder-modal--movement
+.wellness-reminder-gif {
+  width: 190px;
+  height: 190px;
+}
+
+
+/*
+  Water artwork works nicely slightly larger.
+*/
+.wellness-reminder-modal--water
+.wellness-reminder-gif {
+  width: 205px;
+  height: 205px;
+}
+
+
+/* ============================================================
+   TITLE
+   ============================================================ */
+
+.wellness-reminder-title {
+  margin:
+    14px
+    0
+    20px;
+
+  padding:
+    0
+    36px;
+
+  color: #0c1421;
+
+  font-family:
+    inherit;
+
+  font-size: 26px;
+  line-height: 1.2;
+
+  font-weight: 600;
+
+  text-align: center;
+}
+
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+
+.wellness-reminder-divider {
+  width: 100%;
+  height: 1px;
+
+  margin-bottom: 20px;
+
+  background: #d9d9d9;
+}
+
+
+/* ============================================================
+   DESCRIPTION
+   ============================================================ */
+
+.wellness-reminder-description {
+  max-width: 555px;
+
+  margin:
+    0
+    auto
+    20px;
+
+  color: #60657c;
+
+  font-family:
+    inherit;
+
+  font-size: 16px;
+  line-height: 1.4;
+
+  font-weight: 400;
+
+  text-align: center;
+}
+
+
+/* ============================================================
+   TIP
+   ============================================================ */
+
+.wellness-reminder-tip {
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  padding:
+    12px
+    18px;
+
+  margin-bottom: 28px;
+
+  border:
+    1px solid #ead7aa;
+
+  border-radius: 8px;
+
+  background: #fffaf0;
+
+  color: #80602e;
+
+  font-size: 14px;
+  line-height: 1.35;
+
+  font-weight: 600;
+
+  text-align: center;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.wellness-reminder-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 18px;
+
+  width: 100%;
+}
+
+
+.wellness-reminder-button {
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    12px
+    18px;
+
+  border-radius: 8px;
+
+  font-family:
+    inherit;
+
+  font-size: 14px;
+  line-height: 1;
+
+  font-weight: 400;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+
+/* SECONDARY */
+
+.wellness-reminder-button--secondary {
+  border:
+    1px solid #712e1e;
+
+  background: #ffffff;
+
+  color: #712e1e;
+}
+
+
+.wellness-reminder-button--secondary:hover {
+  background: #fcf6f4;
+}
+
+
+/* PRIMARY */
+
+.wellness-reminder-button--primary {
+  border:
+    1px solid #712e1e;
+
+  background: #7d321f;
+
+  color: #ffffff;
+}
+
+
+.wellness-reminder-button--primary:hover {
+  background: #682719;
+}
+
+
+.wellness-reminder-button:active {
+  transform: translateY(1px);
+}
+
+
+.wellness-reminder-button:focus-visible {
+  outline:
+    2px solid rgba(
+      113,
+      46,
+      30,
+      0.3
+    );
+
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   ANIMATION
+   ============================================================ */
+
+@keyframes wellnessReminderFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+@keyframes wellnessReminderEnter {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (
+  max-width: 768px
+) {
+  .wellness-reminder-overlay {
+    padding: 18px;
+  }
+
+
+  .wellness-reminder-modal {
+    width: 100%;
+
+    padding:
+      26px
+      24px
+      26px;
+  }
+
+
+  .wellness-reminder-visual {
+    height: 190px;
+
+    padding-top: 12px;
+  }
+
+
+  .wellness-reminder-gif {
+    width: 180px;
+    height: 180px;
+  }
+
+
+  .wellness-reminder-title {
+    padding: 0 25px;
+
+    font-size: 24px;
+  }
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (
+  max-width: 520px
+) {
+  .wellness-reminder-overlay {
+    align-items: center;
+
+    padding: 12px;
+  }
+
+
+  .wellness-reminder-modal {
+    max-height:
+      calc(100vh - 24px);
+
+    padding:
+      22px
+      18px
+      20px;
+
+    border-radius: 12px;
+  }
+
+
+  .wellness-reminder-close {
+    top: 18px;
+    right: 18px;
+  }
+
+
+  .wellness-reminder-visual {
+    height: 165px;
+
+    padding:
+      10px
+      35px
+      0;
+  }
+
+
+  .wellness-reminder-gif,
+  .wellness-reminder-modal--movement
+  .wellness-reminder-gif,
+  .wellness-reminder-modal--water
+  .wellness-reminder-gif {
+    width: 155px;
+    height: 155px;
+  }
+
+
+  .wellness-reminder-title {
+    margin-top: 12px;
+
+    padding: 0 22px;
+
+    font-size: 22px;
+  }
+
+
+  .wellness-reminder-description {
+    font-size: 15px;
+  }
+
+
+  .wellness-reminder-tip {
+    margin-bottom: 20px;
+
+    font-size: 13px;
+  }
+
+
+  .wellness-reminder-actions {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+  }
+
+
+  .wellness-reminder-button {
+    width: 100%;
+
+    min-height: 46px;
+  }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (
+  prefers-reduced-motion: reduce
+) {
+  .wellness-reminder-overlay,
+  .wellness-reminder-modal {
+    animation: none;
+  }
+}
