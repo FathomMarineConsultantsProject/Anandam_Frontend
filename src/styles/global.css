@@ -1793,3 +1793,1191 @@ button {
     line-height: 11px;
   }
 }
+
+/* =========================================================
+   FINAL ANANDAM HEADER + TOKEN POPUP
+   FIGMA MATCH
+   ========================================================= */
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.anandam-app-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  z-index: 500;
+
+  width: 100%;
+  height: 64px;
+
+  overflow: visible;
+
+  background: #ffffff;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+
+.anandam-app-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 64px;
+
+  padding: 0 100px;
+
+  gap: 10px;
+
+  overflow: visible;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.anandam-app-header__logo-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36.24px;
+  min-width: 36.24px;
+  height: 42.62px;
+
+  flex: 0 0 36.24px;
+
+  padding: 0;
+  margin: 0;
+
+  background: transparent;
+  border: 0;
+
+  cursor: pointer;
+}
+
+
+.anandam-app-header__logo {
+  display: block;
+
+  width: 36.24px;
+  height: 42.62px;
+
+  object-fit: contain;
+}
+
+
+/* =========================================================
+   RIGHT HEADER GROUP
+   Token -> Bell -> Profile
+   ========================================================= */
+
+.anandam-app-header__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+
+  width: max-content;
+  height: 34px;
+
+  min-width: 358px;
+
+  padding: 0;
+  margin: 0;
+
+  gap: 24px;
+
+  flex: 0 0 auto;
+
+  overflow: visible;
+}
+
+
+/* =========================================================
+   TOKEN BUTTON
+   ========================================================= */
+
+.anandam-token-control {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: max-content;
+  height: 34px;
+
+  flex: 0 0 auto;
+
+  overflow: visible;
+}
+
+
+.anandam-token-control__button {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  width: max-content;
+  min-width: 97px;
+  height: 34px;
+
+  padding: 8px 12px;
+
+  gap: 6px;
+
+  flex: 0 0 auto;
+
+  color: #333333;
+  background: #ffffff;
+
+  border: 1px solid #e1e1e1;
+  border-radius: 1000px;
+
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+
+.anandam-token-control__button:hover {
+  background: #fdfbf8;
+  border-color: #d6d0c8;
+}
+
+
+.anandam-token-control__button:focus-visible {
+  outline: 2px solid rgba(184, 138, 50, 0.25);
+  outline-offset: 2px;
+}
+
+
+.anandam-token-control__coin {
+  display: block;
+
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+
+  flex: 0 0 18px;
+
+  object-fit: contain;
+}
+
+
+.anandam-token-control__label {
+  display: block;
+
+  color: #333333;
+
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   NOTIFICATION
+   Figma has 24px clickable area with smaller icon artwork
+   ========================================================= */
+
+.anandam-app-header__notification {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+
+  flex: 0 0 24px;
+
+  padding: 0;
+  margin: 0;
+
+  line-height: 0;
+
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  overflow: visible;
+}
+
+
+.anandam-app-header__notification:hover {
+  background: rgba(184, 138, 50, 0.06);
+  transform: none;
+}
+
+
+.anandam-app-header__notification:focus-visible {
+  outline: 2px solid rgba(184, 138, 50, 0.22);
+  outline-offset: 2px;
+}
+
+
+.anandam-app-header__notification-icon {
+  display: block;
+
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+
+  flex: 0 0 18px;
+
+  object-fit: contain;
+  object-position: center;
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+.anandam-app-header__profile-wrap {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 189px;
+  min-width: 189px;
+  height: 34px;
+
+  flex: 0 0 189px;
+
+  overflow: visible;
+}
+
+
+.anandam-app-header__profile-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 189px;
+  min-width: 189px;
+  height: 34px;
+
+  flex: 0 0 189px;
+
+  padding: 0;
+  margin: 0;
+
+  gap: 12px;
+
+  color: #333333;
+  text-align: left;
+
+  background: transparent;
+  border: 0;
+
+  cursor: pointer;
+}
+
+
+.anandam-app-header__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+
+  flex: 0 0 32px;
+
+  padding: 0;
+  margin: 0;
+
+  overflow: hidden;
+
+  color: #712e1e;
+  background: #f8ecd2;
+
+  border-radius: 50%;
+
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+
+.anandam-app-header__avatar img {
+  display: block;
+
+  width: 32px;
+  height: 32px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+}
+
+
+.anandam-app-header__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  width: 145px;
+  min-width: 145px;
+  height: 34px;
+
+  flex: 0 0 145px;
+
+  padding: 0;
+  margin: 0;
+
+  overflow: hidden;
+}
+
+
+.anandam-app-header__name,
+.anandam-app-header__email {
+  display: block;
+
+  width: 145px;
+
+  overflow: hidden;
+
+  color: #333333;
+
+  font-family: "Roboto", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.anandam-app-header__name {
+  height: 18px;
+
+  font-size: 12px;
+  line-height: 18px;
+}
+
+
+.anandam-app-header__email {
+  height: 16px;
+
+  font-size: 12px;
+  line-height: 16px;
+}
+
+
+/* =========================================================
+   TOKEN POPUP
+   ========================================================= */
+
+.anandam-token-menu {
+  position: absolute;
+
+  top: calc(100% + 12px);
+  left: 50%;
+
+  z-index: 800;
+
+  width: 300px;
+
+  padding: 18px 16px 16px;
+
+  transform: translateX(-50%);
+
+  color: #333333;
+  background: #ffffff;
+
+  border: 1px solid #dedede;
+  border-radius: 8px;
+
+  box-shadow:
+    0 12px 32px rgba(32, 40, 58, 0.14),
+    0 2px 8px rgba(32, 40, 58, 0.05);
+
+  font-family: "Roboto", Arial, sans-serif;
+
+  overflow: visible;
+}
+
+
+/* popup arrow */
+
+.anandam-token-menu::before {
+  content: "";
+
+  position: absolute;
+
+  top: -7px;
+  left: 50%;
+
+  width: 13px;
+  height: 13px;
+
+  transform:
+    translateX(-50%)
+    rotate(45deg);
+
+  background: #ffffff;
+
+  border-top: 1px solid #dedede;
+  border-left: 1px solid #dedede;
+}
+
+
+/* close */
+
+.anandam-token-menu__close {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  height: 24px;
+
+  padding: 0;
+
+  color: #666666;
+  background: transparent;
+
+  border: 0;
+  border-radius: 50%;
+
+  font-family: Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+
+.anandam-token-menu__close:hover {
+  color: #222222;
+  background: #f6f6f6;
+}
+
+
+/* title */
+
+.anandam-token-menu__title,
+.anandam-token-menu h3 {
+  display: block;
+
+  margin: 0 32px 16px 0;
+
+  color: #20283a;
+
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+
+/* current token balance */
+
+.anandam-token-menu__balance {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  gap: 8px;
+
+  margin: 0;
+}
+
+
+.anandam-token-menu__balance img {
+  display: block;
+
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+
+  flex: 0 0 24px;
+
+  object-fit: contain;
+}
+
+
+.anandam-token-menu__balance strong {
+  color: #20283a;
+
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+
+.anandam-token-menu__balance span {
+  color: #8a96aa;
+
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+
+/* token price */
+
+.anandam-token-menu__price {
+  margin: 5px 0 0 32px;
+
+  color: #20283a;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+
+/* divider */
+
+.anandam-token-menu__divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 14px 0 10px;
+
+  background: #e5e5e5;
+}
+
+
+.anandam-token-menu__divider--small {
+  margin: 10px 0 12px;
+}
+
+
+/* usage hint */
+
+.anandam-token-menu__hint {
+  margin: 0;
+
+  color: #8a8a8a;
+
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+}
+
+
+/* zero token warning */
+
+.anandam-token-menu__warning {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  margin-top: 12px;
+  padding: 8px 9px;
+
+  gap: 7px;
+
+  color: #c93c30;
+  background: #fff1ef;
+
+  border: 1px dashed #f5bdb7;
+  border-radius: 8px;
+
+  font-size: 9px;
+  line-height: 13px;
+}
+
+
+.anandam-token-menu__warning-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 15px;
+  min-width: 15px;
+  height: 15px;
+
+  border: 1px solid #e14b3d;
+  border-radius: 50%;
+
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+
+/* request heading */
+
+.anandam-token-menu__request-copy {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  gap: 2px;
+}
+
+
+.anandam-token-menu__request-copy strong {
+  color: #333333;
+
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 15px;
+}
+
+
+.anandam-token-menu__request-copy span {
+  color: #777777;
+
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 14px;
+}
+
+
+/* +/- counter */
+
+.anandam-token-menu__counter {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  margin-top: 10px;
+
+  gap: 12px;
+}
+
+
+.anandam-token-menu__counter button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+
+  flex: 0 0 24px;
+
+  padding: 0;
+
+  color: #667085;
+  background: #ffffff;
+
+  border: 1px solid #dcdfe4;
+  border-radius: 7px;
+
+  cursor: pointer;
+}
+
+
+.anandam-token-menu__counter button:hover:not(:disabled) {
+  border-color: #b88a32;
+  color: #8b6724;
+}
+
+
+.anandam-token-menu__counter button:disabled {
+  color: #c5c5c5;
+  background: #fafafa;
+
+  cursor: not-allowed;
+}
+
+
+.anandam-token-menu__counter strong {
+  min-width: 16px;
+
+  color: #20283a;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+
+  text-align: center;
+}
+
+
+/* estimate */
+
+.anandam-token-menu__estimate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  height: 38px;
+
+  margin-top: 12px;
+  padding: 0 10px;
+
+  background: #fffaf1;
+
+  border: 1px dashed #ead9bc;
+  border-radius: 7px;
+}
+
+
+.anandam-token-menu__estimate span {
+  color: #667085;
+
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 14px;
+}
+
+
+.anandam-token-menu__estimate strong {
+  color: #20283a;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+
+/* API error */
+
+.anandam-token-menu__error {
+  margin: 8px 0 0;
+
+  color: #c93c30;
+
+  font-size: 9px;
+  line-height: 13px;
+
+  text-align: center;
+}
+
+
+/* contact */
+
+.anandam-token-menu__contact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 36px;
+
+  margin-top: 16px;
+  padding: 0 14px;
+
+  color: #ffffff;
+  background: #87331f;
+
+  border: 0;
+  border-radius: 6px;
+
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+
+.anandam-token-menu__contact:hover {
+  background: #712e1e;
+}
+
+
+.anandam-token-menu__contact:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   PROFILE POPUP
+   ========================================================= */
+
+.anandam-app-profile-menu {
+  position: absolute;
+
+  top: calc(100% + 14px);
+  right: 0;
+
+  z-index: 800;
+
+  width: 270px;
+
+  padding: 14px;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.98
+  );
+
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+
+  box-shadow:
+    0 14px 40px rgba(32, 40, 58, 0.13);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+
+.anandam-app-profile-menu__user {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+
+  gap: 12px;
+}
+
+
+.anandam-app-profile-menu__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  overflow: hidden;
+
+  color: #712e1e;
+  background: #f8ecd2;
+
+  border-radius: 50%;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+.anandam-app-profile-menu__avatar img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.anandam-app-profile-menu__label,
+.anandam-app-profile-menu__name,
+.anandam-app-profile-menu__email {
+  margin: 0;
+}
+
+
+.anandam-app-profile-menu__label {
+  color: #8897ad;
+
+  font-size: 11px;
+  line-height: 15px;
+}
+
+
+.anandam-app-profile-menu__name {
+  max-width: 175px;
+
+  overflow: hidden;
+
+  color: #20283a;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.anandam-app-profile-menu__email {
+  max-width: 175px;
+
+  overflow: hidden;
+
+  color: #667085;
+
+  font-size: 11px;
+  line-height: 16px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.anandam-app-profile-menu__divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 12px 0;
+
+  background: #ececec;
+}
+
+
+.anandam-app-profile-menu__item {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 38px;
+
+  padding: 0 10px;
+
+  gap: 10px;
+
+  color: #333333;
+  background: transparent;
+
+  border: 0;
+  border-radius: 8px;
+
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+
+.anandam-app-profile-menu__item:hover {
+  background: #f8f5f1;
+}
+
+
+.anandam-app-profile-menu__item--danger {
+  color: #b3261e;
+}
+
+
+.anandam-app-profile-menu__item--danger:hover {
+  background: #fff1ef;
+}
+
+
+/* =========================================================
+   RESPONSIVE — LARGE TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .anandam-app-header__inner {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+
+
+  .anandam-app-header__actions {
+    min-width: 0;
+
+    gap: 18px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .anandam-app-header__inner {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+
+  .anandam-app-header__actions {
+    width: max-content;
+    min-width: 0;
+
+    gap: 14px;
+  }
+
+
+  .anandam-app-header__profile-wrap,
+  .anandam-app-header__profile-button {
+    width: 32px;
+    min-width: 32px;
+
+    flex-basis: 32px;
+  }
+
+
+  .anandam-app-header__identity {
+    display: none;
+  }
+
+
+  .anandam-token-control__button {
+    min-width: 0;
+
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 620px) {
+
+  .anandam-app-header {
+    height: 60px;
+  }
+
+
+  .anandam-app-header__inner {
+    height: 60px;
+
+    padding-left:
+      max(
+        16px,
+        env(safe-area-inset-left)
+      );
+
+    padding-right:
+      max(
+        16px,
+        env(safe-area-inset-right)
+      );
+  }
+
+
+  .anandam-app-header__logo-button,
+  .anandam-app-header__logo {
+    width: 32px;
+    min-width: 32px;
+    height: 38px;
+
+    flex-basis: 32px;
+  }
+
+
+  .anandam-app-header__actions {
+    gap: 10px;
+  }
+
+
+  .anandam-token-control__button {
+    height: 32px;
+
+    padding: 6px 8px;
+
+    gap: 5px;
+
+    font-size: 11px;
+  }
+
+
+  .anandam-token-control__coin {
+    width: 17px;
+    min-width: 17px;
+    height: 17px;
+
+    flex-basis: 17px;
+  }
+
+
+  .anandam-app-header__notification {
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+
+    flex-basis: 22px;
+  }
+
+
+  .anandam-app-header__notification-icon {
+    width: 17px;
+    min-width: 17px;
+    height: 17px;
+
+    flex-basis: 17px;
+  }
+
+
+  .anandam-token-menu {
+    position: fixed;
+
+    top: 68px;
+    right: 12px;
+    left: auto;
+
+    width:
+      min(
+        300px,
+        calc(100vw - 24px)
+      );
+
+    transform: none;
+  }
+
+
+  .anandam-token-menu::before {
+    display: none;
+  }
+
+
+  .anandam-app-profile-menu {
+    position: fixed;
+
+    top: 68px;
+    right: 12px;
+
+    width:
+      min(
+        270px,
+        calc(100vw - 24px)
+      );
+  }
+
+}
