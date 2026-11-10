@@ -18,6 +18,14 @@ import {
   getDashboardWellness,
 } from "../api/moodCheckinApi";
 
+import {
+  useSiteAccess,
+} from "../context/SiteAccessContext";
+
+import {
+  useWellbeingAccess,
+} from "../context/WellbeingAccessContext";
+
 /* =====================================================
    DASHBOARD ASSETS
    ===================================================== */
@@ -472,6 +480,16 @@ function ContactCard({ item }) {
 function DashboardPage() {
   const navigate = useNavigate();
 
+  const {
+    active: siteAccessActive,
+    loading: siteAccessLoading,
+    requestAccess,
+  } = useSiteAccess();
+
+  const {
+    requestWellbeingAccess,
+  } = useWellbeingAccess();
+
   const [profile, setProfile] =
     useState(null);
 
@@ -566,6 +584,40 @@ function DashboardPage() {
 
   function handleNavigate(route) {
     if (!route) {
+      return;
+    }
+
+    /*
+      Wellbeing has its own access rule:
+      - active site pass -> included
+      - otherwise 1 token per new Wellbeing visit
+    */
+    if (
+      route === "/app/wellbeing" ||
+      route.startsWith(
+        "/app/wellbeing/"
+      )
+    ) {
+      requestWellbeingAccess(
+        route
+      );
+
+      return;
+    }
+
+    /*
+      All other dashboard toolkit/emergency destinations
+      require the normal Anandam site-access pass.
+    */
+    if (siteAccessLoading) {
+      return;
+    }
+
+    if (!siteAccessActive) {
+      requestAccess(
+        route
+      );
+
       return;
     }
 

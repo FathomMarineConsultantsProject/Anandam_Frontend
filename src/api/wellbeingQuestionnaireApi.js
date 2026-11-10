@@ -19,7 +19,9 @@ export function getWellbeingQuestionnaireErrorMessage(
   fallback = "Something went wrong. Please try again."
 ) {
   const backendMessage =
+    error?.data?.message ||
     error?.data?.error ||
+    error?.response?.data?.message ||
     error?.response?.data?.error ||
     error?.error ||
     error?.message ||
@@ -42,8 +44,18 @@ export function getWellbeingQuestionnaireErrorMessage(
     return "Your session has expired. Please sign in again.";
   }
 
+  if (status === 402) {
+    return (
+      backendMessage ||
+      "You need 1 token to access Wellbeing."
+    );
+  }
+
   if (status === 403) {
-    return "You don't have permission to access this questionnaire.";
+    return (
+      backendMessage ||
+      "You don't have permission to access this questionnaire."
+    );
   }
 
   if (status === 404) {
@@ -69,6 +81,35 @@ export function getWellbeingQuestionnaireErrorMessage(
   }
 
   return backendMessage || fallback;
+}
+
+
+// ======================================================
+// UNLOCK WELLBEING ENTRY
+//
+// Active 30-day Anandam pass:
+// no token is deducted.
+//
+// No active pass:
+// backend deducts 1 token and grants this entry.
+// ======================================================
+
+export async function unlockWellbeingAccess() {
+  const response =
+    await apiRequest(
+      `${QUESTIONNAIRE_ROOT}/access`,
+      {
+        method: "POST",
+      }
+    );
+
+  return (
+    response?.access ??
+    response?.data?.access ??
+    response?.data ??
+    response ??
+    {}
+  );
 }
 
 
@@ -112,6 +153,10 @@ export async function getWellbeingQuestionnaireBySlug(
 
 // ======================================================
 // SUBMIT COMPLETE QUESTIONNAIRE
+//
+// IMPORTANT:
+// The 1-token Wellbeing charge happens when the user
+// enters the Wellbeing area, not again on submission.
 // ======================================================
 
 export async function submitWellbeingQuestionnaire(

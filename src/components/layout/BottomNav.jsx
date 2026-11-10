@@ -7,6 +7,10 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import {
+  useSiteAccess,
+} from "../../context/SiteAccessContext";
+
 import homeIcon from "../../assets/navbar/home.png";
 import calendarIcon from "../../assets/navbar/calendar.png";
 import moodIcon from "../../assets/navbar/mood.png";
@@ -23,19 +27,18 @@ const NAV_ITEMS = [
     label: "Home",
     icon: homeIcon,
     path: "/dashboard",
-
-    // Figma artwork is visually around 20px
     iconSize: 20,
     iconScale: 1,
+    freeAccess: true,
 
     matchPaths: [
-  "/dashboard",
-  "/app/breathing",
-  "/app/brain-games",
-  "/app/sleep-stories",
-  "/app/daily-wisdom",
-  "/app/wellbeing",
-],
+      "/dashboard",
+      "/app/breathing",
+      "/app/brain-games",
+      "/app/sleep-stories",
+      "/app/daily-wisdom",
+      "/app/wellbeing",
+    ],
   },
 
   {
@@ -43,10 +46,9 @@ const NAV_ITEMS = [
     label: "Day",
     icon: calendarIcon,
     path: "/app/perfect-day",
-
-    // Figma calendar = around 20px
     iconSize: 20,
     iconScale: 1,
+    freeAccess: false,
 
     matchPaths: [
       "/app/perfect-day",
@@ -58,9 +60,9 @@ const NAV_ITEMS = [
     label: "Mood",
     icon: moodIcon,
     path: "/mood",
-
     iconSize: 24,
     iconScale: 1,
+    freeAccess: false,
 
     matchPaths: [
       "/mood",
@@ -73,9 +75,9 @@ const NAV_ITEMS = [
     label: "Work/rest",
     icon: workIcon,
     path: "/app/work-rest",
-
     iconSize: 24,
     iconScale: 1,
+    freeAccess: false,
 
     matchPaths: [
       "/app/work-rest",
@@ -87,15 +89,9 @@ const NAV_ITEMS = [
     label: "Fitness",
     icon: fitnessIcon,
     path: "/app/fitness",
-
-    /*
-      The Fitness PNG contains more empty transparent
-      space around the actual line artwork.
-
-      Slightly enlarge only the artwork, NOT its wrapper.
-    */
     iconSize: 24,
     iconScale: 1.58,
+    freeAccess: false,
 
     matchPaths: [
       "/app/fitness",
@@ -107,13 +103,9 @@ const NAV_ITEMS = [
     label: "Blogs",
     icon: blogIcon,
     path: "/app/blogs",
-
-    /*
-      Blog artwork visually occupies more of its PNG,
-      so reduce it slightly.
-    */
     iconSize: 24,
     iconScale: 0.92,
+    freeAccess: true,
 
     matchPaths: [
       "/app/blogs",
@@ -121,27 +113,27 @@ const NAV_ITEMS = [
   },
 
   {
-  id: "marketplace",
-  label:"Marketplace",
-  icon: marketplaceIcon,
-  path: "/marketplace",
+    id: "marketplace",
+    label: "Marketplace",
+    icon: marketplaceIcon,
+    path: "/marketplace",
+    iconSize: 25,
+    iconScale: 0.92,
+    freeAccess: false,
 
-  iconSize: 25,
-  iconScale: 0.92,
-
-  matchPaths: [
-    "/marketplace",
-  ],
-},
+    matchPaths: [
+      "/marketplace",
+    ],
+  },
 
   {
     id: "emergency",
     label: "Emergency",
     icon: emergencyIcon,
     path: "/app/emergency",
-
     iconSize: 24,
     iconScale: 1,
+    freeAccess: false,
 
     matchPaths: [
       "/app/emergency",
@@ -171,11 +163,42 @@ function BottomNav() {
   const location =
     useLocation();
 
+  const {
+    active,
+    loading,
+    requestAccess,
+  } = useSiteAccess();
+
 
   function handleNavigation(
     item
   ) {
     if (!item.path) {
+      return;
+    }
+
+    if (item.freeAccess) {
+      if (
+        location.pathname !==
+        item.path
+      ) {
+        navigate(
+          item.path
+        );
+      }
+
+      return;
+    }
+
+    if (loading) {
+      return;
+    }
+
+    if (!active) {
+      requestAccess(
+        item.path
+      );
+
       return;
     }
 
@@ -202,8 +225,7 @@ function BottomNav() {
             item,
             index
           ) => {
-
-            const active =
+            const activeItem =
               isItemActive(
                 item,
                 location.pathname
@@ -220,7 +242,7 @@ function BottomNav() {
                     type="button"
                     className={
                       `anandam-side-nav__item${
-                        active
+                        activeItem
                           ? " is-active"
                           : ""
                       }`
@@ -231,7 +253,7 @@ function BottomNav() {
                       )
                     }
                     aria-current={
-                      active
+                      activeItem
                         ? "page"
                         : undefined
                     }

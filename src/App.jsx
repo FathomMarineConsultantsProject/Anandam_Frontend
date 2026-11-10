@@ -93,6 +93,16 @@ import SiteAccessGate
 import SiteAccessModal
   from "./components/access/SiteAccessModal";
 
+import {
+  WellbeingAccessProvider,
+} from "./context/WellbeingAccessContext";
+
+import WellbeingAccessGate
+  from "./components/access/WellbeingAccessGate";
+
+import WellbeingAccessModal
+  from "./components/access/WellbeingAccessModal";
+
 
 import {
   hasCompletedMoodGate,
@@ -177,6 +187,31 @@ function RequireSiteAccess({
       <SiteAccessGate>
         {children}
       </SiteAccessGate>
+    </RequireAuth>
+  );
+}
+
+
+/* =====================================================
+   AUTH + WELLBEING ENTRY ACCESS
+
+   Active 30-day Anandam pass:
+   opens directly.
+
+   No active pass:
+   1 token is required for each new visit to Wellbeing.
+   Internal /app/wellbeing/... navigation stays inside
+   the same paid entry.
+   ===================================================== */
+
+function RequireWellbeingAccess({
+  children,
+}) {
+  return (
+    <RequireAuth>
+      <WellbeingAccessGate>
+        {children}
+      </WellbeingAccessGate>
     </RequireAuth>
   );
 }
@@ -443,6 +478,8 @@ function AppRoutes() {
       <WellnessReminder />
 
       <SiteAccessModal />
+
+      <WellbeingAccessModal />
 
       <Routes>
 
@@ -756,18 +793,18 @@ function AppRoutes() {
 
         {/* =================================================
             WELLBEING
-            FREE AREA
+            1-TOKEN ENTRY WITHOUT SITE PASS
 
-            Individual psychometric tests keep their
-            EXISTING token logic.
+            Active 30-day Anandam access includes Wellbeing.
+            Existing psychometric test charges remain separate.
             ================================================= */}
 
         <Route
           path="/app/wellbeing"
           element={
-            <RequireAuth>
+            <RequireWellbeingAccess>
               <WellbeingQuestionnairesPage />
-            </RequireAuth>
+            </RequireWellbeingAccess>
           }
         />
 
@@ -777,9 +814,9 @@ function AppRoutes() {
         <Route
           path="/app/wellbeing/psychometrics/:testCode"
           element={
-            <RequireAuth>
+            <RequireWellbeingAccess>
               <PsychometricTestIntroPage />
-            </RequireAuth>
+            </RequireWellbeingAccess>
           }
         />
 
@@ -789,9 +826,9 @@ function AppRoutes() {
         <Route
           path="/app/wellbeing/psychometrics/:testCode/overview"
           element={
-            <RequireAuth>
+            <RequireWellbeingAccess>
               <PsychometricOverviewPage />
-            </RequireAuth>
+            </RequireWellbeingAccess>
           }
         />
 
@@ -801,9 +838,9 @@ function AppRoutes() {
         <Route
           path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId/disclaimer"
           element={
-            <RequireAuth>
+            <RequireWellbeingAccess>
               <PsychometricDisclaimerPage />
-            </RequireAuth>
+            </RequireWellbeingAccess>
           }
         />
 
@@ -813,9 +850,9 @@ function AppRoutes() {
         <Route
           path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId"
           element={
-            <RequireAuth>
+            <RequireWellbeingAccess>
               <PsychometricAssessmentPage />
-            </RequireAuth>
+            </RequireWellbeingAccess>
           }
         />
 
@@ -825,9 +862,9 @@ function AppRoutes() {
         <Route
           path="/app/wellbeing/psychometrics/:testCode/results/:attemptId"
           element={
-            <RequireAuth>
+            <RequireWellbeingAccess>
               <PsychometricResultPage />
-            </RequireAuth>
+            </RequireWellbeingAccess>
           }
         />
 
@@ -837,9 +874,9 @@ function AppRoutes() {
         <Route
           path="/app/wellbeing/:slug"
           element={
-            <RequireAuth>
+            <RequireWellbeingAccess>
               <WellbeingQuestionnairePage />
-            </RequireAuth>
+            </RequireWellbeingAccess>
           }
         />
 
@@ -1012,7 +1049,9 @@ function App() {
   return (
     <BrowserRouter>
       <SiteAccessProvider>
-        <AppRoutes />
+        <WellbeingAccessProvider>
+          <AppRoutes />
+        </WellbeingAccessProvider>
       </SiteAccessProvider>
     </BrowserRouter>
   );

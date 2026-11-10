@@ -28,8 +28,7 @@ function SiteAccessModal() {
     error,
     closeAccessModal,
     activateAccess,
-  } =
-    useSiteAccess();
+  } = useSiteAccess();
 
 
   if (!modalOpen) {
@@ -40,7 +39,7 @@ function SiteAccessModal() {
   const tokenCost =
     Number(
       access?.tokenCost ??
-      5
+      30
     );
 
 
@@ -77,7 +76,6 @@ function SiteAccessModal() {
       getStoredAuthUser() ||
       {};
 
-
     const username =
       user.fullName ||
       user.name ||
@@ -85,21 +83,13 @@ function SiteAccessModal() {
       user.email ||
       "Anandam user";
 
-
     const requestedTokens =
       missingTokens > 0
         ? missingTokens
         : tokenCost;
 
-
-    const amount =
-      requestedTokens *
-      100;
-
-
     const subject =
       `Anandam Token Request - ${username}`;
-
 
     const body = [
       "Hello Fathom Marine Consultants,",
@@ -108,11 +98,9 @@ function SiteAccessModal() {
       "",
       `User: ${username}`,
       `Requested tokens: ${requestedTokens}`,
-      `Estimated amount: ₹${amount}`,
+      `Requested Anandam access: ${durationDays} days`,
       "",
-      `These tokens are required to activate Anandam access for ${durationDays} days.`,
-      "",
-      "Please assist with adding the requested tokens to my account after payment confirmation.",
+      "Please assist me with adding the required tokens to my account.",
       "",
       "Thank you.",
     ].join("\n");
@@ -133,9 +121,7 @@ function SiteAccessModal() {
     try {
       await activateAccess();
     } catch {
-      /*
-        Context already displays the error.
-      */
+      // Context already displays the error.
     }
   }
 
@@ -225,8 +211,12 @@ function SiteAccessModal() {
               </span>
 
               <strong>
-                {tokenBalance -
-                  tokenCost}{" "}
+                {Number(
+                  (
+                    tokenBalance -
+                    tokenCost
+                  ).toFixed(6)
+                )}{" "}
                 Tokens
               </strong>
             </div>
@@ -238,7 +228,9 @@ function SiteAccessModal() {
           <div className="site-access-modal__warning">
             You need{" "}
             <strong>
-              {missingTokens}
+              {Number(
+                missingTokens.toFixed(6)
+              )}
             </strong>{" "}
             more{" "}
             {missingTokens === 1
