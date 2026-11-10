@@ -33,7 +33,6 @@ import DailyWisdomPage from "./pages/DailyWisdomPage";
 import WellbeingQuestionnairesPage from "./pages/WellbeingQuestionnairesPage";
 import WellbeingQuestionnairePage from "./pages/WellbeingQuestionnairePage";
 
-// marketplace
 import MarketplaceEntryPage from "./pages/MarketplaceEntryPage";
 import PractitionerMarketplacePage from "./pages/PractitionerMarketplacePage";
 import PractitionerSessionsPage from "./pages/PractitionerSessionsPage";
@@ -46,7 +45,9 @@ import MyAppointmentsPage from "./pages/MyAppointmentsPage";
 import VideoCallLobbyPage from "./pages/VideoCallLobbyPage";
 import VideoCallRoomPage from "./pages/VideoCallRoomPage";
 import PractitionerOnboardingPage from "./pages/PractitionerOnboardingPage";
+
 import AppLayout from "./components/layout/AppLayout";
+
 import JournalPage
   from "./pages/JournalPage";
 
@@ -62,7 +63,7 @@ import JournalEntriesPage
 import PsychometricOverviewPage
   from "./pages/PsychometricOverviewPage";
 
-  import PsychometricDisclaimerPage
+import PsychometricDisclaimerPage
   from "./pages/PsychometricDisclaimerPage";
 
 import PsychometricTestIntroPage
@@ -74,7 +75,24 @@ import PsychometricAssessmentPage
 import PsychometricResultPage
   from "./pages/PsychometricResultPage";
 
-import WellnessReminder from "./components/reminders/WellnessReminder";
+import WellnessReminder
+  from "./components/reminders/WellnessReminder";
+
+
+/* =====================================================
+   SITE ACCESS
+   ===================================================== */
+
+import {
+  SiteAccessProvider,
+} from "./context/SiteAccessContext";
+
+import SiteAccessGate
+  from "./components/access/SiteAccessGate";
+
+import SiteAccessModal
+  from "./components/access/SiteAccessModal";
+
 
 import {
   hasCompletedMoodGate,
@@ -87,116 +105,318 @@ import {
   getStoredPractitionerOnboarding,
 } from "./api/authApi";
 
+
 function practitionerNeedsOnboarding() {
-  const user = getStoredAuthUser();
-  const onboarding = getStoredPractitionerOnboarding();
+  const user =
+    getStoredAuthUser();
+
+  const onboarding =
+    getStoredPractitionerOnboarding();
+
 
   return (
-    user?.role === "PRACTITIONER" &&
-    onboarding?.completed !== true
+    user?.role ===
+      "PRACTITIONER" &&
+    onboarding?.completed !==
+      true
   );
 }
 
-function RequireAuth({ children }) {
-  const location = useLocation();
-  const token = getStoredToken();
+
+/* =====================================================
+   AUTH
+   ===================================================== */
+
+function RequireAuth({
+  children,
+}) {
+  const location =
+    useLocation();
+
+  const token =
+    getStoredToken();
+
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
+
 
   if (
     practitionerNeedsOnboarding() &&
-    location.pathname !== "/practitioner/onboarding"
+    location.pathname !==
+      "/practitioner/onboarding"
   ) {
-    return <Navigate to="/practitioner/onboarding" replace />;
+    return (
+      <Navigate
+        to="/practitioner/onboarding"
+        replace
+      />
+    );
   }
+
 
   return children;
 }
 
-function RequirePractitioner({ children }) {
-  const location = useLocation();
-  const token = getStoredToken();
-  const user = getStoredAuthUser();
+
+/* =====================================================
+   AUTH + SITE SUBSCRIPTION
+   ===================================================== */
+
+function RequireSiteAccess({
+  children,
+}) {
+  return (
+    <RequireAuth>
+      <SiteAccessGate>
+        {children}
+      </SiteAccessGate>
+    </RequireAuth>
+  );
+}
+
+
+/* =====================================================
+   PRACTITIONER
+   ===================================================== */
+
+function RequirePractitioner({
+  children,
+}) {
+  const location =
+    useLocation();
+
+  const token =
+    getStoredToken();
+
+  const user =
+    getStoredAuthUser();
+
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
 
-  if (user?.role !== "PRACTITIONER") {
-    return <Navigate to="/marketplace" replace />;
+
+  if (
+    user?.role !==
+      "PRACTITIONER"
+  ) {
+    return (
+      <Navigate
+        to="/marketplace"
+        replace
+      />
+    );
   }
+
 
   if (
     practitionerNeedsOnboarding() &&
-    location.pathname !== "/practitioner/onboarding"
+    location.pathname !==
+      "/practitioner/onboarding"
   ) {
-    return <Navigate to="/practitioner/onboarding" replace />;
+    return (
+      <Navigate
+        to="/practitioner/onboarding"
+        replace
+      />
+    );
   }
+
 
   return children;
 }
 
-function RequireNormalUser({ children }) {
-  const token = getStoredToken();
-  const user = getStoredAuthUser();
+
+/* =====================================================
+   PRACTITIONER + SITE ACCESS
+   ===================================================== */
+
+function RequirePractitionerSiteAccess({
+  children,
+}) {
+  return (
+    <RequirePractitioner>
+      <SiteAccessGate>
+        {children}
+      </SiteAccessGate>
+    </RequirePractitioner>
+  );
+}
+
+
+/* =====================================================
+   NORMAL USER
+   ===================================================== */
+
+function RequireNormalUser({
+  children,
+}) {
+  const token =
+    getStoredToken();
+
+  const user =
+    getStoredAuthUser();
+
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
 
-  if (user?.role === "PRACTITIONER") {
-    return <Navigate to="/marketplace/practitioner" replace />;
+
+  if (
+    user?.role ===
+      "PRACTITIONER"
+  ) {
+    return (
+      <Navigate
+        to="/marketplace/practitioner"
+        replace
+      />
+    );
   }
+
 
   return children;
 }
+
+
+/* =====================================================
+   NORMAL USER + SITE ACCESS
+   ===================================================== */
+
+function RequireNormalUserSiteAccess({
+  children,
+}) {
+  return (
+    <RequireNormalUser>
+      <SiteAccessGate>
+        {children}
+      </SiteAccessGate>
+    </RequireNormalUser>
+  );
+}
+
+
+/* =====================================================
+   FIRST QUICK MOOD PAGE
+   ALWAYS FREE
+   ===================================================== */
 
 function MoodQuickEntry() {
-  const user = getStoredAuthUser();
+  const user =
+    getStoredAuthUser();
 
-  // Practitioners do not use the first-login mood gate as their landing page.
-  // Incomplete practitioners are already intercepted by RequireAuth and sent
-  // back to /practitioner/onboarding. Completed practitioners land on dashboard.
-  if (user?.role === "PRACTITIONER") {
-    return <Navigate to="/dashboard" replace />;
+
+  if (
+    user?.role ===
+      "PRACTITIONER"
+  ) {
+    return (
+      <Navigate
+        to="/dashboard"
+        replace
+      />
+    );
   }
+
 
   return <MoodPage />;
 }
 
-function RequireMoodBeforeDashboard({ children }) {
+
+/* =====================================================
+   DASHBOARD GATE
+
+   First login:
+   QUICK mood -> dashboard.
+
+   Dashboard itself does NOT require
+   the 30-day site subscription.
+   ===================================================== */
+
+function RequireMoodBeforeDashboard({
+  children,
+}) {
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
 
-  if (practitionerNeedsOnboarding()) {
-    return <Navigate to="/practitioner/onboarding" replace />;
+
+  if (
+    practitionerNeedsOnboarding()
+  ) {
+    return (
+      <Navigate
+        to="/practitioner/onboarding"
+        replace
+      />
+    );
   }
 
-  const user = getStoredAuthUser();
 
-  // Practitioner onboarding is the practitioner gate. Once it is submitted,
-  // the practitioner should land on the normal Anandam dashboard immediately.
-  if (user?.role === "PRACTITIONER") {
+  const user =
+    getStoredAuthUser();
+
+
+  if (
+    user?.role ===
+      "PRACTITIONER"
+  ) {
     return children;
   }
 
-  if (!hasCompletedMoodGate()) {
-    return <Navigate to="/mood-quick" replace />;
+
+  if (
+    !hasCompletedMoodGate()
+  ) {
+    return (
+      <Navigate
+        to="/mood-quick"
+        replace
+      />
+    );
   }
+
 
   return children;
 }
+
+
+/* =====================================================
+   MARKETPLACE ROLE ENTRY
+   ===================================================== */
 
 function MarketplaceRoleEntry() {
   const user =
     getStoredAuthUser();
 
+
   if (
     user?.role ===
-    "PRACTITIONER"
+      "PRACTITIONER"
   ) {
     return (
       <Navigate
@@ -206,24 +426,70 @@ function MarketplaceRoleEntry() {
     );
   }
 
-  return <MarketplaceEntryPage />;
+
+  return (
+    <MarketplaceEntryPage />
+  );
 }
 
-function App() {
-  return (
-    <BrowserRouter>
 
+/* =====================================================
+   ROUTES
+   ===================================================== */
+
+function AppRoutes() {
+  return (
+    <>
       <WellnessReminder />
 
-      <Routes>
-        {/* PUBLIC ROUTES */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/blog/:shareToken" element={<PublicBlogPage />} />
+      <SiteAccessModal />
 
-        {/* PRACTITIONER AUTH / ONBOARDING - no AppLayout, matches Figma */}
+      <Routes>
+
+        {/* =================================================
+            PUBLIC
+            ================================================= */}
+
+        <Route
+          path="/"
+          element={
+            <LandingPage />
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            <LoginPage />
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            <SignupPage />
+          }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={
+            <ForgotPasswordPage />
+          }
+        />
+
+        <Route
+          path="/blog/:shareToken"
+          element={
+            <PublicBlogPage />
+          }
+        />
+
+
+        {/* =================================================
+            PRACTITIONER ONBOARDING
+            ================================================= */}
+
         <Route
           path="/practitioner/onboarding"
           element={
@@ -233,259 +499,524 @@ function App() {
           }
         />
 
-        {/* MOOD GATE */}
-        <Route path="/mood-quick" element={<RequireAuth><MoodQuickEntry /></RequireAuth>} />
 
-        {/* DASHBOARD */}
-        <Route path="/dashboard" element={<RequireMoodBeforeDashboard><DashboardPage /></RequireMoodBeforeDashboard>} />
+        {/* =================================================
+            QUICK MOOD
+            FREE
+            ================================================= */}
 
-        {/* MAIN APP */}
-        <Route path="/mood" element={<RequireAuth><MoodCheckinPage /></RequireAuth>} />
-        <Route path="/app/perfect-day" element={<RequireAuth><PerfectDaySchedulePage /></RequireAuth>} />
-        <Route path="/app/work-rest" element={<RequireAuth><WorkRestPage /></RequireAuth>} />
-        <Route path="/app/fitness" element={<RequireAuth><FitnessPage /></RequireAuth>} />
-        <Route path="/app/emergency" element={<RequireAuth><EmergencyPage /></RequireAuth>} />
-        <Route path="/app/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
-        <Route path="/app/breathing" element={<RequireAuth><BreathingPage /></RequireAuth>} />
-        <Route path="/app/brain-games/*" element={<RequireAuth><BrainGamesPage /></RequireAuth>} />
-        <Route path="/app/sleep-stories" element={<RequireAuth><SleepStoriesPage /></RequireAuth>} />
-        <Route path="/app/sleep-stories/:slug" element={<RequireAuth><SleepPlayerPage /></RequireAuth>} />
+        <Route
+          path="/mood-quick"
+          element={
+            <RequireAuth>
+              <MoodQuickEntry />
+            </RequireAuth>
+          }
+        />
+
+
+        {/* =================================================
+            DASHBOARD
+            FREE
+            ================================================= */}
+
+        <Route
+          path="/dashboard"
+          element={
+            <RequireMoodBeforeDashboard>
+              <DashboardPage />
+            </RequireMoodBeforeDashboard>
+          }
+        />
+
+
+        {/* =================================================
+            PAID MAIN APP
+            ================================================= */}
+
+        <Route
+          path="/mood"
+          element={
+            <RequireSiteAccess>
+              <MoodCheckinPage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/perfect-day"
+          element={
+            <RequireSiteAccess>
+              <PerfectDaySchedulePage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/work-rest"
+          element={
+            <RequireSiteAccess>
+              <WorkRestPage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/fitness"
+          element={
+            <RequireSiteAccess>
+              <FitnessPage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/emergency"
+          element={
+            <RequireSiteAccess>
+              <EmergencyPage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/profile"
+          element={
+            <RequireSiteAccess>
+              <ProfilePage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/breathing"
+          element={
+            <RequireSiteAccess>
+              <BreathingPage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/brain-games/*"
+          element={
+            <RequireSiteAccess>
+              <BrainGamesPage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/sleep-stories"
+          element={
+            <RequireSiteAccess>
+              <SleepStoriesPage />
+            </RequireSiteAccess>
+          }
+        />
+
+        <Route
+          path="/app/sleep-stories/:slug"
+          element={
+            <RequireSiteAccess>
+              <SleepPlayerPage />
+            </RequireSiteAccess>
+          }
+        />
+
+
+        {/* =================================================
+            JOURNAL
+            PAID
+            ================================================= */}
+
         <Route
           path="/app/journal"
           element={
-            <RequireAuth>
+            <RequireSiteAccess>
               <AppLayout>
                 <JournalPage />
               </AppLayout>
-            </RequireAuth>
+            </RequireSiteAccess>
           }
         />
 
         <Route
           path="/app/journal/template/:slug"
           element={
-            <RequireAuth>
+            <RequireSiteAccess>
               <AppLayout>
                 <JournalTemplatePage />
               </AppLayout>
-            </RequireAuth>
+            </RequireSiteAccess>
           }
         />
 
         <Route
           path="/app/journal/template/:slug/:entryId"
           element={
-            <RequireAuth>
+            <RequireSiteAccess>
               <AppLayout>
                 <JournalTemplatePage />
               </AppLayout>
-            </RequireAuth>
+            </RequireSiteAccess>
           }
         />
 
         <Route
           path="/app/journal/write"
           element={
-            <RequireAuth>
+            <RequireSiteAccess>
               <AppLayout>
                 <JournalCustomPage />
               </AppLayout>
-            </RequireAuth>
+            </RequireSiteAccess>
           }
         />
 
         <Route
           path="/app/journal/write/:entryId"
           element={
-            <RequireAuth>
+            <RequireSiteAccess>
               <AppLayout>
                 <JournalCustomPage />
               </AppLayout>
-            </RequireAuth>
+            </RequireSiteAccess>
           }
         />
 
         <Route
           path="/app/journal/entries"
           element={
-            <RequireAuth>
+            <RequireSiteAccess>
               <AppLayout>
                 <JournalEntriesPage />
               </AppLayout>
+            </RequireSiteAccess>
+          }
+        />
+
+
+        {/* =================================================
+            BLOGS
+            FREE
+            ================================================= */}
+
+        <Route
+          path="/app/blogs"
+          element={
+            <RequireAuth>
+              <BlogsPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/blogs/write"
+          element={
+            <RequireAuth>
+              <BlogEditorPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/blogs/:blogId/edit"
+          element={
+            <RequireAuth>
+              <BlogEditorPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/app/blogs/:blogId"
+          element={
+            <RequireAuth>
+              <BlogDetailPage />
             </RequireAuth>
           }
         />
 
 
+        {/* =================================================
+            DAILY WISDOM
+            PAID
+            ================================================= */}
 
-        {/* BLOGS */}
-        <Route path="/app/blogs" element={<RequireAuth><BlogsPage /></RequireAuth>} />
-        <Route path="/app/blogs/write" element={<RequireAuth><BlogEditorPage /></RequireAuth>} />
-        <Route path="/app/blogs/:blogId/edit" element={<RequireAuth><BlogEditorPage /></RequireAuth>} />
-        <Route path="/app/blogs/:blogId" element={<RequireAuth><BlogDetailPage /></RequireAuth>} />
-        <Route path="/app/daily-wisdom" element={<RequireAuth><DailyWisdomPage /></RequireAuth>} />
-
-        {/* =====================================================
-    PERSONAL ANALYSIS / WELLBEING
-    ===================================================== */}
-
-<Route
-  path="/app/wellbeing"
-  element={
-    <RequireAuth>
-      <WellbeingQuestionnairesPage />
-    </RequireAuth>
-  }
-/>
+        <Route
+          path="/app/daily-wisdom"
+          element={
+            <RequireSiteAccess>
+              <DailyWisdomPage />
+            </RequireSiteAccess>
+          }
+        />
 
 
-{/* =====================================================
-    PSYCHOMETRIC TEST ENTRY
-    ===================================================== */}
+        {/* =================================================
+            WELLBEING
+            FREE AREA
 
-<Route
-  path="/app/wellbeing/psychometrics/:testCode"
-  element={
-    <RequireAuth>
-      <PsychometricTestIntroPage />
-    </RequireAuth>
-  }
-/>
+            Individual psychometric tests keep their
+            EXISTING token logic.
+            ================================================= */}
 
-
-{/* =====================================================
-    MARITIME INTRO / OVERVIEW
-    ===================================================== */}
-
-<Route
-  path="/app/wellbeing/psychometrics/:testCode/overview"
-  element={
-    <RequireAuth>
-      <PsychometricOverviewPage />
-    </RequireAuth>
-  }
-/>
-
-{/* =====================================================
-    PSYCHOMETRIC DISCLAIMER
-    ===================================================== */}
-
-<Route
-  path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId/disclaimer"
-  element={
-    <RequireAuth>
-      <PsychometricDisclaimerPage />
-    </RequireAuth>
-  }
-/>
-
-{/* =====================================================
-    PSYCHOMETRIC QUESTIONNAIRE
-    ===================================================== */}
-
-<Route
-  path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId"
-  element={
-    <RequireAuth>
-      <PsychometricAssessmentPage />
-    </RequireAuth>
-  }
-/>
+        <Route
+          path="/app/wellbeing"
+          element={
+            <RequireAuth>
+              <WellbeingQuestionnairesPage />
+            </RequireAuth>
+          }
+        />
 
 
-{/* =====================================================
-    PSYCHOMETRIC RESULTS
-    ===================================================== */}
+        {/* PSYCHOMETRIC ENTRY */}
 
-<Route
-  path="/app/wellbeing/psychometrics/:testCode/results/:attemptId"
-  element={
-    <RequireAuth>
-      <PsychometricResultPage />
-    </RequireAuth>
-  }
-/>
+        <Route
+          path="/app/wellbeing/psychometrics/:testCode"
+          element={
+            <RequireAuth>
+              <PsychometricTestIntroPage />
+            </RequireAuth>
+          }
+        />
 
 
-{/* =====================================================
-    EXISTING WELLBEING QUESTIONNAIRE
+        {/* PSYCHOMETRIC OVERVIEW */}
 
-    KEEP THIS AFTER PSYCHOMETRIC ROUTES.
-    ===================================================== */}
+        <Route
+          path="/app/wellbeing/psychometrics/:testCode/overview"
+          element={
+            <RequireAuth>
+              <PsychometricOverviewPage />
+            </RequireAuth>
+          }
+        />
 
-<Route
-  path="/app/wellbeing/:slug"
-  element={
-    <RequireAuth>
-      <WellbeingQuestionnairePage />
-    </RequireAuth>
-  }
-/>
 
-        {/* MARKETPLACE ENTRY - role aware */}
+        {/* DISCLAIMER */}
+
+        <Route
+          path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId/disclaimer"
+          element={
+            <RequireAuth>
+              <PsychometricDisclaimerPage />
+            </RequireAuth>
+          }
+        />
+
+
+        {/* ASSESSMENT */}
+
+        <Route
+          path="/app/wellbeing/psychometrics/:testCode/attempts/:attemptId"
+          element={
+            <RequireAuth>
+              <PsychometricAssessmentPage />
+            </RequireAuth>
+          }
+        />
+
+
+        {/* RESULTS */}
+
+        <Route
+          path="/app/wellbeing/psychometrics/:testCode/results/:attemptId"
+          element={
+            <RequireAuth>
+              <PsychometricResultPage />
+            </RequireAuth>
+          }
+        />
+
+
+        {/* WELLBEING QUESTIONNAIRE */}
+
+        <Route
+          path="/app/wellbeing/:slug"
+          element={
+            <RequireAuth>
+              <WellbeingQuestionnairePage />
+            </RequireAuth>
+          }
+        />
+
+
+        {/* =================================================
+            MARKETPLACE
+            PAID
+            ================================================= */}
+
         <Route
           path="/marketplace"
-          element={<RequireAuth><AppLayout><MarketplaceRoleEntry /></AppLayout></RequireAuth>}
+          element={
+            <RequireSiteAccess>
+              <AppLayout>
+                <MarketplaceRoleEntry />
+              </AppLayout>
+            </RequireSiteAccess>
+          }
         />
 
-        {/* MARKETPLACE - NORMAL USER ONLY */}
+
+        {/* NORMAL USER MARKETPLACE */}
+
         <Route
           path="/marketplace/practitioners/:slug"
-          element={<RequireNormalUser><AppLayout><PractitionerProfilePage /></AppLayout></RequireNormalUser>}
+          element={
+            <RequireNormalUserSiteAccess>
+              <AppLayout>
+                <PractitionerProfilePage />
+              </AppLayout>
+            </RequireNormalUserSiteAccess>
+          }
         />
+
         <Route
           path="/marketplace/practitioners/:slug/enquire"
-          element={<RequireNormalUser><AppLayout><SendEnquiryPage /></AppLayout></RequireNormalUser>}
+          element={
+            <RequireNormalUserSiteAccess>
+              <AppLayout>
+                <SendEnquiryPage />
+              </AppLayout>
+            </RequireNormalUserSiteAccess>
+          }
         />
+
         <Route
           path="/marketplace/enquiries"
-          element={<RequireNormalUser><AppLayout><MyEnquiriesPage /></AppLayout></RequireNormalUser>}
+          element={
+            <RequireNormalUserSiteAccess>
+              <AppLayout>
+                <MyEnquiriesPage />
+              </AppLayout>
+            </RequireNormalUserSiteAccess>
+          }
         />
+
         <Route
           path="/marketplace/enquiries/:enquiryId"
-          element={<RequireNormalUser><AppLayout><EnquiryDetailsPage /></AppLayout></RequireNormalUser>}
+          element={
+            <RequireNormalUserSiteAccess>
+              <AppLayout>
+                <EnquiryDetailsPage />
+              </AppLayout>
+            </RequireNormalUserSiteAccess>
+          }
         />
+
         <Route
           path="/marketplace/appointments"
-          element={<RequireNormalUser><AppLayout><MyAppointmentsPage /></AppLayout></RequireNormalUser>}
+          element={
+            <RequireNormalUserSiteAccess>
+              <AppLayout>
+                <MyAppointmentsPage />
+              </AppLayout>
+            </RequireNormalUserSiteAccess>
+          }
         />
 
-        {/* VIDEO - both roles are authorized by appointment ownership on backend */}
+
+        {/* =================================================
+            VIDEO
+            PAID
+            ================================================= */}
+
         <Route
           path="/marketplace/appointments/:appointmentId/join"
-          element={<RequireAuth><AppLayout><VideoCallLobbyPage /></AppLayout></RequireAuth>}
-        />
-        <Route
-          path="/marketplace/appointments/:appointmentId/call"
-          element={<RequireAuth><AppLayout><VideoCallRoomPage /></AppLayout></RequireAuth>}
+          element={
+            <RequireSiteAccess>
+              <AppLayout>
+                <VideoCallLobbyPage />
+              </AppLayout>
+            </RequireSiteAccess>
+          }
         />
 
-        {/* MARKETPLACE - PRACTITIONER ONLY */}
+        <Route
+          path="/marketplace/appointments/:appointmentId/call"
+          element={
+            <RequireSiteAccess>
+              <AppLayout>
+                <VideoCallRoomPage />
+              </AppLayout>
+            </RequireSiteAccess>
+          }
+        />
+
+
+        {/* =================================================
+            PRACTITIONER
+            ================================================= */}
+
         <Route
           path="/marketplace/practitioner"
           element={
-            <RequirePractitioner>
+            <RequirePractitionerSiteAccess>
               <Navigate
                 to="/marketplace/practitioner/sessions?tab=new"
                 replace
               />
-            </RequirePractitioner>
+            </RequirePractitionerSiteAccess>
           }
         />
+
         <Route
           path="/marketplace/practitioner/sessions"
-          element={<RequirePractitioner><AppLayout><PractitionerSessionsPage /></AppLayout></RequirePractitioner>}
-        />
-        <Route
-          path="/marketplace/practitioner/enquiries/:enquiryId"
-          element={<RequirePractitioner><AppLayout><PractitionerEnquiryDetailsPage /></AppLayout></RequirePractitioner>}
+          element={
+            <RequirePractitionerSiteAccess>
+              <AppLayout>
+                <PractitionerSessionsPage />
+              </AppLayout>
+            </RequirePractitionerSiteAccess>
+          }
         />
 
+        <Route
+          path="/marketplace/practitioner/enquiries/:enquiryId"
+          element={
+            <RequirePractitionerSiteAccess>
+              <AppLayout>
+                <PractitionerEnquiryDetailsPage />
+              </AppLayout>
+            </RequirePractitionerSiteAccess>
+          }
+        />
+
+
         {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to="/"
+              replace
+            />
+          }
+        />
+
       </Routes>
+    </>
+  );
+}
+
+
+/* =====================================================
+   ROOT
+   ===================================================== */
+
+function App() {
+  return (
+    <BrowserRouter>
+      <SiteAccessProvider>
+        <AppRoutes />
+      </SiteAccessProvider>
     </BrowserRouter>
   );
 }
+
 
 export default App;
