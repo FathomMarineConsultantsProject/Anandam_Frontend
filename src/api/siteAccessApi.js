@@ -31,13 +31,30 @@ export async function getMySiteAccess() {
 }
 
 
-export async function activateMySiteAccess() {
+export async function activateMySiteAccess(
+  tokenAmount
+) {
+  const options = {
+    method: "POST",
+  };
+
+
+  if (
+    tokenAmount !== undefined &&
+    tokenAmount !== null &&
+    tokenAmount !== ""
+  ) {
+    options.body =
+      JSON.stringify({
+        tokenAmount,
+      });
+  }
+
+
   const response =
     await apiRequest(
       "/site-access/activate",
-      {
-        method: "POST",
-      }
+      options
     );
 
   return unwrapAccess(

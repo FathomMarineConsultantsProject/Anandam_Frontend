@@ -217,12 +217,22 @@ export function SiteAccessProvider({
 
 
   /* ===================================================
-     ACTIVATE 30-DAY ACCESS
+     ACTIVATE / EXTEND ACCESS
+
+     30       -> 30 days
+     15       -> 15 days
+     2        -> 2 days
+     1        -> 1 day
+     0.5      -> 12 hours
+     0.25     -> 6 hours
+     0.083333 -> about 2 hours
      =================================================== */
 
   const activateAccess =
     useCallback(
-      async () => {
+      async (
+        tokenAmount = null
+      ) => {
         try {
           setActivating(
             true
@@ -232,7 +242,9 @@ export function SiteAccessProvider({
 
 
           const updated =
-            await activateMySiteAccess();
+            await activateMySiteAccess(
+              tokenAmount
+            );
 
 
           setAccess(
@@ -241,7 +253,8 @@ export function SiteAccessProvider({
 
 
           /*
-            Refresh token amount in AppHeader.
+            Refresh token balance shown
+            elsewhere in Anandam.
           */
 
           window.dispatchEvent(
@@ -281,6 +294,8 @@ export function SiteAccessProvider({
 
 
           setError(
+            activateError?.data?.message ||
+            activateError?.response?.data?.message ||
             activateError?.message ||
             "Unable to activate Anandam access."
           );
@@ -308,6 +323,7 @@ export function SiteAccessProvider({
   const active =
     Boolean(
       access?.active === true ||
+      access?.hasAccess === true ||
       access?.accessType ===
         "ROLE_BYPASS"
     );
@@ -368,9 +384,6 @@ export function SiteAccessProvider({
 
 /* =====================================================
    HOOK
-
-   IMPORTANT:
-   This named export fixes your current blank-screen error.
    ===================================================== */
 
 export function useSiteAccess() {

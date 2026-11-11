@@ -225,3 +225,215 @@
     flex-direction: column;
   }
 }
+
+/* =====================================================
+   FLEXIBLE ACCESS MODAL - RESPONSIVE FIX
+   ===================================================== */
+
+.site-access-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 18px;
+
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+
+.site-access-modal {
+  width: min(760px, calc(100vw - 36px));
+
+  max-height: calc(100dvh - 36px);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  box-sizing: border-box;
+
+  padding: 24px 28px;
+
+  border-radius: 18px;
+
+  scrollbar-width: thin;
+}
+
+
+.site-access-modal__coin {
+  margin-bottom: 8px;
+}
+
+
+.site-access-modal__coin img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+
+.site-access-modal h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+
+.site-access-modal__description {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+
+/* =====================================================
+   ACCESS PRESETS
+   ===================================================== */
+
+.site-access-duration-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin: 14px 0 10px;
+}
+
+
+.site-access-duration-grid
+.site-access-button {
+  min-height: 58px;
+
+  padding: 8px 10px;
+
+  line-height: 1.2;
+}
+
+
+/* =====================================================
+   CUSTOM ACCESS
+   ===================================================== */
+
+.site-access-custom-duration {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr) 130px;
+
+  gap: 8px;
+
+  margin-bottom: 12px;
+}
+
+
+.site-access-custom-duration input,
+.site-access-custom-duration select {
+  width: 100%;
+
+  min-width: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   SUMMARY
+   ===================================================== */
+
+.site-access-modal__summary {
+  margin-top: 12px;
+}
+
+
+.site-access-modal__summary > div {
+  padding: 10px 0;
+}
+
+
+.site-access-modal__actions {
+  margin-top: 14px;
+  padding-top: 0;
+}
+
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media (max-width: 720px) {
+
+  .site-access-modal {
+    width: min(
+      560px,
+      calc(100vw - 24px)
+    );
+
+    max-height:
+      calc(100dvh - 24px);
+
+    padding: 22px 20px;
+  }
+
+
+  .site-access-duration-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 480px) {
+
+  .site-access-overlay {
+    padding: 8px;
+  }
+
+
+  .site-access-modal {
+    width:
+      calc(100vw - 16px);
+
+    max-height:
+      calc(100dvh - 16px);
+
+    padding:
+      20px 16px;
+  }
+
+
+  .site-access-duration-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 6px;
+  }
+
+
+  .site-access-duration-grid
+  .site-access-button {
+    min-height: 54px;
+  }
+
+
+  .site-access-custom-duration {
+    grid-template-columns:
+      1fr 105px;
+  }
+
+
+  .site-access-modal__actions {
+    display: grid;
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+  }
+}
