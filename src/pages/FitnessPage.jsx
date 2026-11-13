@@ -52,6 +52,7 @@ const GUIDED_CATEGORIES = [
   "BALANCE",
   "YOGA",
   "RECOVERY",
+   "MOTIVATION",
 ];
 
 const DIFFICULTIES = [

@@ -369,31 +369,46 @@ export default function WellbeingQuestionnairesPage() {
       ]
     );
 
+    const seniorLeadershipTest =
+  useMemo(
+    () =>
+      psychometricTests.find(
+        (test) =>
+          test.type ===
+          "SENIOR_LEADERSHIP_PERSONALITY"
+      ) ||
+      null,
 
-  const personalTests =
-    useMemo(
-      () =>
-        [
-          "BIG_FIVE",
-          "PERSONALITY_16PF",
-          "MOTIVATION_VALUES",
-        ]
-          .map(
-            (type) =>
-              psychometricTests.find(
-                (test) =>
-                  test.type ===
-                  type
-              )
-          )
-          .filter(
-            Boolean
-          ),
+    [
+      psychometricTests,
+    ]
+  );
 
+
+ const personalTests =
+  useMemo(
+    () =>
       [
-        psychometricTests,
+        "BIG_FIVE",
+        "PERSONALITY_16PF",
+        "MOTIVATION_VALUES",
       ]
-    );
+        .map(
+          (type) =>
+            psychometricTests.find(
+              (test) =>
+                test.type ===
+                type
+            )
+        )
+        .filter(
+          Boolean
+        ),
+
+    [
+      psychometricTests,
+    ]
+  );
 
 
   function openWellbeing(
@@ -501,19 +516,20 @@ export default function WellbeingQuestionnairesPage() {
       its overview page.
     */
 
-    if (
-      test.type ===
-      "MARITIME_HUMAN_PERFORMANCE"
-    ) {
-      navigate(
-        `/app/wellbeing/psychometrics/${encodeURIComponent(
-          test.code
-        )}/overview`
-      );
+   if (
+  test.type ===
+    "MARITIME_HUMAN_PERFORMANCE" ||
+  test.type ===
+    "SENIOR_LEADERSHIP_PERSONALITY"
+) {
+  navigate(
+    `/app/wellbeing/psychometrics/${encodeURIComponent(
+      test.code
+    )}/overview`
+  );
 
-
-      return;
-    }
+  return;
+}
 
 
     /*
@@ -840,21 +856,36 @@ export default function WellbeingQuestionnairesPage() {
           ) : (
             <>
               {maritimeTest ? (
-                <PsychometricCard
-                  test={
-                    maritimeTest
-                  }
+  <PsychometricCard
+    test={
+      maritimeTest
+    }
 
-                  featured
+    featured
 
-                  onOpen={
-                    openPsychometric
-                  }
-                />
-              ) : null}
+    onOpen={
+      openPsychometric
+    }
+  />
+) : null}
 
 
-              <section className="pad-card-grid">
+{seniorLeadershipTest ? (
+  <PsychometricCard
+    test={
+      seniorLeadershipTest
+    }
+
+    featured
+
+    onOpen={
+      openPsychometric
+    }
+  />
+) : null}
+
+
+<section className="pad-card-grid">
                 {personalTests.map(
                   (
                     test

@@ -637,6 +637,24 @@ export async function submitPsychometricSection(
     timedOut = false,
   } = {}
 ) {
+  /*
+    Save the currently visible section answers first.
+
+    The backend section-submit controller closes/marks the
+    section; answer persistence is handled by /answers.
+    This keeps Maritime and Senior Leadership consistent.
+  */
+  if (
+    Array.isArray(answers) &&
+    answers.length > 0
+  ) {
+    await savePsychometricAnswers(
+      attemptId,
+      answers
+    );
+  }
+
+
   const response =
     await apiRequest(
       PSYCHOMETRIC_ENDPOINTS.submitSection(
@@ -648,13 +666,6 @@ export async function submitPsychometricSection(
 
         body:
           JSON.stringify({
-            answers:
-              Array.isArray(
-                answers
-              )
-                ? answers
-                : [],
-
             timedOut:
               Boolean(
                 timedOut

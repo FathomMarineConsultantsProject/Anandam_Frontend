@@ -29,6 +29,7 @@ import {
     getPsychometricAttempt,
     getPsychometricSection,
     submitPsychometricSection,
+    savePsychometricAnswers,
     getPsychometricErrorMessage,
 } from "../api/psychometricApi";
 
@@ -214,6 +215,27 @@ function sectionDisplayTitle(
         return "Safety Behaviour & Human Factors";
     }
 
+    if (
+        section?.code ===
+        "S1"
+    ) {
+        return "Strategic Judgment & Accountability";
+    }
+
+    if (
+        section?.code ===
+        "S2"
+    ) {
+        return "Leadership Influence & Crew Dynamics";
+    }
+
+    if (
+        section?.code ===
+        "S3"
+    ) {
+        return "Resilience, Adaptability & Integrity";
+    }
+
     return (
         section?.title ||
         "Assessment"
@@ -303,6 +325,72 @@ export default function PsychometricAssessmentPage() {
     const isMaritime =
         testType ===
         "MARITIME_HUMAN_PERFORMANCE";
+
+
+    const isSeniorLeadership =
+        testType ===
+        "SENIOR_LEADERSHIP_PERSONALITY";
+
+
+    const isSectionedAssessment =
+        isMaritime ||
+        isSeniorLeadership;
+
+
+    const availableSections =
+        useMemo(
+            () => {
+                const source =
+                    Array.isArray(
+                        attempt?.sections
+                    )
+                        ? attempt.sections
+                        : [];
+
+                return [...source].sort(
+                    (left, right) =>
+                        Number(
+                            left?.sortOrder ??
+                            left?.section?.sortOrder ??
+                            0
+                        ) -
+                        Number(
+                            right?.sortOrder ??
+                            right?.section?.sortOrder ??
+                            0
+                        )
+                );
+            },
+            [attempt]
+        );
+
+
+    const getSectionCodeFromAttempt =
+        (section) =>
+            section?.code ||
+            section?.section?.code ||
+            null;
+
+
+    const currentSectionIndex =
+        availableSections.findIndex(
+            (section) =>
+                getSectionCodeFromAttempt(
+                    section
+                ) ===
+                activeSection?.code
+        );
+
+
+    const allSeniorSectionsSubmitted =
+        isSeniorLeadership &&
+        availableSections.length > 0 &&
+        availableSections.every(
+            (section) =>
+                Boolean(
+                    section?.submittedAt
+                )
+        );
 
 
     const answeredCount =
@@ -453,37 +541,37 @@ export default function PsychometricAssessmentPage() {
                             attemptId
                         );
 
-                        /*
-  =====================================================
-  DISCLAIMER GATE
+                    /*
+=====================================================
+DISCLAIMER GATE
 
-  Never allow the assessment UI to open before
-  acknowledgement.
-  =====================================================
+Never allow the assessment UI to open before
+acknowledgement.
+=====================================================
 */
 
-if (
-  loadedAttempt
-    ?.requiresDisclaimer ===
-    true ||
-  loadedAttempt
-    ?.canBeginAssessment ===
-    false
-) {
-  navigate(
-    `/app/wellbeing/psychometrics/${encodeURIComponent(
-      testCode
-    )}/attempts/${encodeURIComponent(
-      attemptId
-    )}/disclaimer`,
-    {
-      replace: true,
-    }
-  );
+                    if (
+                        loadedAttempt
+                            ?.requiresDisclaimer ===
+                        true ||
+                        loadedAttempt
+                            ?.canBeginAssessment ===
+                        false
+                    ) {
+                        navigate(
+                            `/app/wellbeing/psychometrics/${encodeURIComponent(
+                                testCode
+                            )}/attempts/${encodeURIComponent(
+                                attemptId
+                            )}/disclaimer`,
+                            {
+                                replace: true,
+                            }
+                        );
 
 
-  return;
-}
+                        return;
+                    }
 
                     setAttempt(
                         loadedAttempt
@@ -499,6 +587,16 @@ if (
                         "MARITIME_HUMAN_PERFORMANCE";
 
 
+                    const loadedIsSeniorLeadership =
+                        loadedTestType ===
+                        "SENIOR_LEADERSHIP_PERSONALITY";
+
+
+                    const loadedIsSectioned =
+                        loadedIsMaritime ||
+                        loadedIsSeniorLeadership;
+
+
                     /*
                         =====================================================
                         STANDALONE PSYCHOMETRIC TESTS
@@ -510,7 +608,7 @@ if (
                         These DO NOT use sections.
                         =====================================================
                     */
-                    if (!loadedIsMaritime) {
+                    if (!loadedIsSectioned) {
                         setActiveSection(null);
                         setSecondsRemaining(null);
 
@@ -571,6 +669,7 @@ if (
 
 
                     const requestedSectionClosed =
+                        loadedIsMaritime &&
                         Boolean(
                             requestedSection &&
                             (
@@ -595,6 +694,17 @@ if (
 
 
                     if (
+                        loadedIsSeniorLeadership
+                    ) {
+                        sectionCode =
+                            sectionCode ||
+                            loadedAttempt
+                                ?.currentSectionCode ||
+                            getSectionCode(
+                                attemptSections[0]
+                            ) ||
+                            null;
+                    } else if (
                         !sectionCode ||
                         requestedSectionClosed
                     ) {
@@ -773,6 +883,9 @@ if (
             [
                 attemptId,
                 selectedSectionCode,
+                testCode,
+                navigate,
+                setSearchParams,
             ]
         );
 
@@ -793,6 +906,130 @@ if (
                     answer,
             })
         );
+    }
+
+
+    async function saveCurrentSectionProgress() {
+        if (
+            !isSeniorLeadership ||
+            !activeSection?.code
+        ) {
+            return true;
+        }
+
+        const submission =
+            buildSubmission(
+                questions,
+                answers
+            );
+
+        if (
+            submission.length === 0
+        ) {
+            return true;
+        }
+
+        try {
+            setSubmitting(true);
+            setError("");
+
+            await savePsychometricAnswers(
+                attemptId,
+                submission
+            );
+
+            return true;
+        } catch (saveError) {
+            setError(
+                getPsychometricErrorMessage(
+                    saveError,
+                    "Unable to save your answers before changing section."
+                )
+            );
+
+            return false;
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
+
+    async function openSeniorSection(
+        sectionCode
+    ) {
+        if (
+            !isSeniorLeadership ||
+            !sectionCode ||
+            submitting
+        ) {
+            return;
+        }
+
+        const saved =
+            await saveCurrentSectionProgress();
+
+        if (!saved) {
+            return;
+        }
+
+        setModal(null);
+        setSearchParams({
+            section: sectionCode,
+        });
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }
+
+
+    async function completeSeniorLeadershipAssessment() {
+        if (
+            !isSeniorLeadership ||
+            submitting
+        ) {
+            return;
+        }
+
+        const saved =
+            await saveCurrentSectionProgress();
+
+        if (!saved) {
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+            setError("");
+
+            await completePsychometricAttempt(
+                attemptId,
+                {
+                    answers: [],
+                }
+            );
+
+            navigate(
+                `/app/wellbeing/psychometrics/${encodeURIComponent(
+                    testCode
+                )}/results/${encodeURIComponent(
+                    attemptId
+                )}`,
+                {
+                    replace: true,
+                }
+            );
+        } catch (submitError) {
+            setError(
+                getPsychometricErrorMessage(
+                    submitError,
+                    "Please complete all three sections before submitting the assessment."
+                )
+            );
+        } finally {
+            setSubmitting(false);
+        }
     }
 
 
@@ -923,6 +1160,13 @@ if (
                 top: 0,
                 behavior: "smooth",
             });
+
+            return;
+        }
+
+        if (isSeniorLeadership) {
+            setModal(null);
+            await load();
         }
     }
 
@@ -1063,7 +1307,7 @@ if (
             return;
         }
 
-        if (isMaritime) {
+        if (isSectionedAssessment) {
             submitSectionNormally();
 
             return;
@@ -1097,7 +1341,7 @@ if (
     async function continueDespiteUnanswered() {
         setModal(null);
 
-        if (isMaritime) {
+        if (isSectionedAssessment) {
             await submitSectionNormally();
         } else {
             await submitPersonalityAssessment();
@@ -1309,6 +1553,66 @@ if (
                     ) : null}
 
 
+                    {isSeniorLeadership ? (
+                        <div
+                            className="psychometric-section-navigation"
+                            style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: "10px",
+                                marginBottom: "24px",
+                            }}
+                        >
+                            {availableSections.map(
+                                (section, index) => {
+                                    const code =
+                                        getSectionCodeFromAttempt(
+                                            section
+                                        );
+
+                                    const title =
+                                        section?.title ||
+                                        section?.section?.title ||
+                                        sectionDisplayTitle({
+                                            code,
+                                        });
+
+                                    const selected =
+                                        code ===
+                                        activeSection?.code;
+
+                                    return (
+                                        <button
+                                            key={
+                                                section?.id ||
+                                                section?.section?.id ||
+                                                code
+                                            }
+                                            type="button"
+                                            className={`psychometric-button${
+                                                selected
+                                                    ? ""
+                                                    : " psychometric-button--outline"
+                                            }`}
+                                            disabled={
+                                                submitting
+                                            }
+                                            onClick={() =>
+                                                openSeniorSection(
+                                                    code
+                                                )
+                                            }
+                                            title={title}
+                                        >
+                                            Section {index + 1}
+                                        </button>
+                                    );
+                                }
+                            )}
+                        </div>
+                    ) : null}
+
+
                     <section className="psychometric-questions-container">
                         {questions.map(
                             (
@@ -1340,6 +1644,26 @@ if (
 
 
                     <div className="psychometric-questionnaire-footer">
+                        {isSeniorLeadership &&
+                        currentSectionIndex > 0 ? (
+                            <button
+                                type="button"
+                                className="psychometric-button psychometric-button--outline"
+                                disabled={submitting}
+                                onClick={() =>
+                                    openSeniorSection(
+                                        getSectionCodeFromAttempt(
+                                            availableSections[
+                                                currentSectionIndex - 1
+                                            ]
+                                        )
+                                    )
+                                }
+                            >
+                                Previous Section
+                            </button>
+                        ) : null}
+
                         <button
                             type="button"
                             className="psychometric-button"
@@ -1352,10 +1676,48 @@ if (
                         >
                             {submitting
                                 ? "Submitting..."
-                                : isMaritime
-                                    ? "Submit Section"
+                                : isSectionedAssessment
+                                    ? isSeniorLeadership
+                                        ? "Save & Submit Section"
+                                        : "Submit Section"
                                     : "Submit Assessment"}
                         </button>
+
+                        {isSeniorLeadership &&
+                        currentSectionIndex >= 0 &&
+                        currentSectionIndex <
+                            availableSections.length - 1 ? (
+                            <button
+                                type="button"
+                                className="psychometric-button psychometric-button--outline"
+                                disabled={submitting}
+                                onClick={() =>
+                                    openSeniorSection(
+                                        getSectionCodeFromAttempt(
+                                            availableSections[
+                                                currentSectionIndex + 1
+                                            ]
+                                        )
+                                    )
+                                }
+                            >
+                                Next Section
+                            </button>
+                        ) : null}
+
+                        {isSeniorLeadership &&
+                        allSeniorSectionsSubmitted ? (
+                            <button
+                                type="button"
+                                className="psychometric-button"
+                                disabled={submitting}
+                                onClick={
+                                    completeSeniorLeadershipAssessment
+                                }
+                            >
+                                Complete Assessment
+                            </button>
+                        ) : null}
                     </div>
                 </div>
 
@@ -1396,7 +1758,9 @@ if (
                     onContinue={
                         modal ===
                             "UNANSWERED"
-                            ? continueDespiteUnanswered
+                            ? isSeniorLeadership
+                                ? scrollToFirstUnanswered
+                                : continueDespiteUnanswered
                             : modal ===
                                 "TIME_UP"
                                 ? continueAfterTimeout

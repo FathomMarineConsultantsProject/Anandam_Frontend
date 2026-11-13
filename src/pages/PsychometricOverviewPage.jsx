@@ -31,6 +31,44 @@ import {
 import "../styles/psychometrics.css";
 
 
+function getFallbackRequiredTokens(
+  test
+) {
+  const attemptCount =
+    Number(
+      test?.attemptCount ??
+      test?.eligibility
+        ?.attemptCount ??
+      0
+    );
+
+  if (attemptCount === 0) {
+    if (
+      test?.firstAttemptFree ===
+      true
+    ) {
+      return 0;
+    }
+
+    return Number(
+      test?.firstAttemptTokenCost ??
+      test?.eligibility
+        ?.firstAttemptTokenCost ??
+      getFallbackRequiredTokens(
+        test
+      )
+    );
+  }
+
+  return Number(
+    test?.repeatTokenCost ??
+    test?.eligibility
+      ?.repeatTokenCost ??
+    1
+  );
+}
+
+
 function readPaymentDetails(
   error,
   test
@@ -512,6 +550,22 @@ export default function PsychometricOverviewPage() {
     );
 
 
+  const isSeniorLeadership =
+    test?.type ===
+    "SENIOR_LEADERSHIP_PERSONALITY";
+
+
+  const isUntimed =
+    isSeniorLeadership ||
+    duration <= 0;
+
+
+  const firstAttemptIsPaid =
+    attemptNumber === 1 &&
+    test?.firstAttemptFree ===
+      false;
+
+
   return (
     <AppLayout>
       <main className="psychometric-page psychometric-overview-page">
@@ -542,7 +596,9 @@ export default function PsychometricOverviewPage() {
               </span>
 
               <strong>
-                {duration} min
+                {isUntimed
+                  ? "Untimed"
+                  : `${duration} min`}
               </strong>
             </div>
 
@@ -625,11 +681,16 @@ export default function PsychometricOverviewPage() {
                     {
                       section.questionsPerAttempt
                     }{" "}
-                    questions ·{" "}
-                    {
-                      section.durationMinutes
-                    }{" "}
-                    min
+                    questions
+                    {isUntimed ? (
+                      <> · Untimed</>
+                    ) : (
+                      <>
+                        {" · "}
+                        {section.durationMinutes}{" "}
+                        min
+                      </>
+                    )}
                   </span>
                 </div>
               )
@@ -647,8 +708,9 @@ export default function PsychometricOverviewPage() {
               <span>✓</span>
 
               {questionCount}{" "}
-              multiple-choice
-              questions
+              {isSeniorLeadership
+                ? "personality statements"
+                : "multiple-choice questions"}
             </div>
 
 
@@ -663,16 +725,18 @@ export default function PsychometricOverviewPage() {
             <div>
               <span>✓</span>
 
-              Each section has its
-              own time limit
+              {isSeniorLeadership
+                ? "No time limit — complete each section at your own pace"
+                : "Each section has its own time limit"}
             </div>
 
 
             <div>
               <span>✓</span>
 
-              Review answers before
-              submission
+              {isSeniorLeadership
+                ? "Move between sections and revisit your answers before final completion"
+                : "Review answers before submission"}
             </div>
           </section>
 
@@ -714,12 +778,17 @@ export default function PsychometricOverviewPage() {
             starting
           }
 
-          title="Start Another Attempt"
+          title={
+            firstAttemptIsPaid
+              ? "Start Assessment"
+              : "Start Another Attempt"
+          }
 
-          description={`Your free attempt for ${
-            test?.title ||
-            "this assessment"
-          } has already been used.`}
+          description={
+            firstAttemptIsPaid
+              ? `${test?.title || "This assessment"} requires ${tokenModal.requiredTokens} token${tokenModal.requiredTokens === 1 ? "" : "s"} for the first attempt.`
+              : `A previous attempt for ${test?.title || "this assessment"} has already been used. ${tokenModal.requiredTokens} token${tokenModal.requiredTokens === 1 ? "" : "s"} required to start again.`
+          }
 
           tokenCost={
             tokenModal

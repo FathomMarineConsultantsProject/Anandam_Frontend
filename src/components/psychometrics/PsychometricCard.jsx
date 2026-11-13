@@ -8,6 +8,18 @@ import {
 } from "../../utils/psychometricAssets";
 
 
+function getFirstAttemptCost(
+  test
+) {
+  return Number(
+    test?.firstAttemptTokenCost ??
+    test?.eligibility
+      ?.firstAttemptTokenCost ??
+    0
+  );
+}
+
+
 export default function PsychometricCard({
   test,
   featured = false,
@@ -18,6 +30,7 @@ export default function PsychometricCard({
       test
     );
 
+
   const attemptCount =
     Number(
       test?.attemptCount ??
@@ -25,6 +38,7 @@ export default function PsychometricCard({
         ?.attemptCount ??
       0
     );
+
 
   const firstAttemptUsed =
     Boolean(
@@ -34,12 +48,25 @@ export default function PsychometricCard({
       attemptCount > 0
     );
 
+
+  const firstAttemptFree =
+    test?.firstAttemptFree !==
+    false;
+
+
+  const firstAttemptCost =
+    getFirstAttemptCost(
+      test
+    );
+
+
   const questionCount =
     Number(
       test?.questionCount ??
       test?.questionsPerAttempt ??
       20
     );
+
 
   const repeatCost =
     Number(
@@ -49,6 +76,41 @@ export default function PsychometricCard({
       1
     );
 
+
+  const isSeniorLeadership =
+    test?.type ===
+    "SENIOR_LEADERSHIP_PERSONALITY";
+
+
+  const badgeText =
+    firstAttemptUsed
+      ? "First attempt used"
+      : firstAttemptFree
+        ? "First attempt is free"
+        : `${firstAttemptCost} Token${
+            firstAttemptCost === 1
+              ? ""
+              : "s"
+          } first attempt`;
+
+
+  const requiredCost =
+    firstAttemptUsed
+      ? repeatCost
+      : firstAttemptFree
+        ? 0
+        : firstAttemptCost;
+
+
+  /*
+    =====================================================
+    FULL-WIDTH FEATURED CARD
+
+    Used for:
+    - Maritime Human Performance
+    - Senior Leadership Personality
+    =====================================================
+  */
 
   if (featured) {
     const duration =
@@ -66,8 +128,9 @@ export default function PsychometricCard({
             ),
           0
         ) ??
-        80
+        0
       );
+
 
     const sectionCount =
       Number(
@@ -83,6 +146,7 @@ export default function PsychometricCard({
         <div className="pad-featured-card__top">
 
           <div>
+
             {illustration ? (
               <img
                 src={illustration}
@@ -95,14 +159,15 @@ export default function PsychometricCard({
 
             <h2>
               {test?.title ||
-                "Maritime Human Performance Analysis"}
+                "Assessment"}
             </h2>
 
 
             <p>
               {test?.description ||
-                "Explore your reasoning, leadership, and safety judgement across three timed sections."}
+                ""}
             </p>
+
           </div>
 
 
@@ -118,9 +183,7 @@ export default function PsychometricCard({
               strokeWidth={1.5}
             />
 
-            {firstAttemptUsed
-              ? "First attempt used"
-              : "First attempt is free"}
+            {badgeText}
           </div>
 
         </div>
@@ -141,7 +204,11 @@ export default function PsychometricCard({
 
 
             <span>
-              ◷ {duration} Minutes
+              ◷{" "}
+              {isSeniorLeadership ||
+              duration <= 0
+                ? "Untimed"
+                : `${duration} Minutes`}
             </span>
 
 
@@ -152,10 +219,10 @@ export default function PsychometricCard({
           </div>
 
 
-          {firstAttemptUsed ? (
+          {requiredCost > 0 ? (
             <span className="pad-token-required">
-              {repeatCost}{" "}
-              {repeatCost === 1
+              {requiredCost}{" "}
+              {requiredCost === 1
                 ? "Token"
                 : "Tokens"}{" "}
               required
@@ -179,6 +246,14 @@ export default function PsychometricCard({
     );
   }
 
+
+  /*
+    =====================================================
+    NORMAL SMALL CARD
+
+    Personality / Behaviour / Motivation
+    =====================================================
+  */
 
   return (
     <article className="pad-assessment-card">
@@ -207,9 +282,7 @@ export default function PsychometricCard({
             strokeWidth={1.5}
           />
 
-          {firstAttemptUsed
-            ? "First attempt used"
-            : "First attempt is free"}
+          {badgeText}
         </div>
 
       </div>

@@ -14,7 +14,7 @@ export default function PsychometricTokenModal({
     "Token Required",
 
   description =
-    "Your free attempt has already been used.",
+    "Tokens are required to start this assessment.",
 
   tokenCost = 1,
 
@@ -194,9 +194,10 @@ export default function PsychometricTokenModal({
               1
                 ? ""
                 : "s"}{" "}
-              to start another
-              attempt, but your
-              current balance is{" "}
+              to start this
+              assessment attempt,
+              but your current
+              balance is{" "}
               {
                 safeWalletBalance
               }.

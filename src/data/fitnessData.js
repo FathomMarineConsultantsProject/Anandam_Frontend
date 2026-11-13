@@ -56,6 +56,7 @@ export const GUIDED_CATEGORIES = [
   "Balance",
   "Yoga",
   "Recovery",
+   "Motivation",
 ];
 
 export const GUIDED_WORKOUTS = [

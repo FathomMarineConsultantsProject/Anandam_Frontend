@@ -10,10 +10,16 @@ import behaviourIllustration
 import motivationIllustration
   from "../assets/psychometrics/motivation-values.png";
 
+import seniorLeadershipIllustration
+  from "../assets/psychometrics/maritime-human-performance.png";
+
 
 const TYPE_MAP = {
   MARITIME_HUMAN_PERFORMANCE:
     maritimeIllustration,
+
+  SENIOR_LEADERSHIP_PERSONALITY:
+    seniorLeadershipIllustration,
 
   BIG_FIVE:
     personalityIllustration,
@@ -32,6 +38,7 @@ export function getPsychometricIllustration(
   if (!test) {
     return null;
   }
+
 
   return (
     TYPE_MAP[

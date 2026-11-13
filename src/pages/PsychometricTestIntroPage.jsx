@@ -25,6 +25,53 @@ import {
 import "../styles/psychometrics.css";
 
 
+function getFallbackRequiredTokens(
+  test
+) {
+  const attemptCount =
+    Number(
+      test?.attemptCount ??
+      test?.eligibility
+        ?.attemptCount ??
+      0
+    );
+
+  if (attemptCount === 0) {
+    if (test?.firstAttemptFree === true) {
+      return 0;
+    }
+
+    return Number(
+      test?.firstAttemptTokenCost ??
+      test?.eligibility
+        ?.firstAttemptTokenCost ??
+      getFallbackRequiredTokens(
+        test
+      )
+    );
+  }
+
+  return Number(
+    test?.repeatTokenCost ??
+    test?.eligibility
+      ?.repeatTokenCost ??
+    1
+  );
+}
+
+
+function usesSectionOverview(
+  test
+) {
+  return (
+    test?.type ===
+      "MARITIME_HUMAN_PERFORMANCE" ||
+    test?.type ===
+      "SENIOR_LEADERSHIP_PERSONALITY"
+  );
+}
+
+
 function readPaymentDetails(
   error,
   test
@@ -397,11 +444,12 @@ export default function PsychometricTestIntroPage() {
         );
 
 
-        // Maritime has its own
+        // Sectioned assessments have their own
         // overview page.
         if (
-          loaded?.type ===
-          "MARITIME_HUMAN_PERFORMANCE"
+          usesSectionOverview(
+            loaded
+          )
         ) {
           return;
         }
@@ -541,8 +589,9 @@ export default function PsychometricTestIntroPage() {
 
 
   if (
-    test?.type ===
-    "MARITIME_HUMAN_PERFORMANCE"
+    usesSectionOverview(
+      test
+    )
   ) {
     return (
       <Navigate
@@ -601,12 +650,27 @@ export default function PsychometricTestIntroPage() {
             starting
           }
 
-          title="Start Another Attempt"
+          title={
+            Number(
+              test?.attemptCount ??
+              test?.eligibility?.attemptCount ??
+              0
+            ) === 0 &&
+            test?.firstAttemptFree === false
+              ? "Start Assessment"
+              : "Start Another Attempt"
+          }
 
-          description={`Your free attempt for ${
-            test?.title ||
-            "this assessment"
-          } has already been used.`}
+          description={
+            Number(
+              test?.attemptCount ??
+              test?.eligibility?.attemptCount ??
+              0
+            ) === 0 &&
+            test?.firstAttemptFree === false
+              ? `${test?.title || "This assessment"} requires ${tokenModal.requiredTokens} token${tokenModal.requiredTokens === 1 ? "" : "s"} for the first attempt.`
+              : `A previous attempt for ${test?.title || "this assessment"} has already been used. ${tokenModal.requiredTokens} token${tokenModal.requiredTokens === 1 ? "" : "s"} required to start again.`
+          }
 
           tokenCost={
             tokenModal
