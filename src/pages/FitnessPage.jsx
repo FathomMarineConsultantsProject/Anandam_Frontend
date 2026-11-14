@@ -6,7 +6,21 @@ import {
   useState,
 } from "react";
 
+import {
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
 import AppLayout from "../components/layout/AppLayout";
+
+import {
+  GuidedYogaDetail,
+  GuidedYogaTab,
+} from "../components/fitness/GuidedYoga";
+
+import {
+  getGuidedYogaPose,
+} from "../data/guidedYogaData";
 
 import {
   ArrowLeft,
@@ -39,6 +53,7 @@ import "../styles/fitness.css";
 
 const FITNESS_TABS = [
   { id: "overview", label: "Overview" },
+  { id: "yoga", label: "Guided Yoga" },
   { id: "guided", label: "Guided Workout" },
   { id: "vr", label: "VR Workouts" },
   { id: "history", label: "Activity History" },
@@ -1711,8 +1726,12 @@ function CompleteScreen({ type, title, onBackToList }) {
 }
 
 function FitnessPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] = useState("overview");
   const [view, setView] = useState("main");
+  const [selectedYogaPose, setSelectedYogaPose] = useState(null);
 
   const [overview, setOverview] = useState(null);
   const [overviewLoading, setOverviewLoading] = useState(true);
@@ -1848,6 +1867,38 @@ function FitnessPage() {
   }, []);
 
   useEffect(() => {
+    const requestedTab = location.state?.openFitnessTab;
+    const requestedPoseId = location.state?.yogaPoseId;
+
+    if (requestedTab !== "yoga" || !requestedPoseId) {
+      return;
+    }
+
+    const matchingPose = getGuidedYogaPose(requestedPoseId);
+
+    if (!matchingPose) {
+      navigate(location.pathname, {
+        replace: true,
+        state: {},
+      });
+      return;
+    }
+
+    setActiveTab("yoga");
+    setSelectedYogaPose(matchingPose);
+    setView("yoga-detail");
+
+    navigate(location.pathname, {
+      replace: true,
+      state: {},
+    });
+  }, [
+    location.pathname,
+    location.state,
+    navigate,
+  ]);
+
+  useEffect(() => {
     loadOverview();
   }, [loadOverview]);
 
@@ -1932,6 +1983,7 @@ function FitnessPage() {
   function handleMainTabChange(tabId) {
     setView("main");
     setActiveTab(tabId);
+    setSelectedYogaPose(null);
     setDetailError("");
 
     if (tabId === "history") {
@@ -2002,6 +2054,23 @@ function FitnessPage() {
               onRetry={() => setDetailError("")}
             />
           </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (view === "yoga-detail" && selectedYogaPose) {
+    return (
+      <AppLayout>
+        <div className="fitness-page fitness-page--yoga-detail">
+          <GuidedYogaDetail
+            pose={selectedYogaPose}
+            onBack={() => {
+              setView("main");
+              setActiveTab("yoga");
+              setSelectedYogaPose(null);
+            }}
+          />
         </div>
       </AppLayout>
     );
@@ -2120,6 +2189,15 @@ function FitnessPage() {
             onResume={handleResumeOverview}
             onEnd={handleEndOverview}
             onViewAll={() => handleMainTabChange("history")}
+          />
+        ) : null}
+
+        {activeTab === "yoga" ? (
+          <GuidedYogaTab
+            onOpen={(pose) => {
+              setSelectedYogaPose(pose);
+              setView("yoga-detail");
+            }}
           />
         ) : null}
 
