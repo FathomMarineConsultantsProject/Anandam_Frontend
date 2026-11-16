@@ -7,6 +7,10 @@ import extendedSideAngleGif from "../assets/fitness/Extended Side Angle Pose (Ut
 import suryaGif from "../assets/fitness/surya namaskar.gif";
 import halfMoonGif from "../assets/fitness/Half Moon Pose (Ardha Chandrasana).gif";
 
+import halfMoonStep1 from "../assets/fitness/Property 1=Half Moon Pose Preparation-1 1.png";
+import halfMoonStep2 from "../assets/fitness/Property 1=Transitional half moon balance-2 1.png";
+import halfMoonStep3 from "../assets/fitness/Property 1=Balanced half moon pose-3 1.png";
+
 import cobraStep1 from "../assets/fitness/Property 1=Cobra pose starting position-1 2.png";
 import cobraStep2 from "../assets/fitness/Property 1=Cobra pose starting position-1 2 (1).png";
 import cobraStep3 from "../assets/fitness/Property 1=Cobra pose starting position-1 2 (2).png";
@@ -172,9 +176,9 @@ export const GUIDED_YOGA_POSES = [
     description: "Practise balance and open your hips",
     gif: halfMoonGif,
     steps: [
-      { id: 1, title: "Lean sideways, hand on shin", image: halfMoonGif },
-      { id: 2, title: "Lower your hand and lift one leg", image: halfMoonGif },
-      { id: 3, title: "Open your chest and raise your arm", image: halfMoonGif },
+      { id: 1, title: "Lean sideways, hand on shin", image: halfMoonStep1 },
+      { id: 2, title: "Lower your hand and lift one leg", image: halfMoonStep2 },
+      { id: 3, title: "Open your chest and raise your arm", image: halfMoonStep3 },
     ],
     benefits: [
       "Engages the legs, glutes, and core.",
