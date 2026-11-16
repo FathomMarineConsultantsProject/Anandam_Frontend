@@ -49,38 +49,47 @@ function normaliseQuestion(
         item;
 
 
+    const attemptQuestionId =
+        item?.attemptQuestionId ||
+        (
+            item?.question
+                ? item?.id
+                : null
+        ) ||
+        null;
+
+
+    const originalQuestionId =
+        item?.questionId ||
+        question?.id ||
+        null;
+
+
     return {
         ...question,
 
         /*
-          Original PsychometricQuestion ID
+          Keep the assigned attempt-question ID as the
+          primary FE ID whenever the backend provides it.
         */
         id:
-            question?.id ||
-            item?.questionId ||
-            item?.id,
-
-        questionId:
-            item?.questionId ||
-            question?.id ||
-            null,
+            attemptQuestionId ||
+            item?.id ||
+            originalQuestionId,
 
         /*
-          PsychometricAttemptQuestion ID.
-    
-          This is the safest identifier
-          when saving an answer.
+          Original question-bank ID.
+        */
+        questionId:
+            originalQuestionId,
+
+        /*
+          Assigned PsychometricAttemptQuestion ID.
         */
         attemptQuestionId:
-            item?.attemptQuestionId ||
-            (
-                item?.question
-                    ? item?.id
-                    : null
-            ),
+            attemptQuestionId,
     };
 }
-
 
 function buildSubmission(
     questions,
@@ -1171,13 +1180,19 @@ acknowledgement.
     }
 
 
-    async function submitPersonalityAssessment() {
+    async function submitPersonalityAssessment(
+        {
+            allowIncomplete = false,
+        } = {}
+    ) {
         if (submitting) {
             return;
         }
 
+
         if (
-            unanswered.length
+            unanswered.length &&
+            !allowIncomplete
         ) {
             setModal(
                 "UNANSWERED"
@@ -1210,9 +1225,20 @@ acknowledgement.
         );
 
 
+        /*
+          For the normal personality-style tests:
+          - normal Submit requires all answers
+          - "Continue Anyway" intentionally allows a partial
+            submission and completes the attempt with only
+            the answers the user actually provided.
+
+          Senior Leadership is sectioned and does not use
+          this partial-completion path.
+        */
         if (
+            !allowIncomplete &&
             submission.length !==
-            questions.length
+                questions.length
         ) {
             console.error(
                 "Submission count mismatch",
@@ -1238,6 +1264,7 @@ acknowledgement.
         try {
             setSubmitting(true);
             setError("");
+            setModal(null);
 
 
             await completePsychometricAttempt(
@@ -1281,7 +1308,6 @@ acknowledgement.
             setSubmitting(false);
         }
     }
-
 
     function requestSubmit() {
         if (
@@ -1341,13 +1367,32 @@ acknowledgement.
     async function continueDespiteUnanswered() {
         setModal(null);
 
+
+        /*
+          Maritime sections are allowed to submit with
+          unanswered questions; unanswered items simply
+          remain unanswered for scoring.
+        */
         if (isSectionedAssessment) {
             await submitSectionNormally();
-        } else {
-            await submitPersonalityAssessment();
+            return;
         }
-    }
 
+
+        /*
+          Normal profile tests:
+          this is the actual bypass path used by the
+          "Continue Anyway" button.
+
+          Do NOT call the normal submit path without the
+          flag, because that would immediately reopen the
+          unanswered modal.
+        */
+        await submitPersonalityAssessment({
+            allowIncomplete:
+                true,
+        });
+    }
 
     /*
       =====================================================
