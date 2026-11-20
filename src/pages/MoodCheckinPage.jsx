@@ -24,6 +24,10 @@ import {
   getMoodCheckinById,
 } from "../api/moodCheckinApi";
 
+import {
+  WORK_REST_PROMPT_EVENT,
+} from "../utils/reminderCoordinator";
+
 import "../styles/mood-checkin.css";
 
 function MoodCheckinPage() {
@@ -131,15 +135,15 @@ function MoodCheckinPage() {
   }, [toast]);
 
   function startNewCheckin() {
-  setSelectedEntry(null);
-  setScreen("wizard");
+    setSelectedEntry(null);
+    setScreen("wizard");
 
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: "auto",
-  });
-}
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+  }
 
   async function viewDetails(
     entry
@@ -190,6 +194,18 @@ function MoodCheckinPage() {
       message:
         "Your wellbeing check-in has been saved successfully.",
     });
+
+    /*
+      Let the global Work/Rest reminder know that a mood
+      check-in has just completed. It will only open the
+      first Work/Rest prompt when today's reminder state
+      has not already been handled.
+    */
+    window.dispatchEvent(
+      new CustomEvent(
+        WORK_REST_PROMPT_EVENT
+      )
+    );
 
     /*
       Leave the success state visible

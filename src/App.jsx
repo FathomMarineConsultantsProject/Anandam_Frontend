@@ -78,6 +78,9 @@ import PsychometricResultPage
 import WellnessReminder
   from "./components/reminders/WellnessReminder";
 
+import WorkRestReminder
+  from "./components/reminders/WorkRestReminder";
+
 
 /* =====================================================
    SITE ACCESS
@@ -476,6 +479,8 @@ function AppRoutes() {
   return (
     <>
       <WellnessReminder />
+
+      <WorkRestReminder />
 
       <SiteAccessModal />
 
