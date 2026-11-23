@@ -215,7 +215,7 @@
 
 .anandam-signup-account-tabs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   width: 516px;
   height: 36px;
   padding: 2px;
@@ -824,4 +824,126 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* =========================================================
+   RESORT OWNER TAB: FIGMA CLAY-RESORT SLIDESHOW ONLY
+   The personal and practitioner leaf presentation is unchanged.
+   ========================================================= */
+.anandam-signup-resort-showcase {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  gap: 25px;
+}
+
+.anandam-signup-resort-gallery {
+  position: relative;
+  width: 100%;
+  height: 420px;
+}
+
+.anandam-signup-resort-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: 0;
+  transition: opacity 350ms ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+.anandam-signup-resort-image.is-active {
+  opacity: 1;
+}
+
+.anandam-signup-resort-caption {
+  max-width: 560px;
+  padding: 0 10px;
+  color: #6d6d6d;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.anandam-signup-resort-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.anandam-signup-resort-dots,
+.anandam-signup-resort-arrows {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.anandam-signup-resort-dots { gap: 4px; }
+.anandam-signup-resort-arrows { gap: 13px; }
+
+.anandam-signup-resort-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 30px;
+  background: rgba(113, 46, 30, 0.45);
+  cursor: pointer;
+  transition: width 180ms ease, background-color 180ms ease;
+}
+
+.anandam-signup-resort-dot.is-active {
+  width: 21px;
+  background: #712e1e;
+}
+
+.anandam-signup-resort-arrows button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  background: transparent;
+  color: #999;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.anandam-signup-resort-arrows button:hover {
+  color: #712e1e;
+  border-color: #712e1e;
+}
+
+.anandam-signup-resort-dot:focus-visible,
+.anandam-signup-resort-arrows button:focus-visible {
+  outline: 2px solid #712e1e;
+  outline-offset: 4px;
+}
+
+@media (max-width: 900px) {
+  .anandam-signup-resort-showcase { gap: 13px; }
+  .anandam-signup-resort-gallery { height: 185px; }
+  .anandam-signup-resort-caption { font-size: 15px; max-width: 340px; }
+  .anandam-signup-resort-controls { gap: 10px; }
+  .anandam-signup-resort-arrows button { width: 30px; height: 30px; font-size: 17px; }
+}
+
+@media (max-width: 560px) {
+  .anandam-signup-resort-gallery { height: 130px; }
+  .anandam-signup-resort-caption { font-size: 13px; }
+  .anandam-signup-account-tabs button { font-size: 10px; padding: 0 3px; }
 }

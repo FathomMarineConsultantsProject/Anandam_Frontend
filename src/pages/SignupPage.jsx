@@ -9,6 +9,7 @@ import {
   getUserFriendlyError,
 } from "../api/client";
 import { resetMoodGate } from "../utils/storage";
+import { beginResortSignup } from "../api/resortSignupDraft";
 
 import leafFrame11 from "../assets/loginpage/Property 1=Frame 11.png";
 import leafFrame12 from "../assets/loginpage/Property 1=Frame 12.png";
@@ -16,6 +17,15 @@ import leafFrame13 from "../assets/loginpage/Property 1=Frame 13.png";
 import leafFrame14 from "../assets/loginpage/Property 1=Frame 14.png";
 import leafFrame15 from "../assets/loginpage/Property 1=Frame 15.png";
 import leafFrame16 from "../assets/loginpage/Property 1=Frame 16.png";
+import resortMountain from "../assets/marketplace/resortslogin/image 429.png";
+import resortBackwater from "../assets/marketplace/resortslogin/Clay backwater retreat diorama-8 1.png";
+import resortForest from "../assets/marketplace/resortslogin/Forest wellness resort diorama-2 1.png";
+import resortSeaModern from "../assets/marketplace/resortslogin/Modern clay sea-facing resort diorama-6 1.png";
+import resortMeadow from "../assets/marketplace/resortslogin/Open Meadow Wellness Resort-2 1.png";
+import resortSea from "../assets/marketplace/resortslogin/Sea-facing clay resort diorama-3 1.png";
+import resortRajasthan from "../assets/marketplace/resortslogin/Sunlit Rajasthan Wellness Courtyard-3 1.png";
+import resortTerracotta from "../assets/marketplace/resortslogin/Terracotta wellness retreat on sandstone-1 1.png";
+import resortModernForest from "../assets/marketplace/resortslogin/Modern forest retreat diorama-5 1.png";
 import bgLeaf from "../assets/loginpage/image9.png";
 import backgroundWave from "../assets/landing/about-wave.png";
 
@@ -29,6 +39,18 @@ const LEAF_FRAMES = [
   leafFrame13,
   leafFrame12,
   leafFrame15,
+];
+
+const RESORT_SLIDES = [
+  resortMountain,
+  resortBackwater,
+  resortForest,
+  resortSeaModern,
+  resortMeadow,
+  resortSea,
+  resortRajasthan,
+  resortTerracotta,
+  resortModernForest,
 ];
 
 const LEAF_FRAME_INTERVAL_MS = 1500;
@@ -148,6 +170,58 @@ function AnimatedLeaf() {
   );
 }
 
+function ResortSlideshow() {
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  const goToSlide = (direction) => {
+    setActiveSlide((current) =>
+      (current + direction + RESORT_SLIDES.length) % RESORT_SLIDES.length
+    );
+  };
+
+  return (
+    <div className="anandam-signup-resort-showcase" aria-label="Resort illustrations">
+      <div className="anandam-signup-resort-gallery">
+        {RESORT_SLIDES.map((slide, index) => (
+          <img
+            key={slide}
+            src={slide}
+            alt={index === activeSlide ? `Resort illustration ${index + 1} of ${RESORT_SLIDES.length}` : ""}
+            aria-hidden={index !== activeSlide}
+            className={`anandam-signup-resort-image${index === activeSlide ? " is-active" : ""}`}
+            draggable="false"
+          />
+        ))}
+      </div>
+      <p className="anandam-signup-resort-caption">
+        Welcome the families and crews who keep the world moving
+      </p>
+      <div className="anandam-signup-resort-controls" aria-label="Resort slideshow controls">
+        <div className="anandam-signup-resort-dots" aria-label="Choose resort illustration">
+          {RESORT_SLIDES.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              className={`anandam-signup-resort-dot${index === activeSlide ? " is-active" : ""}`}
+              aria-label={`Show resort illustration ${index + 1}`}
+              aria-current={index === activeSlide ? "true" : undefined}
+              onClick={() => setActiveSlide(index)}
+            />
+          ))}
+        </div>
+        <div className="anandam-signup-resort-arrows">
+          <button type="button" onClick={() => goToSlide(-1)} aria-label="Previous resort image">
+            <span aria-hidden="true">←</span>
+          </button>
+          <button type="button" onClick={() => goToSlide(1)} aria-label="Next resort image">
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SignupPage() {
   const navigate = useNavigate();
 
@@ -227,6 +301,14 @@ function SignupPage() {
     const fullName = form.fullName.trim();
     const email = form.email.trim();
 
+    // RESORT_OWNER: collect the listing first. Do not create a backend account here.
+    // Sensitive signup details stay in memory (not in the URL or localStorage).
+    if (accountType === "RESORT_OWNER") {
+      beginResortSignup({ fullName, email, password: form.password });
+      navigate("/resort/onboarding", { replace: false });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -296,9 +378,9 @@ function SignupPage() {
       <main className="anandam-signup-layout">
         <section
           className="anandam-signup-visual"
-          aria-label="Wellness illustration"
+          aria-label={accountType === "RESORT_OWNER" ? "Resort illustrations" : "Wellness illustration"}
         >
-          <AnimatedLeaf />
+          {accountType === "RESORT_OWNER" ? <ResortSlideshow /> : <AnimatedLeaf />}
         </section>
 
         <section
@@ -344,6 +426,17 @@ function SignupPage() {
                 disabled={loading}
               >
                 Coaching / Practitioner 
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={accountType === "RESORT_OWNER"}
+                className={accountType === "RESORT_OWNER" ? "is-active" : ""}
+                onClick={() => setAccountType("RESORT_OWNER")}
+                disabled={loading}
+              >
+                Resorts / Ashrams
               </button>
             </div>
 

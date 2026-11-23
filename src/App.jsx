@@ -45,6 +45,7 @@ import MyAppointmentsPage from "./pages/MyAppointmentsPage";
 import VideoCallLobbyPage from "./pages/VideoCallLobbyPage";
 import VideoCallRoomPage from "./pages/VideoCallRoomPage";
 import PractitionerOnboardingPage from "./pages/PractitionerOnboardingPage";
+import ResortOnboardingEntry from "./pages/ResortOnboardingEntry";
 
 import AppLayout from "./components/layout/AppLayout";
 
@@ -525,6 +526,18 @@ function AppRoutes() {
           element={
             <PublicBlogPage />
           }
+        />
+
+
+        {/* =================================================
+            RESORT OWNER ONBOARDING
+            Public during signup: no account exists yet.
+            Keep outside RequireAuth / SiteAccessGate.
+            ================================================= */}
+
+        <Route
+          path="/resort/onboarding"
+          element={<ResortOnboardingEntry />}
         />
 
 
