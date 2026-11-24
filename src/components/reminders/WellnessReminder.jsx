@@ -23,7 +23,7 @@ import {
 
 
 // ============================================================
-// YOGA GIFS
+// MOVEMENT / YOGA GIFS
 // ============================================================
 
 import cobraGif from "../../assets/fitness/cobra pose.gif";
@@ -43,6 +43,13 @@ import suryaGif from "../../assets/fitness/surya namaskar.gif";
 import halfMoonGif from "../../assets/fitness/Half Moon Pose (Ardha Chandrasana).gif";
 
 
+// ============================================================
+// HYDRATION GIF
+// ============================================================
+
+import hydrationGif from "../../assets/fitness/man drinking water.gif";
+
+
 import "../../styles/wellness-reminder.css";
 
 
@@ -50,18 +57,30 @@ import "../../styles/wellness-reminder.css";
 // TIMER SETTINGS
 // ============================================================
 
-// Normal reminder:
+// Movement / yoga reminder:
 // every 50 minutes
-const REGULAR_REMINDER_MS =
+const MOVEMENT_REMINDER_MS =
   50 * 60 * 1000;
 
 
-// Remind me later:
+// Hydration reminder:
+// every 60 minutes
+const HYDRATION_REMINDER_MS =
+  60 * 60 * 1000;
+
+
+// Movement "Remind me later":
 // random between 5 and 10 minutes
-const SNOOZE_MIN_MS =
+const MOVEMENT_SNOOZE_MIN_MS =
   5 * 60 * 1000;
 
-const SNOOZE_MAX_MS =
+const MOVEMENT_SNOOZE_MAX_MS =
+  10 * 60 * 1000;
+
+
+// Hydration "Remind me later":
+// fixed 10 minutes
+const HYDRATION_SNOOZE_MS =
   10 * 60 * 1000;
 
 
@@ -69,31 +88,49 @@ const SNOOZE_MAX_MS =
 // STORAGE
 // ============================================================
 
-const NEXT_REMINDER_KEY =
+// Keep the old movement key so existing users do not lose
+// their current movement reminder schedule.
+const NEXT_MOVEMENT_REMINDER_KEY =
   "anandam:wellness-reminder:next-at";
+
+
+const NEXT_HYDRATION_REMINDER_KEY =
+  "anandam:hydration-reminder:next-at";
+
 
 const RECENT_REMINDERS_KEY =
   "anandam:wellness-reminder:recent-ids";
 
 
-// Do not repeat any of the last 4 poses
-const RECENT_REMINDER_LIMIT = 4;
+const HYDRATION_BENEFIT_INDEX_KEY =
+  "anandam:hydration-reminder:benefit-index";
+
+
+// Do not repeat any of the last 4 yoga poses.
+const RECENT_REMINDER_LIMIT =
+  4;
 
 
 // ============================================================
-// REMINDER POSES
+// MOVEMENT / YOGA REMINDERS
+//
 // IMPORTANT:
 // poseId MUST exactly match the id inside guidedYogaData.js
 // ============================================================
 
-const REMINDERS = [
+const MOVEMENT_REMINDERS = [
   {
-    id: "reminder-cobra",
-    poseId: "cobra-pose",
+    id:
+      "reminder-cobra",
 
-    type: "movement",
+    poseId:
+      "cobra-pose",
 
-    image: cobraGif,
+    type:
+      "movement",
+
+    image:
+      cobraGif,
 
     title:
       "Time for a quick movement break?",
@@ -110,34 +147,17 @@ const REMINDERS = [
 
 
   {
-    id: "reminder-tree",
-    poseId: "tree-pose",
+    id:
+      "reminder-tree",
 
-    type: "movement",
+    poseId:
+      "tree-pose",
 
-    image: treeGif,
+    type:
+      "movement",
 
-    title:
-      "Time for a quick movement break?",
-
-    description:
-      "You’ve been focused for nearly 50 minutes. A short movement break can help you reset before continuing.",
-
-    tip:
-      "Take 2 minutes to stretch, move, or try a quick exercise.",
-
-    actionLabel:
-      "Start a quick exercise",
-  },
-
-
-  {
-    id: "reminder-bow",
-    poseId: "bow-pose",
-
-    type: "movement",
-
-    image: bowGif,
+    image:
+      treeGif,
 
     title:
       "Time for a quick movement break?",
@@ -154,34 +174,17 @@ const REMINDERS = [
 
 
   {
-    id: "reminder-triangle",
-    poseId: "triangle-pose",
+    id:
+      "reminder-bow",
 
-    type: "movement",
+    poseId:
+      "bow-pose",
 
-    image: triangleGif,
+    type:
+      "movement",
 
-    title:
-      "Time for a quick movement break?",
-
-    description:
-      "You’ve been focused for nearly 50 minutes. A short movement break can help you reset before continuing.",
-
-    tip:
-      "Take 2 minutes to stretch, move, or try a quick exercise.",
-
-    actionLabel:
-      "Start a quick exercise",
-  },
-
-
-  {
-    id: "reminder-warrior-three",
-    poseId: "warrior-three",
-
-    type: "movement",
-
-    image: warriorGif,
+    image:
+      bowGif,
 
     title:
       "Time for a quick movement break?",
@@ -198,34 +201,17 @@ const REMINDERS = [
 
 
   {
-    id: "reminder-extended-side-angle",
-    poseId: "extended-side-angle",
+    id:
+      "reminder-triangle",
 
-    type: "movement",
+    poseId:
+      "triangle-pose",
 
-    image: extendedSideAngleGif,
+    type:
+      "movement",
 
-    title:
-      "Time for a quick movement break?",
-
-    description:
-      "You’ve been focused for nearly 50 minutes. A short movement break can help you reset before continuing.",
-
-    tip:
-      "Take 2 minutes to stretch, move, or try a quick exercise.",
-
-    actionLabel:
-      "Start a quick exercise",
-  },
-
-
-  {
-    id: "reminder-surya-namaskar",
-    poseId: "surya-namaskar",
-
-    type: "movement",
-
-    image: suryaGif,
+    image:
+      triangleGif,
 
     title:
       "Time for a quick movement break?",
@@ -242,12 +228,98 @@ const REMINDERS = [
 
 
   {
-    id: "reminder-half-moon",
-    poseId: "half-moon-pose",
+    id:
+      "reminder-warrior-three",
 
-    type: "movement",
+    poseId:
+      "warrior-three",
 
-    image: halfMoonGif,
+    type:
+      "movement",
+
+    image:
+      warriorGif,
+
+    title:
+      "Time for a quick movement break?",
+
+    description:
+      "You’ve been focused for nearly 50 minutes. A short movement break can help you reset before continuing.",
+
+    tip:
+      "Take 2 minutes to stretch, move, or try a quick exercise.",
+
+    actionLabel:
+      "Start a quick exercise",
+  },
+
+
+  {
+    id:
+      "reminder-extended-side-angle",
+
+    poseId:
+      "extended-side-angle",
+
+    type:
+      "movement",
+
+    image:
+      extendedSideAngleGif,
+
+    title:
+      "Time for a quick movement break?",
+
+    description:
+      "You’ve been focused for nearly 50 minutes. A short movement break can help you reset before continuing.",
+
+    tip:
+      "Take 2 minutes to stretch, move, or try a quick exercise.",
+
+    actionLabel:
+      "Start a quick exercise",
+  },
+
+
+  {
+    id:
+      "reminder-surya-namaskar",
+
+    poseId:
+      "surya-namaskar",
+
+    type:
+      "movement",
+
+    image:
+      suryaGif,
+
+    title:
+      "Time for a quick movement break?",
+
+    description:
+      "You’ve been focused for nearly 50 minutes. A short movement break can help you reset before continuing.",
+
+    tip:
+      "Take 2 minutes to stretch, move, or try a quick exercise.",
+
+    actionLabel:
+      "Start a quick exercise",
+  },
+
+
+  {
+    id:
+      "reminder-half-moon",
+
+    poseId:
+      "half-moon-pose",
+
+    type:
+      "movement",
+
+    image:
+      halfMoonGif,
 
     title:
       "Time for a quick movement break?",
@@ -265,35 +337,107 @@ const REMINDERS = [
 
 
 // ============================================================
-// HELPERS
+// 25 HYDRATION BENEFITS / TIPS
+//
+// They rotate in order so the user sees a different one each
+// time before the list starts again.
 // ============================================================
 
-function readTimestamp() {
+const HYDRATION_BENEFITS = [
+  "Keep your water bottle nearby and sip regularly.",
+
+  "Staying hydrated helps your body maintain normal fluid balance.",
+
+  "Regular water intake supports normal concentration and alertness.",
+
+  "Hydration supports normal physical performance during daily activity.",
+
+  "Drinking water regularly can help replace fluid lost through breathing and perspiration.",
+
+  "Good hydration supports the normal transport of nutrients around the body.",
+
+  "Water helps support normal digestion and everyday digestive function.",
+
+  "Staying hydrated supports normal temperature regulation.",
+
+  "Regular hydration helps keep your mouth and throat from feeling dry.",
+
+  "Water supports normal kidney function and the body’s natural waste-removal processes.",
+
+  "Taking a water break is also a useful moment to relax your eyes from the screen.",
+
+  "Small, regular sips can be easier to maintain than waiting until you feel very thirsty.",
+
+  "Hydration supports normal joint lubrication during everyday movement.",
+
+  "Water supports normal blood volume and circulation.",
+
+  "A regular drinking routine can make it easier to remember hydration during busy work periods.",
+
+  "Keeping water visible on your desk can be a simple reminder to drink regularly.",
+
+  "Hydration supports normal muscle function during movement and exercise.",
+
+  "Drinking water with meals can contribute to your overall daily fluid intake.",
+
+  "A short water break can give you a natural pause between focused tasks.",
+
+  "Hydration needs can increase in warm environments or during physical activity.",
+
+  "Regular fluid intake supports normal skin hydration from within.",
+
+  "Water is a simple zero-calorie choice for maintaining everyday hydration.",
+
+  "If you have been speaking for a long time, a few sips of water can help relieve a dry mouth.",
+
+  "Building hydration into your routine can help prevent long periods without drinking.",
+
+  "A consistent hydration habit supports overall day-to-day wellbeing.",
+];
+
+
+// ============================================================
+// GENERIC TIMESTAMP HELPERS
+// ============================================================
+
+function readTimestamp(
+  key
+) {
   const raw =
     sessionStorage.getItem(
-      NEXT_REMINDER_KEY
+      key
     );
 
+
   const value =
-    Number(raw);
+    Number(
+      raw
+    );
+
 
   if (
-    !Number.isFinite(value) ||
+    !Number.isFinite(
+      value
+    ) ||
     value <= 0
   ) {
     return null;
   }
+
 
   return value;
 }
 
 
 function saveTimestamp(
+  key,
   timestamp
 ) {
   sessionStorage.setItem(
-    NEXT_REMINDER_KEY,
-    String(timestamp)
+    key,
+    String(
+      timestamp
+    )
   );
 }
 
@@ -301,40 +445,47 @@ function saveTimestamp(
 function createNextTimestamp(
   delay
 ) {
-  return Date.now() + delay;
-}
-
-
-// ============================================================
-// RANDOM 5–10 MINUTE SNOOZE
-// ============================================================
-
-function getRandomSnoozeDelay() {
   return (
-    Math.floor(
-      Math.random() *
-        (
-          SNOOZE_MAX_MS -
-          SNOOZE_MIN_MS +
-          1
-        )
-    ) +
-    SNOOZE_MIN_MS
+    Date.now() +
+    delay
   );
 }
 
 
 // ============================================================
-// RANDOM POSE
+// MOVEMENT SNOOZE
+// ============================================================
+
+function getRandomMovementSnoozeDelay() {
+  return (
+    Math.floor(
+      Math.random() *
+        (
+          MOVEMENT_SNOOZE_MAX_MS -
+          MOVEMENT_SNOOZE_MIN_MS +
+          1
+        )
+    ) +
+    MOVEMENT_SNOOZE_MIN_MS
+  );
+}
+
+
+// ============================================================
+// RANDOM YOGA POSE
 // Prevent last 4 poses from repeating
 // ============================================================
 
-function chooseRandomReminder() {
-  if (!REMINDERS.length) {
+function chooseRandomMovementReminder() {
+  if (
+    !MOVEMENT_REMINDERS.length
+  ) {
     return null;
   }
 
-  let recentIds = [];
+
+  let recentIds =
+    [];
 
 
   try {
@@ -343,25 +494,31 @@ function chooseRandomReminder() {
         RECENT_REMINDERS_KEY
       );
 
+
     recentIds =
       stored
-        ? JSON.parse(stored)
+        ? JSON.parse(
+            stored
+          )
         : [];
+
 
     if (
       !Array.isArray(
         recentIds
       )
     ) {
-      recentIds = [];
+      recentIds =
+        [];
     }
   } catch {
-    recentIds = [];
+    recentIds =
+      [];
   }
 
 
   let candidates =
-    REMINDERS.filter(
+    MOVEMENT_REMINDERS.filter(
       (item) =>
         !recentIds.includes(
           item.id
@@ -369,13 +526,14 @@ function chooseRandomReminder() {
     );
 
 
-  /*
-    Safety fallback.
-  */
-  if (!candidates.length) {
-    candidates = REMINDERS;
+  if (
+    !candidates.length
+  ) {
+    candidates =
+      MOVEMENT_REMINDERS;
 
-    recentIds = [];
+    recentIds =
+      [];
   }
 
 
@@ -397,7 +555,8 @@ function chooseRandomReminder() {
 
     ...recentIds.filter(
       (id) =>
-        id !== selected.id
+        id !==
+        selected.id
     ),
   ].slice(
     0,
@@ -419,12 +578,62 @@ function chooseRandomReminder() {
 
 
 // ============================================================
+// HYDRATION BENEFIT ROTATION
+// ============================================================
+
+function getNextHydrationBenefit() {
+  const rawIndex =
+    Number(
+      sessionStorage.getItem(
+        HYDRATION_BENEFIT_INDEX_KEY
+      )
+    );
+
+
+  const safeIndex =
+    Number.isInteger(
+      rawIndex
+    ) &&
+    rawIndex >= 0
+      ? rawIndex %
+        HYDRATION_BENEFITS.length
+      : 0;
+
+
+  const benefit =
+    HYDRATION_BENEFITS[
+      safeIndex
+    ];
+
+
+  const nextIndex =
+    (
+      safeIndex +
+      1
+    ) %
+    HYDRATION_BENEFITS.length;
+
+
+  sessionStorage.setItem(
+    HYDRATION_BENEFIT_INDEX_KEY,
+    String(
+      nextIndex
+    )
+  );
+
+
+  return benefit;
+}
+
+
+// ============================================================
 // COMPONENT
 // ============================================================
 
 export default function WellnessReminder() {
   const navigate =
     useNavigate();
+
 
   const location =
     useLocation();
@@ -433,25 +642,33 @@ export default function WellnessReminder() {
   const [
     isOpen,
     setIsOpen,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
 
 
   const [
     imageOrientation,
     setImageOrientation,
-  ] = useState("normal");
+  ] = useState(
+    "normal"
+  );
 
 
   const [
     activeReminder,
     setActiveReminder,
-  ] = useState(null);
+  ] = useState(
+    null
+  );
 
 
   const [
     scheduleVersion,
     setScheduleVersion,
-  ] = useState(0);
+  ] = useState(
+    0
+  );
 
 
   const token =
@@ -459,20 +676,24 @@ export default function WellnessReminder() {
 
 
   const authenticated =
-    Boolean(token);
+    Boolean(
+      token
+    );
 
 
   // ==========================================================
-  // SHOW RANDOM REMINDER
+  // OPEN MOVEMENT REMINDER
   // ==========================================================
 
-  const showReminder =
+  const showMovementReminder =
     useCallback(() => {
       const reminder =
-        chooseRandomReminder();
+        chooseRandomMovementReminder();
 
 
-      if (!reminder) {
+      if (
+        !reminder
+      ) {
         return;
       }
 
@@ -487,52 +708,142 @@ export default function WellnessReminder() {
       );
 
 
-      setIsOpen(true);
+      setIsOpen(
+        true
+      );
     }, []);
 
 
   // ==========================================================
-  // SCHEDULE NEXT
+  // OPEN HYDRATION REMINDER
   // ==========================================================
 
-  const scheduleNext =
+  const showHydrationReminder =
+    useCallback(() => {
+      setImageOrientation(
+        "normal"
+      );
+
+
+      setActiveReminder({
+        id:
+          "hydration-reminder",
+
+        type:
+          "hydration",
+
+        image:
+          hydrationGif,
+
+        title:
+          "Time for a water break?",
+
+        description:
+          "You’ve been focused for a while. Take a moment to pause and drink some water.",
+
+        tip:
+          getNextHydrationBenefit(),
+
+        actionLabel:
+          "I’ve had some water",
+      });
+
+
+      setIsOpen(
+        true
+      );
+    }, []);
+
+
+  // ==========================================================
+  // CLOSE CURRENT POPUP + FORCE TIMER RECALCULATION
+  // ==========================================================
+
+  const dismissPopup =
+    useCallback(() => {
+      setIsOpen(
+        false
+      );
+
+
+      setActiveReminder(
+        null
+      );
+
+
+      setScheduleVersion(
+        (current) =>
+          current +
+          1
+      );
+    }, []);
+
+
+  // ==========================================================
+  // SCHEDULE NEXT MOVEMENT REMINDER
+  // ==========================================================
+
+  const scheduleNextMovement =
     useCallback(
       (delay) => {
-        const nextTimestamp =
+        saveTimestamp(
+          NEXT_MOVEMENT_REMINDER_KEY,
+
           createNextTimestamp(
             delay
-          );
-
-
-        saveTimestamp(
-          nextTimestamp
+          )
         );
 
 
-        setIsOpen(false);
-
-
-        setActiveReminder(
-          null
-        );
-
-
-        setScheduleVersion(
-          (current) =>
-            current + 1
-        );
+        dismissPopup();
       },
-      []
+      [
+        dismissPopup,
+      ]
     );
 
 
   // ==========================================================
-  // MAIN TIMER
+  // SCHEDULE NEXT HYDRATION REMINDER
+  // ==========================================================
+
+  const scheduleNextHydration =
+    useCallback(
+      (delay) => {
+        saveTimestamp(
+          NEXT_HYDRATION_REMINDER_KEY,
+
+          createNextTimestamp(
+            delay
+          )
+        );
+
+
+        dismissPopup();
+      },
+      [
+        dismissPopup,
+      ]
+    );
+
+
+  // ==========================================================
+  // COMBINED TIMER ENGINE
+  //
+  // Movement and hydration each keep their OWN timestamp.
+  // Only one modal is shown at a time.
+  // If both become due, the oldest due reminder is shown first.
+  // The other remains due and appears after the first is closed.
   // ==========================================================
 
   useEffect(() => {
-    if (!authenticated) {
-      setIsOpen(false);
+    if (
+      !authenticated
+    ) {
+      setIsOpen(
+        false
+      );
+
 
       setActiveReminder(
         null
@@ -540,7 +851,12 @@ export default function WellnessReminder() {
 
 
       sessionStorage.removeItem(
-        NEXT_REMINDER_KEY
+        NEXT_MOVEMENT_REMINDER_KEY
+      );
+
+
+      sessionStorage.removeItem(
+        NEXT_HYDRATION_REMINDER_KEY
       );
 
 
@@ -554,64 +870,163 @@ export default function WellnessReminder() {
 
 
     /*
-      Do not create another timer
-      while popup is currently visible.
+      Never place one reminder
+      on top of another.
     */
-    if (isOpen) {
+    if (
+      isOpen
+    ) {
       return undefined;
     }
 
 
-    let nextTimestamp =
-      readTimestamp();
+    let nextMovementTimestamp =
+      readTimestamp(
+        NEXT_MOVEMENT_REMINDER_KEY
+      );
+
+
+    let nextHydrationTimestamp =
+      readTimestamp(
+        NEXT_HYDRATION_REMINDER_KEY
+      );
 
 
     /*
-      First reminder after 50 minutes.
+      First movement reminder:
+      50 minutes from now.
     */
-    if (!nextTimestamp) {
-      nextTimestamp =
+    if (
+      !nextMovementTimestamp
+    ) {
+      nextMovementTimestamp =
         createNextTimestamp(
-          REGULAR_REMINDER_MS
+          MOVEMENT_REMINDER_MS
         );
 
 
       saveTimestamp(
-        nextTimestamp
+        NEXT_MOVEMENT_REMINDER_KEY,
+        nextMovementTimestamp
       );
     }
 
 
-    let timerId = null;
+    /*
+      First hydration reminder:
+      60 minutes from now.
+    */
+    if (
+      !nextHydrationTimestamp
+    ) {
+      nextHydrationTimestamp =
+        createNextTimestamp(
+          HYDRATION_REMINDER_MS
+        );
+
+
+      saveTimestamp(
+        NEXT_HYDRATION_REMINDER_KEY,
+        nextHydrationTimestamp
+      );
+    }
+
+
+    let timerId =
+      null;
 
 
     function checkReminderTime() {
-      const currentNext =
-        readTimestamp();
+      const now =
+        Date.now();
 
 
-      if (!currentNext) {
-        return false;
+      const movementNext =
+        readTimestamp(
+          NEXT_MOVEMENT_REMINDER_KEY
+        );
+
+
+      const hydrationNext =
+        readTimestamp(
+          NEXT_HYDRATION_REMINDER_KEY
+        );
+
+
+      const dueReminders =
+        [];
+
+
+      if (
+        movementNext &&
+        now >=
+          movementNext
+      ) {
+        dueReminders.push({
+          type:
+            "movement",
+
+          timestamp:
+            movementNext,
+        });
       }
 
 
       if (
-        Date.now() >=
-        currentNext
+        hydrationNext &&
+        now >=
+          hydrationNext
       ) {
-        showReminder();
+        dueReminders.push({
+          type:
+            "hydration",
 
-        return true;
+          timestamp:
+            hydrationNext,
+        });
       }
 
 
-      return false;
+      if (
+        !dueReminders.length
+      ) {
+        return false;
+      }
+
+
+      dueReminders.sort(
+        (
+          first,
+          second
+        ) =>
+          first.timestamp -
+          second.timestamp
+      );
+
+
+      const nextDue =
+        dueReminders[
+          0
+        ];
+
+
+      if (
+        nextDue.type ===
+        "hydration"
+      ) {
+        showHydrationReminder();
+      } else {
+        showMovementReminder();
+      }
+
+
+      return true;
     }
 
 
     /*
       Browser may have been hidden,
-      sleeping, etc.
+      sleeping, or returned from another tab.
     */
     if (
       checkReminderTime()
@@ -620,23 +1035,51 @@ export default function WellnessReminder() {
     }
 
 
-    const remainingTime =
-      Math.max(
-        0,
-
-        nextTimestamp -
-          Date.now()
+    const currentMovement =
+      readTimestamp(
+        NEXT_MOVEMENT_REMINDER_KEY
       );
 
 
-    timerId =
-      window.setTimeout(
-        () => {
-          showReminder();
-        },
-
-        remainingTime
+    const currentHydration =
+      readTimestamp(
+        NEXT_HYDRATION_REMINDER_KEY
       );
+
+
+    const nextTimestamp =
+      Math.min(
+        currentMovement ||
+          Number.POSITIVE_INFINITY,
+
+        currentHydration ||
+          Number.POSITIVE_INFINITY
+      );
+
+
+    if (
+      Number.isFinite(
+        nextTimestamp
+      )
+    ) {
+      const remainingTime =
+        Math.max(
+          0,
+
+          nextTimestamp -
+            Date.now()
+        );
+
+
+      timerId =
+        window.setTimeout(
+          () => {
+            checkReminderTime();
+          },
+
+          remainingTime
+        );
+    }
 
 
     function handleWindowFocus() {
@@ -667,7 +1110,9 @@ export default function WellnessReminder() {
 
 
     return () => {
-      if (timerId) {
+      if (
+        timerId
+      ) {
         window.clearTimeout(
           timerId
         );
@@ -690,24 +1135,39 @@ export default function WellnessReminder() {
     isOpen,
     location.pathname,
     scheduleVersion,
-    showReminder,
+    showHydrationReminder,
+    showMovementReminder,
   ]);
 
 
   // ==========================================================
   // X BUTTON
   //
-  // Closing normally means:
-  // next regular reminder after 50 minutes
+  // Movement -> next one in 50 minutes
+  // Hydration -> next one in 60 minutes
   // ==========================================================
 
   const handleClose =
     useCallback(() => {
-      scheduleNext(
-        REGULAR_REMINDER_MS
+      if (
+        activeReminder?.type ===
+        "hydration"
+      ) {
+        scheduleNextHydration(
+          HYDRATION_REMINDER_MS
+        );
+
+        return;
+      }
+
+
+      scheduleNextMovement(
+        MOVEMENT_REMINDER_MS
       );
     }, [
-      scheduleNext,
+      activeReminder,
+      scheduleNextHydration,
+      scheduleNextMovement,
     ]);
 
 
@@ -716,7 +1176,9 @@ export default function WellnessReminder() {
   // ==========================================================
 
   useEffect(() => {
-    if (!isOpen) {
+    if (
+      !isOpen
+    ) {
       return undefined;
     }
 
@@ -765,47 +1227,67 @@ export default function WellnessReminder() {
 
   // ==========================================================
   // REMIND ME LATER
-  //
-  // Random 5–10 minutes
   // ==========================================================
 
   function handleRemindLater() {
-    scheduleNext(
-      getRandomSnoozeDelay()
+    if (
+      activeReminder?.type ===
+      "hydration"
+    ) {
+      scheduleNextHydration(
+        HYDRATION_SNOOZE_MS
+      );
+
+      return;
+    }
+
+
+    scheduleNextMovement(
+      getRandomMovementSnoozeDelay()
     );
   }
 
 
   // ==========================================================
-  // START QUICK EXERCISE
+  // PRIMARY ACTION
   //
-  // Goes directly to matching yoga pose
+  // Movement:
+  // go directly to the matching yoga pose.
+  //
+  // Hydration:
+  // acknowledge water and schedule the next hydration
+  // reminder for one hour later.
   // ==========================================================
 
   function handlePrimaryAction() {
-    if (!activeReminder?.poseId) {
+    if (
+      activeReminder?.type ===
+      "hydration"
+    ) {
+      scheduleNextHydration(
+        HYDRATION_REMINDER_MS
+      );
+
       return;
     }
+
+
+    if (
+      !activeReminder?.poseId
+    ) {
+      return;
+    }
+
 
     const poseId =
       activeReminder.poseId;
 
 
-    /*
-      Start another normal
-      50-minute reminder cycle.
-    */
-    scheduleNext(
-      REGULAR_REMINDER_MS
+    scheduleNextMovement(
+      MOVEMENT_REMINDER_MS
     );
 
 
-    /*
-      Put the requested pose in the URL.
-
-      Example:
-      /app/fitness?tab=yoga&pose=surya-namaskar
-    */
     navigate(
       `/app/fitness?tab=yoga&pose=${encodeURIComponent(
         poseId
@@ -849,7 +1331,9 @@ export default function WellnessReminder() {
         <button
           type="button"
           className="wellness-reminder-close"
-          onClick={handleClose}
+          onClick={
+            handleClose
+          }
           aria-label="Close reminder"
         >
           <X
@@ -859,7 +1343,7 @@ export default function WellnessReminder() {
         </button>
 
 
-        {/* YOGA GIF */}
+        {/* GIF / ILLUSTRATION */}
 
         <div className="wellness-reminder-visual">
           <img
@@ -876,7 +1360,12 @@ export default function WellnessReminder() {
             aria-hidden="true"
 
             className={
-              `wellness-reminder-gif wellness-reminder-gif--${imageOrientation}`
+              `wellness-reminder-gif wellness-reminder-gif--${imageOrientation}${
+                activeReminder.type ===
+                "hydration"
+                  ? " wellness-reminder-gif--hydration"
+                  : ""
+              }`
             }
 
             onLoad={(event) => {
@@ -892,9 +1381,6 @@ export default function WellnessReminder() {
                 image.naturalHeight;
 
 
-              /*
-                Tall yoga poses
-              */
               if (
                 height >
                 width * 1.2
@@ -907,9 +1393,6 @@ export default function WellnessReminder() {
               }
 
 
-              /*
-                Wide poses
-              */
               if (
                 width >
                 height * 1.25
@@ -962,7 +1445,7 @@ export default function WellnessReminder() {
         </p>
 
 
-        {/* TIP */}
+        {/* TIP / ROTATING HYDRATION BENEFIT */}
 
         <div className="wellness-reminder-tip">
           {
