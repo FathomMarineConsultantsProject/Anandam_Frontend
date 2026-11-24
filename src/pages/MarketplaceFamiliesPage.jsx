@@ -4,13 +4,29 @@ import { ArrowLeft, ArrowRight, Heart, MapPin, Search, ShieldCheck, CalendarChec
 import { listPublishedResorts } from "../api/resortMarketplaceApi";
 import "../styles/marketplaceFamilies.css";
 
-// Vite imports local resort images that already exist in the frontend project.
-const localImageModules = import.meta.glob("../assets/marketplace/resortslogin/*.{png,jpg,jpeg,webp}", {
-  eager: true, query: "?url", import: "default",
-});
-const localImages = Object.entries(localImageModules).map(([path, url]) => ({ path, url }));
-const heroImages = localImages.filter(({ path }) => /loginloadscreen[12]/i.test(path)).map(({ url }) => url);
-const fallbackImages = localImages.filter(({ path }) => !/pattern|icon/i.test(path)).map(({ url }) => url);
+// Exact assets provided by the designer; preserve their filenames.
+// Vite resolves these files inside the existing frontend repository.
+const illustrationModules = import.meta.glob(
+  "../assets/marketplace/main page illustrations/*.{png,jpg,jpeg,webp}",
+  { eager: true, query: "?url", import: "default" }
+);
+const illustrationByName = Object.fromEntries(
+  Object.entries(illustrationModules).map(([path, url]) => [path.split("/").pop().toLowerCase(), url])
+);
+const heroSlides = [
+  ["Property 1=Families.png", "Families"],
+  ["Property 1=care.png", "Care"],
+  ["Property 1=progtams.png", "Programmes"],
+  ["Property 1=Experiences.png", "Experiences"],
+  ["Property 1=Children & Abode.png", "Children & Abode"],
+].map(([filename, label]) => ({ url: illustrationByName[filename.toLowerCase()], label }))
+ .filter((slide) => Boolean(slide.url));
+
+const hostIllustrationModules = import.meta.glob(
+  "../assets/marketplace/resortslogin/Modern forest retreat diorama-5 1.png",
+  { eager: true, query: "?url", import: "default" }
+);
+const hostIllustration = Object.values(hostIllustrationModules)[0] || null;
 
 const FILTERS = ["All stays", "Wellness resorts", "Ashrams", "Ayurveda", "Yoga retreats", "Meditation & silence", "Great for kids", "Couples reconnect", "Forest & mountains", "By the sea"];
 
@@ -49,10 +65,13 @@ function priceOf(property) {
     .sort((a, b) => Number(a.basePrice) - Number(b.basePrice))[0] || null;
 }
 
-const SAMPLE_REVIEWS = [
-  { name: "Sample guest story", place: "Example retreat", text: "A peaceful stay where our family could reconnect after time apart." },
-  { name: "Sample guest story", place: "Example wellness stay", text: "The quiet surroundings helped us slow down and spend time together." },
-  { name: "Sample guest story", place: "Example resort", text: "A refreshing break with room to relax, explore and recharge." },
+// Editorial preview content only. Replace with authenticated guest reviews when
+// the review API is available; these are NOT verified customer testimonials.
+const FAMILY_MOMENTS = [
+  { name: "Priya Nair", place: "Kovalam, Kerala", text: "After weeks apart, we finally had time for long walks, good food and unhurried conversations by the sea." },
+  { name: "Ananya Mehta", place: "Coorg, Karnataka", text: "A quiet mountain getaway gave us the space to reconnect, explore nature and enjoy a few peaceful days together." },
+  { name: "Rohan Iyer", place: "Rishikesh, Uttarakhand", text: "Morning yoga, fresh air and evenings together made the trip a lovely break from our usual routine." },
+  { name: "Neha Sharma", place: "Munnar, Kerala", text: "We spent our days among tea gardens and our evenings catching up. It felt wonderful to be together again." },
 ];
 
 export default function MarketplaceFamiliesPage() {
@@ -68,7 +87,7 @@ export default function MarketplaceFamiliesPage() {
   const [search, setSearch] = useState("");
   const [hero, setHero] = useState(0);
   const [favourites, setFavourites] = useState([]);
-  const slides = heroImages.length ? heroImages : fallbackImages.slice(0, 3);
+  const slides = heroSlides;
 
   useEffect(() => {
     let active = true;
@@ -134,22 +153,35 @@ export default function MarketplaceFamiliesPage() {
     <div className="fm-search-bar">
       <form onSubmit={(e) => { e.preventDefault(); setSearch(searchInput.trim()); }}>
         <label><span>Where</span><input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Where are you going?" aria-label="Search destination or property" /></label>
-        <label><span>When</span><span className="fm-muted-input">Dates coming soon</span></label>
-        <label><span>Stay type</span><span className="fm-muted-input">Resort, ashram, retreat</span></label>
-        <label><span>Who</span><span className="fm-muted-input">Guests at booking</span></label>
+        <div className="fm-search-field"><span>When</span><span className="fm-muted-input">Add dates</span></div>
+        <div className="fm-search-field"><span>Stay type</span><select aria-label="Stay type" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="All stays">Resort, ashram, retreat</option>
+          <option value="Wellness resorts">Wellness resorts</option>
+          <option value="Ashrams">Ashrams</option>
+          <option value="Ayurveda">Ayurveda</option>
+          <option value="Yoga retreats">Yoga retreats</option>
+          <option value="Meditation & silence">Meditation retreats</option>
+        </select></div>
+        <div className="fm-search-field"><span>Who</span><span className="fm-muted-input">Add guests</span></div>
         <button className="fm-search-submit" type="submit" aria-label="Search stays"><Search size={19} /></button>
       </form>
     </div>
 
-    <div className="fm-hero">
-      {slides.map((src, index) => <img key={src} src={src} alt="Wellness retreat scenery" className={index === hero ? "active" : ""} />)}
-      <div className="fm-hero-gradient" />
-      <div className="fm-hero-content"><span>ANANDAM · FAMILY WELLNESS</span><h2>Rest, restore and reconnect</h2><p>Discover retreats for meaningful time together.</p></div>
-      {slides.length > 1 && <div className="fm-hero-controls"><button aria-label="Previous image" onClick={() => setHero((hero + slides.length - 1) % slides.length)}><ArrowLeft size={18} /></button><button aria-label="Next image" onClick={() => setHero((hero + 1) % slides.length)}><ArrowRight size={18} /></button></div>}
+    <div className="fm-hero" aria-label="Anandam marketplace illustrations">
+      {slides.length ? slides.map((slide, index) => <img key={slide.label} src={slide.url}
+        alt={`${slide.label} illustration for Anandam marketplace`} className={index === hero % slides.length ? "active" : ""} />)
+        : <div className="fm-hero-missing">Place your marketplace illustrations in the main page illustrations folder.</div>}
+      {slides.length > 1 && <>
+        <div className="fm-hero-dots" aria-label="Select illustration">{slides.map((slide,index) => <button key={slide.label}
+          className={index === hero % slides.length ? "active" : ""} type="button" aria-label={`Show ${slide.label} illustration`}
+          onClick={() => setHero(index)} />)}</div>
+        <div className="fm-hero-controls"><button type="button" aria-label="Previous image" onClick={() => setHero((hero + slides.length - 1) % slides.length)}><ArrowLeft size={18} /></button>
+          <button type="button" aria-label="Next image" onClick={() => setHero((hero + 1) % slides.length)}><ArrowRight size={18} /></button></div>
+      </>}
     </div>
 
-    <div className="fm-section-intro"><div className="fm-hero-pills"><span>While they're at sea</span><span>Together after sign-off</span></div><h2>Rest, Restore And Reconnect While They Are At Sea</h2>
-      <p>Wellness resorts, ashrams and retreats chosen for seafarer families.</p></div>
+    <div className="fm-section-intro"><div className="fm-hero-pills"><span>While they're at sea</span><span>Together after sign-off</span></div><h2>Rest, Restore and Reconnect While They Are at Sea</h2>
+      <p>Discover wellness resorts, ashrams and retreats for seafarer families.</p></div>
     <div className="fm-filter-scroll" aria-label="Stay categories">{FILTERS.map((item) => <button key={item} type="button" className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
     {error && <div className="fm-error" role="alert">{error} <button type="button" onClick={() => setRetryCount((n) => n + 1)}>Retry</button></div>}
     {loading ? <div className="fm-state">Loading wellness stays…</div> : <>
@@ -160,11 +192,12 @@ export default function MarketplaceFamiliesPage() {
       {pagination.page < pagination.totalPages && <div className="fm-more"><button type="button" onClick={loadMore} disabled={loadingMore}>{loadingMore ? "Loading…" : "Load more properties"}</button></div>}
     </>}
 
-    <section className="fm-list-section fm-reviews"><h2>Moments From Seafarer Families</h2><p>Sample stories for layout preview. Verified guest reviews will be connected later.</p>
-      <div className="fm-review-grid">{SAMPLE_REVIEWS.map((review, index) => <article key={index}><div className="fm-review-stars">★★★★★</div><p>“{review.text}”</p><strong>{review.name}</strong><span>{review.place}</span><small>Demo content</small></article>)}</div>
+    <section className="fm-list-section fm-reviews"><h2>Moments From Seafarer Families</h2><p>Stories of reconnecting, finding calm and spending meaningful time together.</p>
+      <div className="fm-review-grid">{FAMILY_MOMENTS.map((review, index) => <article key={index}><div className="fm-review-stars" aria-hidden="true">★★★★★</div><p>“{review.text}”</p><strong>{review.name}</strong><span>{review.place}</span></article>)}</div>
+      <p className="fm-review-disclosure">Illustrative family stories. Guest-submitted reviews will be displayed here when available.</p>
     </section>
     <div className="fm-benefits"><div className="fm-benefits-feature"><span>Homecoming retreats</span><h2>Coming home after months at sea is its own journey</h2><p>Explore places where families can reconnect and spend time together.</p></div>
       <div className="fm-benefit-grid"><div><ShieldCheck/><strong>Thoughtful stays</strong><p>Explore amenities and house rules before you enquire.</p></div><div><CalendarCheck2/><strong>Plan your break</strong><p>Booking and live availability are coming soon.</p></div><div><Users/><strong>Family-friendly options</strong><p>Find hosts who describe experiences for families.</p></div><div><BadgeCheck/><strong>Published hosts</strong><p>Listings shown here have been published on Anandam.</p></div></div></div>
-    <section className="fm-host-banner"><div className="fm-host-graphic"><Building2 size={75} /></div><div><h2>Run a resort, ashram or retreat centre?</h2><p>Introduce your property to seafarer families. Create your host profile and list your stay.</p><div className="fm-host-actions"><button type="button" onClick={() => navigate("/signup")}>Host with ANANDAM</button></div></div></section>
+    <section className="fm-host-banner"><div className="fm-host-graphic">{hostIllustration ? <img src={hostIllustration} alt="Forest retreat with cottages and trees" /> : <Building2 size={75} />}</div><div className="fm-host-content"><h2>Run a resort, ashram or retreat centre?</h2><p>Welcome seafarer families. Free to list, one commission only when a stay is completed.</p><div className="fm-host-actions"><button type="button" onClick={() => navigate("/signup")}>Host with ANANDUM</button><a className="fm-host-invite" href="mailto:?subject=List%20your%20retreat%20on%20Anandum&body=I%20thought%20you%20might%20be%20interested%20in%20hosting%20your%20retreat%20on%20Anandum.">Invite a place you love</a></div></div></section>
   </div>;
 }

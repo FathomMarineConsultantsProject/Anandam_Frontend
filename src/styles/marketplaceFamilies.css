@@ -7,5 +7,374 @@
 .fm-section-intro{text-align:center;padding:32px 0 22px}.fm-section-intro h2{font-size:clamp(20px,2.4vw,27px);margin:13px 0 5px}.fm-hero-pills{display:flex;gap:5px;justify-content:center}.fm-hero-pills span{background:#fff;padding:8px 12px;border:1px solid #eaded1;border-radius:20px;font-size:10px}.fm-filter-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;scrollbar-width:thin}.fm-filter-scroll button{flex-shrink:0;border:1px solid #dfe2e8;background:#fff;border-radius:5px;color:#8d96a6;padding:10px 14px;font-size:11px;cursor:pointer}.fm-filter-scroll button.active{background:var(--fm-brown);border-color:var(--fm-brown);color:white}
 .fm-list-section{margin-top:40px}.fm-list-section h2{font-size:25px;letter-spacing:-.025em;margin:0 0 5px}.fm-card-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;margin-top:20px}.fm-property-card{min-width:0;background:#fff;border:1px solid #eee5d8;border-radius:9px;overflow:hidden}.fm-card-image-wrap{position:relative;height:170px;cursor:pointer;overflow:hidden}.fm-card-image-wrap>img{width:100%;height:100%;object-fit:cover;transition:transform .25s}.fm-card-image-wrap:hover>img{transform:scale(1.04)}.fm-image-fallback,.fm-photo-placeholder{height:100%;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#eceae5;color:#91979d;font-size:12px}.fm-heart{position:absolute;top:9px;right:9px;background:#fffc;border:0;border-radius:50%;width:29px;height:29px;display:grid;place-items:center;color:#62636b;cursor:pointer}.fm-heart.active{color:#a43b35}.fm-card-copy{padding:13px}.fm-type{font-size:10px;color:#8e796a}.fm-card-line{display:flex;align-items:center;justify-content:space-between;gap:5px}.fm-card-line h3{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:5px 0}.fm-stars{white-space:nowrap;color:#e8a038;font-size:12px}.fm-card-copy>p{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--fm-muted);margin:2px 0 12px}.fm-card-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;padding-top:11px;border-top:1px solid #eee}.fm-card-footer strong{font-size:15px}.fm-card-footer span{font-size:10px;color:#777}.fm-card-footer button{border:0;background:none;color:var(--fm-brown);font-size:11px;text-decoration:underline;cursor:pointer}.fm-state{background:#fff;border:1px solid #eee2d7;padding:30px;margin:26px 0;border-radius:10px;text-align:center;color:#737985}.fm-state h3{color:var(--fm-ink)}.fm-more{text-align:center;margin:24px}.fm-more button,.fm-host-actions button{background:var(--fm-brown);color:white;border:0;padding:12px 24px;border-radius:6px;cursor:pointer}.fm-more button:disabled{opacity:.6;cursor:wait}.fm-error{padding:14px 18px;background:#fff0ed;border:1px solid #f4bab2;color:#a53929;border-radius:8px;margin:16px 0}.fm-error button{margin-left:10px}
 .fm-review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}.fm-review-grid article{background:#fff;min-height:170px;border:1px solid #eee;padding:24px;display:flex;flex-direction:column;gap:9px}.fm-review-stars{color:#e9a134;letter-spacing:2px}.fm-review-grid article p{font-size:13px;color:#566175;flex:1}.fm-review-grid article strong{font-size:12px}.fm-review-grid article span,.fm-review-grid article small{font-size:10px;color:#8992a0}.fm-benefits{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:38px 0}.fm-benefits-feature{background:#f4e5d1;padding:32px;border-radius:8px}.fm-benefits-feature>span{color:var(--fm-brown);font-size:12px}.fm-benefits-feature h2{font-size:27px;line-height:1.14;margin:12px 0}.fm-benefits-feature p,.fm-benefit-grid p{font-size:12px;color:#5e5d5c}.fm-benefit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fm-benefit-grid>div{background:#fff;border:1px solid #e6ddd0;padding:20px;border-radius:7px}.fm-benefit-grid svg{display:block;margin-bottom:9px;width:20px;height:20px}.fm-benefit-grid strong{font-size:13px}.fm-host-banner{display:flex;align-items:center;gap:30px;background:#fff;border:1px solid #e4d5c5;border-radius:9px;padding:30px}.fm-host-graphic{min-width:160px;display:grid;place-items:center;color:#ba8b42}.fm-host-banner h2{margin:0 0 7px;font-size:24px}.fm-host-banner p{font-size:12px;color:var(--fm-muted)}.fm-host-actions{margin-top:18px}.fm-unavailable{min-height:330px;display:grid;place-content:center;text-align:center;color:var(--fm-muted)}
-.fm-detail-page{background:#fcfaf7;min-height:100vh;padding:26px clamp(18px,3.5vw,58px)}.fm-back{border:0;background:transparent;display:flex;align-items:center;gap:7px;color:#727984;cursor:pointer;padding:9px 0 16px}.fm-detail-surface{background:#fff;border-radius:15px;padding:32px;max-width:1350px;margin:auto}.fm-photo-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;height:360px}.fm-photo-grid button{padding:0;border:0;background:#f3f3f3;overflow:hidden;border-radius:8px;cursor:zoom-in}.fm-photo-grid img{width:100%;height:100%;object-fit:cover}.fm-photo-side{display:grid;grid-template-rows:1fr 1fr;gap:12px;min-height:0}.fm-photo-side>button{min-height:0}.fm-no-photos{grid-column:1/-1}.fm-detail-jump{display:flex;gap:26px;border-bottom:1px solid #eee;padding:20px 0;margin-bottom:24px}.fm-detail-jump a{color:#667085;font-size:13px;text-decoration:none}.fm-detail-jump a:first-child{color:var(--fm-brown);font-weight:600}.fm-detail-surface>h1{font-size:28px;margin:0 0 8px}.fm-detail-rating{font-size:15px;color:#d9952a;margin-left:8px;vertical-align:middle}.fm-detail-meta{display:flex;align-items:center;gap:20px;color:#667085;font-size:13px}.fm-detail-meta span,.fm-detail-meta a,.fm-detail-section>p:has(svg){display:flex;gap:6px;align-items:center}.fm-detail-meta a,.fm-map-link{color:#34536b}.fm-detail-section{border-bottom:1px solid #eee;padding:35px 0 40px;scroll-margin-top:24px}.fm-detail-section:last-child{border:0}.fm-detail-section h2{font-size:22px;margin:0 0 18px}.fm-detail-section>p{font-size:14px;color:#5f6673}.fm-description{white-space:pre-line;line-height:1.7;font-size:14px;color:#4b5563}.fm-amenities{display:flex;gap:10px;flex-wrap:wrap}.fm-amenities span{display:flex;align-items:center;gap:9px;border:1px solid #e5e7eb;padding:14px 19px;border-radius:5px;font-size:12px;min-width:170px}.fm-rooms-list{display:flex;flex-direction:column;gap:14px;margin-top:24px}.fm-room-row{display:grid;grid-template-columns:180px 1fr auto;gap:22px;padding:17px;border:1px solid #e5e7eb;border-radius:7px}.fm-room-image{height:145px;background:#f1f2f0;border-radius:5px;display:grid;place-items:center;color:#a2a6ad;overflow:hidden}.fm-room-image img{width:100%;height:100%;object-fit:cover}.fm-room-text h3{font-size:17px;margin:0 0 8px}.fm-room-text>p{font-size:12px;color:#626b77;line-height:1.5;margin:5px 0}.fm-room-meta{display:flex;gap:13px;flex-wrap:wrap}.fm-room-meta span{display:flex;gap:5px;align-items:center;font-size:11px}.fm-room-text .fm-included{color:#298b3b}.fm-room-price{min-width:130px;display:flex;align-items:flex-end;justify-content:center;flex-direction:column}.fm-room-price strong{font-size:20px}.fm-room-price span,.fm-room-price small{color:#8992a0;font-size:11px}.fm-room-price small{margin-top:12px}.fm-map-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin-top:10px}.fm-rule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.fm-rule-grid p{display:flex;flex-direction:column;gap:8px;font-size:12px}.fm-rule-grid span{color:#6b7280}.fm-lightbox{position:fixed;inset:0;background:#000d;z-index:9999;display:grid;place-items:center;padding:40px}.fm-lightbox img{max-height:90vh;max-width:95vw;object-fit:contain}.fm-lightbox button{position:absolute;top:20px;right:26px;color:white;background:none;border:0;font-size:38px;cursor:pointer}
+.fm-detail-page{background:#fcfaf7;min-height:100vh;padding:26px clamp(18px,3.5vw,58px)}.fm-back{border:0;background:transparent;display:flex;align-items:center;gap:7px;color:#727984;cursor:pointer;padding:9px 0 16px}.fm-detail-surface{background:#fff;border-radius:15px;padding:32px;max-width:1350px;margin:auto}.fm-photo-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;height:360px}.fm-photo-grid button{padding:0;border:0;background:#f3f3f3;overflow:hidden;border-radius:8px;cursor:zoom-in}.fm-photo-grid img{width:100%;height:100%;object-fit:cover}.fm-photo-side{display:grid;grid-template-rows:1fr 1fr;gap:12px;min-height:0}.fm-photo-side>button{min-height:0}.fm-no-photos{grid-column:1/-1}.fm-detail-jump{display:flex;gap:26px;border-bottom:1px solid #eee;padding:20px 0;margin-bottom:24px}.fm-detail-jump a{color:#667085;font-size:13px;text-decoration:none}.fm-detail-jump a:first-child{color:var(--fm-brown);font-weight:600}.fm-detail-surface>h1{font-size:28px;margin:0 0 8px}.fm-detail-rating{font-size:15px;color:#d9952a;margin-left:8px;vertical-align:middle}.fm-detail-meta{display:flex;align-items:center;gap:20px;color:#667085;font-size:13px}.fm-detail-meta span,.fm-detail-meta a,.fm-detail-section>p:has(svg){display:flex;gap:6px;align-items:center}.fm-detail-meta a,.fm-map-link{color:#34536b}.fm-detail-section{border-bottom:1px solid #eee;padding:35px 0 40px;scroll-margin-top:24px}.fm-detail-section:last-child{border:0}.fm-detail-section h2{font-size:22px;margin:0 0 18px}.fm-detail-section>p{font-size:14px;color:#5f6673}.fm-description{white-space:pre-line;line-height:1.7;font-size:14px;color:#4b5563}.fm-amenities{display:flex;gap:10px;flex-wrap:wrap}.fm-rooms-list{display:flex;flex-direction:column;gap:14px;margin-top:24px}.fm-room-row{display:grid;grid-template-columns:180px 1fr auto;gap:22px;padding:17px;border:1px solid #e5e7eb;border-radius:7px}.fm-room-image{height:145px;background:#f1f2f0;border-radius:5px;display:grid;place-items:center;color:#a2a6ad;overflow:hidden}.fm-room-image img{width:100%;height:100%;object-fit:cover}.fm-room-text h3{font-size:17px;margin:0 0 8px}.fm-room-text>p{font-size:12px;color:#626b77;line-height:1.5;margin:5px 0}.fm-room-meta{display:flex;gap:13px;flex-wrap:wrap}.fm-room-meta span{display:flex;gap:5px;align-items:center;font-size:11px}.fm-room-text .fm-included{color:#298b3b}.fm-room-price{min-width:130px;display:flex;align-items:flex-end;justify-content:center;flex-direction:column}.fm-room-price strong{font-size:20px}.fm-room-price span,.fm-room-price small{color:#8992a0;font-size:11px}.fm-room-price small{margin-top:12px}.fm-map-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin-top:10px}.fm-rule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.fm-rule-grid p{display:flex;flex-direction:column;gap:8px;font-size:12px}.fm-rule-grid span{color:#6b7280}.fm-lightbox{position:fixed;inset:0;background:#000d;z-index:9999;display:grid;place-items:center;padding:40px}.fm-lightbox img{max-height:90vh;max-width:95vw;object-fit:contain}.fm-lightbox button{position:absolute;top:20px;right:26px;color:white;background:none;border:0;font-size:38px;cursor:pointer}
 @media(max-width:1100px){.fm-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.fm-search-bar label{padding:0 12px}}@media(max-width:750px){.fm-marketplace-shell,.fm-detail-page{padding:20px 14px}.fm-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.fm-search-bar form{flex-wrap:wrap;border-radius:15px;padding:12px}.fm-search-bar label{flex:1 1 40%;border:0;padding:10px}.fm-search-submit{margin-left:auto}.fm-benefits{grid-template-columns:1fr}.fm-review-grid{grid-template-columns:1fr}.fm-host-graphic{display:none}.fm-detail-surface{padding:18px}.fm-photo-grid{height:270px}.fm-room-row{grid-template-columns:115px 1fr}.fm-room-image{height:105px}.fm-room-price{grid-column:2;align-items:flex-start}.fm-rule-grid{grid-template-columns:1fr}}@media(max-width:450px){.fm-card-grid{grid-template-columns:1fr}.fm-card-image-wrap{height:210px}.fm-photo-grid{height:190px;grid-template-columns:1fr}.fm-photo-side{display:none}.fm-room-row{grid-template-columns:1fr}.fm-room-price{grid-column:1}.fm-room-image{height:170px}.fm-detail-jump{gap:12px;flex-wrap:wrap}}
+
+/* Figma alignment and responsive typography refinements (Nov 2026) */
+.fm-marketplace-shell{max-width:none;padding:28px clamp(16px,3vw,58px) 72px;background:#fef9ef}
+.fm-marketplace-header h1{font-size:clamp(24px,2vw,29px);font-weight:500;line-height:1.2;color:#0c1421}
+.fm-marketplace-header p,.fm-list-section>p,.fm-section-intro>p{font-size:clamp(13px,1.05vw,15px);line-height:1.5;color:#60657c}
+.fm-primary-tabs{gap:5px;margin:28px 0 28px;scrollbar-width:thin;scroll-padding:8px}
+.fm-primary-tabs button{font-size:14px;padding:9px clamp(12px,1.3vw,20px) 13px;white-space:nowrap}
+.fm-search-bar{max-width:min(1100px,100%);margin:0 auto 28px}
+.fm-search-bar form{min-height:76px;padding:10px 13px 10px 22px;gap:0;box-shadow:0 7px 12px rgba(0,0,0,.09)}
+.fm-search-bar label,.fm-search-bar .fm-search-field{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding:0 22px;border-right:1px solid #e5e7eb}
+.fm-search-bar label:first-child{flex:1.3;padding-left:10px}
+.fm-search-bar .fm-search-field:nth-of-type(3){border-right:0}
+.fm-search-bar label>span:first-child,.fm-search-bar .fm-search-field>span:first-child{font-size:13px;font-weight:650;color:#101828;line-height:1.25}
+.fm-search-bar input,.fm-search-bar select,.fm-search-bar input::placeholder,.fm-search-bar .fm-muted-input{font-family:inherit;font-size:14px;line-height:1.45;color:#6b7280}
+.fm-search-bar select{border:0;outline:0;background:transparent;width:100%;min-width:0;cursor:pointer;appearance:none;text-overflow:ellipsis}
+.fm-search-bar input{border:0;outline:0;width:100%}
+.fm-search-submit{width:48px;height:48px;margin-left:10px}
+.fm-hero{height:auto;aspect-ratio:1324 / 349;min-height:225px;border-radius:8px;border:1px solid #d9d9d9;background:#f4f7e9}
+.fm-hero>img{object-position:center;object-fit:cover}
+.fm-hero-gradient,.fm-hero-content{display:none}
+.fm-hero-dots{position:absolute;left:18px;bottom:16px;display:flex;align-items:center;gap:5px;z-index:2}
+.fm-hero-dots button{width:8px;height:8px;border:0;border-radius:20px;background:rgba(255,255,255,.5);padding:0;cursor:pointer;transition:width .2s}
+.fm-hero-dots button.active{width:26px;background:rgba(255,255,255,.9)}
+.fm-hero-controls{z-index:2;right:16px;bottom:13px;gap:9px}
+.fm-hero-controls button{width:32px;height:32px;background:rgba(0,0,0,.28);color:#fff}
+.fm-hero-missing{height:100%;display:grid;place-content:center;text-align:center;padding:20px;color:#60657c;font-size:13px}
+.fm-section-intro{padding:26px 0 18px}
+.fm-section-intro h2{font-size:clamp(23px,2.2vw,29px);font-weight:600;line-height:1.3;margin:13px 0 5px;color:#0c1421}
+.fm-hero-pills{display:inline-flex;padding:4px;gap:2px;border-radius:24px;background:#f3eadf}
+.fm-hero-pills span{padding:6px 11px;border:0;background:transparent;font-size:11px;color:#364152}
+.fm-hero-pills span:first-child{background:#fff;border-radius:24px}
+.fm-filter-scroll{padding:12px 0 8px;gap:8px}
+.fm-filter-scroll button{font-size:13px;padding:10px 14px;border-radius:7px;color:#667085;min-height:38px}
+.fm-list-section{margin-top:36px}
+.fm-list-section h2{font-size:clamp(23px,2vw,29px);font-weight:600;color:#101828;letter-spacing:-.02em}
+.fm-card-grid{gap:18px;margin-top:18px}
+.fm-property-card{background:#fcfaf7;border-color:transparent;border-radius:4px}
+.fm-card-image-wrap{height:auto;aspect-ratio:297 / 160;border-radius:8px}
+.fm-card-copy{padding:12px 2px 8px}
+.fm-type{font-size:12px}
+.fm-card-line h3{font-size:17px;font-weight:650}
+.fm-stars{font-size:13px}
+.fm-card-copy>p{font-size:13px;line-height:1.4}
+.fm-card-footer strong{font-size:17px}
+.fm-card-footer span,.fm-card-footer button{font-size:13px}
+.fm-review-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.fm-review-grid article{min-height:195px;gap:10px;padding:23px;border:0;box-shadow:0 2px 4px #0000000c}
+.fm-review-grid article p{font-size:15px;line-height:1.5}
+.fm-review-grid article strong{font-size:14px}
+.fm-review-grid article span{font-size:12px}
+.fm-review-disclosure{margin-top:12px!important;font-size:12px!important;color:#7f8490!important}
+.fm-benefits-feature h2{font-size:clamp(23px,2vw,29px)}
+.fm-benefits-feature p,.fm-benefit-grid p,.fm-host-banner p{font-size:14px;line-height:1.5}
+.fm-benefit-grid strong{font-size:15px}
+.fm-host-graphic{min-width:210px;width:24%;max-width:300px}
+.fm-host-graphic img{width:100%;height:auto;max-height:190px;object-fit:contain}
+.fm-host-banner h2{font-size:clamp(22px,2vw,29px)}
+@media(max-width:1150px){
+ .fm-card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .fm-review-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fm-search-bar label,.fm-search-bar .fm-search-field{padding:0 13px}
+}
+@media(max-width:800px){
+ .fm-marketplace-shell{padding:20px 18px 54px}
+ .fm-primary-tabs{gap:3px;margin:22px 0}
+ .fm-primary-tabs button{font-size:14px}
+ .fm-search-bar form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) 52px;border-radius:18px;gap:0;padding:9px 12px}
+ .fm-search-bar label,.fm-search-bar .fm-search-field{padding:13px 12px;border-right:0;border-bottom:1px solid #eee;min-width:0}
+ .fm-search-bar label:first-child{flex:initial;padding-left:12px}
+ .fm-search-bar .fm-search-field:nth-of-type(2){border-bottom:0}
+ .fm-search-bar .fm-search-field:nth-of-type(3){border-bottom:0}
+ .fm-search-submit{grid-column:3;grid-row:1 / 3;width:48px;height:48px;align-self:center;margin:0}
+ .fm-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fm-benefits{grid-template-columns:1fr}
+ .fm-hero{min-height:220px;aspect-ratio:2.9 / 1}
+ .fm-host-banner{gap:16px;padding:22px}
+ .fm-host-graphic{min-width:130px}
+ .fm-detail-meta{flex-wrap:wrap}
+}
+@media(max-width:520px){
+ .fm-marketplace-shell,.fm-detail-page{padding:16px 12px 42px}
+ .fm-search-bar{margin-bottom:20px}
+ .fm-search-bar form{grid-template-columns:repeat(2,minmax(0,1fr));padding:7px;border-radius:15px}
+ .fm-search-bar label,.fm-search-bar .fm-search-field{padding:10px;border-bottom:1px solid #eee}
+ .fm-search-bar .fm-search-field:nth-of-type(2){border-bottom:1px solid #eee}
+ .fm-search-bar .fm-search-field:nth-of-type(3){border-bottom:1px solid #eee}
+ .fm-search-bar label{grid-column:1 / -1}
+ .fm-search-submit{grid-column:1 / -1;grid-row:auto;width:100%;height:42px;border-radius:9px;margin:7px 0 2px}
+ .fm-search-bar label>span:first-child,.fm-search-bar .fm-search-field>span:first-child{font-size:12px}
+ .fm-search-bar input,.fm-search-bar select,.fm-search-bar input::placeholder,.fm-search-bar .fm-muted-input{font-size:13px}
+ .fm-hero{min-height:165px;aspect-ratio:2.3 / 1}
+ .fm-hero>img{object-fit:cover;object-position:center}
+ .fm-hero-controls{bottom:10px;right:10px}
+ .fm-hero-controls button{width:30px;height:30px}
+ .fm-hero-dots{bottom:16px;left:12px}
+ .fm-section-intro{padding:20px 0 14px}
+ .fm-section-intro h2{font-size:22px}
+ .fm-card-grid{grid-template-columns:1fr}
+ .fm-card-image-wrap{aspect-ratio:1.9 / 1;height:auto}
+ .fm-review-grid{grid-template-columns:1fr}
+ .fm-list-section{margin-top:28px}
+ .fm-list-section h2{font-size:22px}
+ .fm-host-banner{flex-direction:column;align-items:flex-start}
+ .fm-host-graphic{width:100%;max-width:210px;min-width:0}
+ .fm-benefit-grid{grid-template-columns:1fr}
+ .fm-room-row{grid-template-columns:1fr}
+ .fm-room-price{grid-column:1}
+ .fm-room-image{height:185px}
+ .fm-detail-surface{padding:16px}
+ .fm-photo-grid{height:200px}
+}
+
+/* Resort detail: Figma-inspired amenity chips with context-specific icons */
+.fm-detail-section .fm-amenities{display:flex;flex-wrap:wrap;align-items:stretch;gap:14px 16px;margin-top:22px}
+.fm-detail-section .fm-amenities .fm-amenity-pill{display:inline-flex;align-items:center;justify-content:flex-start;gap:11px;min-width:184px;min-height:54px;padding:15px 20px;border:1px solid #dedfe3;border-radius:6px;background:#fff;color:#313957;font-size:15px;line-height:1.4;font-weight:400;white-space:normal;overflow-wrap:anywhere}
+.fm-detail-section .fm-amenities .fm-amenity-pill>svg{color:#313957;flex:0 0 20px}
+.fm-detail-section .fm-amenities .fm-amenity-pill>span{display:inline;min-width:0}
+.fm-detail-section h2{font-size:clamp(23px,2vw,26px);font-weight:600;color:#111827}
+.fm-detail-section .fm-description{font-size:16px;line-height:1.65;color:#343a46}
+@media(max-width:780px){.fm-detail-section .fm-amenities{gap:10px}.fm-detail-section .fm-amenities .fm-amenity-pill{min-width:unset;flex:1 1 calc(50% - 10px);padding:12px 14px;min-height:50px;font-size:14px}}
+@media(max-width:480px){.fm-detail-section .fm-amenities .fm-amenity-pill{flex-basis:100%;min-height:47px}.fm-detail-section .fm-description{font-size:14px}}
+
+
+/* Figma geometry: resort profile 1440px canvas, white 1324px panel, 850:366 photo grid. */
+.fm-detail-page{background:#fcfaf7;padding:22px 24px 70px 92px;color:#0c1421}
+.fm-back{font-size:14px;color:#60657c;padding:8px 0 20px;font-weight:400}
+.fm-detail-surface{max-width:1324px;width:100%;padding:32px 24px 80px;border-radius:20px;box-shadow:none;background:#fff}
+.fm-photo-grid{height:auto;aspect-ratio:1234/494;display:grid;grid-template-columns:850fr 366fr;gap:18px}
+.fm-photo-grid button{border-radius:8px}
+.fm-photo-side{gap:18px}
+.fm-detail-jump{gap:14px;border:0;margin:14px 0 12px;padding:0}
+.fm-detail-jump a{font-family:Roboto,Arial,sans-serif;font-size:16px;font-weight:400;padding:10px 14px;text-decoration:none;border-bottom:3px solid transparent;color:#777b83}
+.fm-detail-jump a:first-child{border-color:#712e1e;color:#333;font-weight:400}
+.fm-detail-surface>h1{font-size:28px;line-height:33px;font-weight:700;color:#16192c;margin:10px 0 10px}
+.fm-detail-rating{font-size:18px;color:#5c626a;font-weight:400;margin-left:10px}
+.fm-detail-meta{display:flex;flex-wrap:wrap;gap:27px;font-size:18px;color:#425466}
+.fm-detail-meta a{color:#425466;text-decoration:underline}
+.fm-detail-section{border-bottom:1px solid #ddd;padding:76px 0 88px;margin:0;scroll-margin-top:88px}
+.fm-detail-section h2{font-size:26px;font-weight:500;color:#000;line-height:30px;margin:0 0 18px}
+.fm-detail-section .fm-description{font-size:17px;line-height:1.42;color:#343a46}
+.fm-detail-section .fm-amenities{gap:26px;margin-top:24px}
+.fm-detail-section .fm-amenities .fm-amenity-pill{flex:0 0 auto;min-width:unset;min-height:62px;padding:18px 26px;font-size:16px;border:1px solid #d9d9d9;border-radius:6px;gap:10px;color:#313957;justify-content:center}
+.fm-detail-section .fm-amenities .fm-amenity-pill>svg{width:24px;height:24px;flex-basis:24px}
+.fm-room-search{width:100%;border:1px solid #e5e7eb;background:#fff;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-height:60px;margin:27px 0;align-items:center}
+.fm-room-search label{min-width:0;display:flex;flex-direction:column;padding:10px 24px;gap:4px;border-right:1px solid #e5e7eb}
+.fm-room-search label:last-child{border:0}
+.fm-room-search strong{font-size:12px;font-weight:600;color:#000}
+.fm-room-search select,.fm-room-search input{font:400 14px Roboto,Arial,sans-serif;color:#6b7280;border:0;background:transparent;width:100%;min-width:0;outline:none}
+.fm-date-pair{display:flex;gap:6px;align-items:center;min-width:0}
+.fm-date-pair input{flex:1 1 0;min-width:0;max-width:50%}
+.fm-rooms-list{gap:18px;margin-top:0}
+.fm-room-row{grid-template-columns:270px minmax(0,1fr) 188px;min-height:248px;gap:40px;padding:21px 26px;border-radius:5px;border:1px solid #e0e0e0;box-shadow:0 4px 4px #00000012;align-items:stretch}
+.fm-room-image{height:206px;border-radius:5px}
+.fm-room-text h3{font-size:20px;font-weight:800;line-height:24px;color:#1a1a1a;margin:0 0 12px}
+.fm-room-text>p{font-size:16px;line-height:1.4;color:#4f4f4f}
+.fm-room-meta{margin-top:12px;gap:12px}
+.fm-room-meta span{font-size:13px;color:#333}
+.fm-room-text .fm-included{font-size:13px;color:#229935;margin-top:14px}
+.fm-room-price{min-width:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;text-align:right}
+.fm-room-select{background:#712e1e;color:#fff;border:0;border-radius:6px;padding:12px 26px;min-width:122px;font:400 15px Roboto,Arial,sans-serif;cursor:pointer}
+.fm-room-price-bottom{display:flex;align-items:flex-end;flex-direction:column;gap:4px}
+.fm-room-price strong{font-size:20px;line-height:23px;color:#0c1421}
+.fm-room-price span,.fm-room-price small{font-size:12px;color:#888686;margin:0}
+.fm-map-panel{width:100%;height:480px;border-radius:4px;overflow:hidden;background:#f5f3ed;box-shadow:inset 0 0 2px #0003}
+.fm-map-panel iframe{width:100%;height:100%;border:0}
+.fm-location-heading{font-size:18px;font-weight:500;margin:20px 0 10px}
+.fm-location-address{font-size:16px!important;color:#111!important}
+.fm-detail-section:last-child{border-bottom:0}
+/* Figma host illustration and banner: do not use a marketplace hero image here. */
+.fm-host-banner{display:flex;align-items:center;gap:28px;min-height:190px;background:#fff;border:1px solid #d9cbb8;border-radius:8px;padding:24px 34px;margin-top:36px}
+.fm-host-graphic{width:300px;min-width:300px;max-width:300px;display:flex;align-items:center;justify-content:center}
+.fm-host-graphic img{width:100%;height:145px;max-height:none;object-fit:contain}
+.fm-host-content{flex:1;min-width:0}
+.fm-host-banner h2{font-size:26px;line-height:1.2;margin:0 0 8px;color:#3c2f22;font-weight:650}
+.fm-host-banner p{font-size:13px;line-height:1.4;color:#4f4f4f;margin:0}
+.fm-host-actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:21px}
+.fm-host-actions button{font-size:14px;border-radius:6px;background:#712e1e;padding:13px 24px}
+.fm-host-invite{display:inline-flex;align-items:center;justify-content:center;border:1px solid #712e1e;border-radius:6px;padding:12px 23px;color:#712e1e!important;background:#fff;font-size:14px;text-decoration:none}
+@media(max-width:1100px){.fm-detail-page{padding-left:66px;padding-right:20px}.fm-room-row{grid-template-columns:210px minmax(0,1fr) 140px;gap:20px}.fm-room-image{height:190px}.fm-host-graphic{width:240px;min-width:240px}}
+@media(max-width:800px){.fm-detail-page{padding:20px 16px 48px}.fm-detail-surface{padding:22px 18px 45px}.fm-photo-grid{aspect-ratio:1234/494;gap:10px}.fm-photo-side{gap:10px}.fm-detail-section{padding:45px 0 52px}.fm-room-row{grid-template-columns:160px minmax(0,1fr);gap:18px}.fm-room-image{height:155px}.fm-room-price{grid-column:2;flex-direction:row;align-items:center;gap:15px}.fm-room-price-bottom{margin-left:auto}.fm-room-search{grid-template-columns:1fr 1fr}.fm-room-search label:nth-child(2){border-right:0}.fm-room-search label:last-child{grid-column:1/-1;border-top:1px solid #e5e7eb}.fm-host-graphic{width:190px;min-width:190px}.fm-host-banner{padding:22px}}
+@media(max-width:520px){.fm-detail-page{padding:12px 12px 38px}.fm-detail-surface{padding:16px 14px 32px;border-radius:12px}.fm-photo-grid{grid-template-columns:1fr;aspect-ratio:1.55/1}.fm-photo-side{display:none}.fm-detail-surface>h1{font-size:24px}.fm-detail-meta{font-size:14px;gap:12px}.fm-detail-jump{overflow:auto;gap:0;white-space:nowrap}.fm-detail-jump a{font-size:14px;padding:10px 12px}.fm-detail-section{padding:34px 0 40px}.fm-detail-section h2{font-size:23px}.fm-detail-section .fm-description{font-size:15px}.fm-detail-section .fm-amenities{gap:10px}.fm-detail-section .fm-amenities .fm-amenity-pill{flex:1 1 calc(50% - 10px);min-height:50px;padding:10px 12px;font-size:13px;justify-content:flex-start}.fm-detail-section .fm-amenities .fm-amenity-pill>svg{width:20px;height:20px;flex-basis:20px}.fm-room-search{display:flex;flex-direction:column;align-items:stretch}.fm-room-search label,.fm-room-search label:last-child{border:0;border-bottom:1px solid #e5e7eb}.fm-room-search label:last-child{border-bottom:0}.fm-room-row{grid-template-columns:1fr;padding:14px;gap:14px}.fm-room-image{height:210px}.fm-room-price{grid-column:1;display:flex;flex-direction:row;justify-content:space-between}.fm-room-select{min-width:100px;padding:10px 15px}.fm-room-text h3{font-size:19px}.fm-room-text>p{font-size:14px}.fm-map-panel{height:280px}.fm-host-banner{flex-direction:column;align-items:flex-start;gap:8px;padding:18px}.fm-host-graphic{min-width:0;width:100%;max-width:250px;align-self:center}.fm-host-banner h2{font-size:22px}.fm-host-actions{gap:9px}.fm-host-actions button,.fm-host-invite{font-size:13px;padding:11px 14px}}
+
+
+/* ==========================================================
+   FINAL FIGMA MATCH — Resort detail only
+   Figma export: 1440px artboard; 1234px content; 1132px
+   amenity field; 62px single-border cards, 6px radius.
+   Never put borders on the text inside cards.
+   ========================================================== */
+.fm-detail-page .fm-detail-surface > h1 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.fm-detail-page .fm-detail-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 21px;
+  color: #5C626A;
+  margin-left: 0;
+}
+.fm-detail-page .fm-detail-rating .fm-rating-star {
+  display: block;
+  width: 23px;
+  height: 23px;
+  flex: none;
+  color: #FFBA4C;
+  fill: #FFBA4C;
+  stroke: #FFBA4C;
+}
+.fm-detail-page .fm-detail-rating .fm-rating-number {
+  color: #5C626A;
+  font-size: 18px;
+  font-weight: 400;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+.fm-detail-page .fm-detail-section .fm-amenities {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 1132px;
+  column-gap: 0;
+  row-gap: 32px;
+  margin-top: 18px;
+}
+.fm-detail-page .fm-detail-section .fm-amenity-row {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  gap: 26px;
+  width: 100%;
+  min-width: 0;
+}
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  width: auto;
+  height: 62px;
+  min-height: 62px;
+  padding: 0 29px;
+  gap: 10px;
+  background: #FFFFFF;
+  border: 1px solid #D9D9D9;
+  border-radius: 6px;
+  box-shadow: none;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0;
+  color: #313957;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: normal;
+}
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill > .fm-amenity-icon {
+  display: block;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  color: #313957;
+}
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill > .fm-amenity-label {
+  /* Explicitly prevent the old double-box styling from returning. */
+  display: inline;
+  flex: 0 1 auto;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 19px;
+  white-space: normal;
+}
+/* Figma's exact per-card widths for the amenities in its sample profile. */
+@media (min-width: 1151px) {
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="AIR_CONDITIONING"] { width: 250px; flex-basis: 250px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="BUSINESS_CENTER"],
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="BUSINESS_CENTRE"] { width: 205px; flex-basis: 205px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="CLOTHING_IRON"] { width: 180px; flex-basis: 180px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="DATA_PORTS"] { width: 165px; flex-basis: 165px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="DRY_CLEANING"] { width: 179px; flex-basis: 179px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="HAIR_DRYER"] { width: 188px; flex-basis: 188px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="MEETING_ROOMS"] { width: 239px; flex-basis: 239px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="OUTDOOR_POOL"] { width: 197px; flex-basis: 197px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="PARKING_GARAGE"] { width: 219px; flex-basis: 219px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="SAFE"] { width: 143px; flex-basis: 143px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="ROOM_SERVICE"] { width: 186px; flex-basis: 186px; }
+.fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill[data-amenity="TV_IN_ROOM"] { width: 170px; flex-basis: 170px; }
+
+}
+/* Tablet: preserve single-border cards, allow a fluid multi-column wrap. */
+@media (max-width: 1150px) {
+  .fm-detail-page .fm-detail-section .fm-amenities {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 14px;
+    max-width: 100%;
+  }
+  .fm-detail-page .fm-detail-section .fm-amenity-row { display: contents; }
+  .fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill {
+    width: auto;
+    height: auto;
+    min-height: 54px;
+    padding: 10px 18px;
+    flex: 0 1 auto;
+    font-size: 15px;
+  }
+  .fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill > .fm-amenity-label {
+    line-height: 20px;
+  }
+}
+/* Mobile: full-width grid that never causes horizontal overflow. */
+@media (max-width: 600px) {
+  .fm-detail-page .fm-detail-section .fm-amenities {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 10px;
+  }
+  .fm-detail-page .fm-detail-section .fm-amenity-row { display: contents; }
+  .fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 50px;
+    padding: 10px 11px;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill > .fm-amenity-icon {
+    width: 20px;
+    height: 20px;
+    flex-basis: 20px;
+  }
+  .fm-detail-page .fm-detail-section .fm-amenities .fm-amenity-pill > .fm-amenity-label {
+    font-size: 14px;
+    line-height: 18px;
+  }
+}
+@media (max-width: 380px) {
+  .fm-detail-page .fm-detail-section .fm-amenities { grid-template-columns: 1fr; }
+}
+/* Figma gold used for rating stars on both listing and detail cards. */
+.fm-marketplace-shell .fm-stars,
+.fm-marketplace-shell .fm-review-stars { color: #FFBA4C; }

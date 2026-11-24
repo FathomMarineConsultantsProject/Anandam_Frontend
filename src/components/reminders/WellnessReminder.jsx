@@ -783,40 +783,37 @@ export default function WellnessReminder() {
   // ==========================================================
 
   function handlePrimaryAction() {
-    if (!activeReminder) {
-      return;
-    }
-
-
-    /*
-      User started the exercise.
-
-      Begin another normal
-      50-minute cycle.
-    */
-    scheduleNext(
-      REGULAR_REMINDER_MS
-    );
-
-
-    /*
-      Navigate to Fitness and tell
-      FitnessPage exactly which pose
-      should open.
-    */
-    navigate(
-      "/app/fitness",
-      {
-        state: {
-          openFitnessTab:
-            "yoga",
-
-          yogaPoseId:
-            activeReminder.poseId,
-        },
-      }
-    );
+  if (!activeReminder?.poseId) {
+    return;
   }
+
+  const poseId =
+    activeReminder.poseId;
+
+  /*
+    Start another normal
+    50-minute reminder cycle.
+  */
+  scheduleNext(
+    REGULAR_REMINDER_MS
+  );
+
+  /*
+    IMPORTANT:
+    Put the requested yoga pose
+    directly into the URL.
+
+    This is more reliable than
+    React Router location.state
+    because it survives navigation,
+    remounts and refreshes.
+  */
+  navigate(
+    `/app/fitness?tab=yoga&pose=${encodeURIComponent(
+      poseId
+    )}`
+  );
+}
 
 
   // ==========================================================
