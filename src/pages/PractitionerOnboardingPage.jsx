@@ -375,7 +375,10 @@ export default function PractitionerOnboardingPage() {
         nextStep: 4,
         profileId: data.practitioner?.id || null,
       });
-      navigate("/dashboard", { replace: true });
+      navigate("/welcome", {
+        replace: true,
+        state: { next: "/dashboard" },
+      });
     } catch (err) { setError(getUserFriendlyError(err, "Unable to submit your practitioner profile.")); }
     finally { setSaving(false); }
   };

@@ -34,6 +34,8 @@ import WellbeingQuestionnairesPage from "./pages/WellbeingQuestionnairesPage";
 import WellbeingQuestionnairePage from "./pages/WellbeingQuestionnairePage";
 
 import MarketplaceEntryPage from "./pages/MarketplaceEntryPage";
+import MarketplaceHubPage from "./pages/MarketplaceHubPage";
+import ResortPublicDetailPage from "./pages/ResortPublicDetailPage";
 import PractitionerMarketplacePage from "./pages/PractitionerMarketplacePage";
 import PractitionerSessionsPage from "./pages/PractitionerSessionsPage";
 import PractitionerEnquiryDetailsPage from "./pages/PractitionerEnquiryDetailsPage";
@@ -467,7 +469,7 @@ function MarketplaceRoleEntry() {
 
 
   return (
-    <MarketplaceEntryPage />
+    <MarketplaceHubPage />
   );
 }
 
@@ -915,6 +917,18 @@ function AppRoutes() {
           }
         />
 
+
+        {/* Public listing details remain inside paid marketplace access. */}
+        <Route
+          path="/marketplace/resorts/:slug"
+          element={
+            <RequireNormalUserSiteAccess>
+              <AppLayout>
+                <ResortPublicDetailPage />
+              </AppLayout>
+            </RequireNormalUserSiteAccess>
+          }
+        />
 
         {/* NORMAL USER MARKETPLACE */}
 
