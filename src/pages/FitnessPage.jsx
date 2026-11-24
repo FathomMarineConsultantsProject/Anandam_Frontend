@@ -7,8 +7,7 @@ import {
 } from "react";
 
 import {
-  useLocation,
-  useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 
 import AppLayout from "../components/layout/AppLayout";
@@ -1726,8 +1725,10 @@ function CompleteScreen({ type, title, onBackToList }) {
 }
 
 function FitnessPage() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams();
 
   const [activeTab, setActiveTab] = useState("overview");
   const [view, setView] = useState("main");
@@ -1867,35 +1868,95 @@ function FitnessPage() {
   }, []);
 
   useEffect(() => {
-    const requestedTab = location.state?.openFitnessTab;
-    const requestedPoseId = location.state?.yogaPoseId;
+    const requestedTab =
+      searchParams.get(
+        "tab"
+      );
 
-    if (requestedTab !== "yoga" || !requestedPoseId) {
+    const requestedPoseId =
+      searchParams.get(
+        "pose"
+      );
+
+
+    /*
+      If the URL asks for the Yoga tab,
+      make sure Guided Yoga is active.
+    */
+    if (
+      requestedTab ===
+      "yoga"
+    ) {
+      setActiveTab(
+        "yoga"
+      );
+    }
+
+
+    /*
+      No pose was requested.
+      The user can stay on the normal
+      Guided Yoga list.
+    */
+    if (
+      requestedTab !==
+        "yoga" ||
+      !requestedPoseId
+    ) {
       return;
     }
 
-    const matchingPose = getGuidedYogaPose(requestedPoseId);
 
+    const matchingPose =
+      getGuidedYogaPose(
+        requestedPoseId
+      );
+
+
+    /*
+      Invalid/old pose ID:
+      safely fall back to the Yoga list.
+    */
     if (!matchingPose) {
-      navigate(location.pathname, {
-        replace: true,
-        state: {},
-      });
+      setSelectedYogaPose(
+        null
+      );
+
+      setView(
+        "main"
+      );
+
+      setSearchParams(
+        {
+          tab: "yoga",
+        },
+        {
+          replace: true,
+        }
+      );
+
       return;
     }
 
-    setActiveTab("yoga");
-    setSelectedYogaPose(matchingPose);
-    setView("yoga-detail");
 
-    navigate(location.pathname, {
-      replace: true,
-      state: {},
-    });
+    /*
+      Exact pose found.
+      Open its guided detail screen.
+    */
+    setActiveTab(
+      "yoga"
+    );
+
+    setSelectedYogaPose(
+      matchingPose
+    );
+
+    setView(
+      "yoga-detail"
+    );
   }, [
-    location.pathname,
-    location.state,
-    navigate,
+    searchParams,
+    setSearchParams,
   ]);
 
   useEffect(() => {
@@ -1986,6 +2047,26 @@ function FitnessPage() {
     setSelectedYogaPose(null);
     setDetailError("");
 
+
+    if (tabId === "yoga") {
+      setSearchParams(
+        {
+          tab: "yoga",
+        },
+        {
+          replace: true,
+        }
+      );
+    } else {
+      setSearchParams(
+        {},
+        {
+          replace: true,
+        }
+      );
+    }
+
+
     if (tabId === "history") {
       setHistoryPagination((current) => ({
         ...current,
@@ -2069,6 +2150,15 @@ function FitnessPage() {
               setView("main");
               setActiveTab("yoga");
               setSelectedYogaPose(null);
+
+              setSearchParams(
+                {
+                  tab: "yoga",
+                },
+                {
+                  replace: true,
+                }
+              );
             }}
           />
         </div>
@@ -2195,8 +2285,24 @@ function FitnessPage() {
         {activeTab === "yoga" ? (
           <GuidedYogaTab
             onOpen={(pose) => {
-              setSelectedYogaPose(pose);
-              setView("yoga-detail");
+              setSelectedYogaPose(
+                pose
+              );
+
+              setView(
+                "yoga-detail"
+              );
+
+              setSearchParams(
+                {
+                  tab: "yoga",
+                  pose:
+                    pose.id,
+                },
+                {
+                  replace: false,
+                }
+              );
             }}
           />
         ) : null}
