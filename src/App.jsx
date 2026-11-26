@@ -48,6 +48,7 @@ import VideoCallLobbyPage from "./pages/VideoCallLobbyPage";
 import VideoCallRoomPage from "./pages/VideoCallRoomPage";
 import PractitionerOnboardingPage from "./pages/PractitionerOnboardingPage";
 import ResortOnboardingEntry from "./pages/ResortOnboardingEntry";
+import MyPropertiesPage from "./pages/MyPropertiesPage";
 
 import AppLayout from "./components/layout/AppLayout";
 
@@ -84,6 +85,9 @@ import WellnessReminder
 import WorkRestReminder
   from "./components/reminders/WorkRestReminder";
 
+import WelcomeLoadingPage from "./pages/WelcomeLoadingPage";
+import "./styles/my-property-sidebar-fix.css";
+
 
 /* =====================================================
    SITE ACCESS
@@ -114,6 +118,7 @@ import {
   hasCompletedMoodGate,
   isAuthenticated,
   getStoredToken,
+  getStoredUser,
 } from "./utils/storage";
 
 import {
@@ -163,19 +168,15 @@ function RequireAuth({
   }
 
 
-  if (
-    practitionerNeedsOnboarding() &&
-    location.pathname !==
-      "/practitioner/onboarding"
-  ) {
-    return (
-      <Navigate
-        to="/practitioner/onboarding"
-        replace
-      />
-    );
-  }
+  // The welcome and quick mood screens are available to every logged-in role.
+  // Other authenticated pages require the quick check-in first.
+  const isLoginJourneyPage =
+    location.pathname === "/welcome" ||
+    location.pathname === "/mood-quick";
 
+  if (!isLoginJourneyPage && !hasCompletedMoodGate()) {
+    return <Navigate to="/mood-quick" replace />;
+  }
 
   return children;
 }
@@ -263,6 +264,14 @@ function RequirePractitioner({
   }
 
 
+  // Keep the login quick mood check-in mandatory for practitioners too.
+  if (
+    location.pathname !== "/practitioner/onboarding" &&
+    !hasCompletedMoodGate()
+  ) {
+    return <Navigate to="/mood-quick" replace />;
+  }
+
   if (
     practitionerNeedsOnboarding() &&
     location.pathname !==
@@ -322,6 +331,11 @@ function RequireNormalUser({
   }
 
 
+  // All signed-in roles complete the quick mood check-in before browsing.
+  if (!hasCompletedMoodGate()) {
+    return <Navigate to="/mood-quick" replace />;
+  }
+
   if (
     user?.role ===
       "PRACTITIONER"
@@ -362,23 +376,7 @@ function RequireNormalUserSiteAccess({
    ===================================================== */
 
 function MoodQuickEntry() {
-  const user =
-    getStoredAuthUser();
-
-
-  if (
-    user?.role ===
-      "PRACTITIONER"
-  ) {
-    return (
-      <Navigate
-        to="/dashboard"
-        replace
-      />
-    );
-  }
-
-
+  // Normal users, practitioners and resort owners all complete this page.
   return <MoodPage />;
 }
 
@@ -406,30 +404,7 @@ function RequireMoodBeforeDashboard({
   }
 
 
-  if (
-    practitionerNeedsOnboarding()
-  ) {
-    return (
-      <Navigate
-        to="/practitioner/onboarding"
-        replace
-      />
-    );
-  }
-
-
-  const user =
-    getStoredAuthUser();
-
-
-  if (
-    user?.role ===
-      "PRACTITIONER"
-  ) {
-    return children;
-  }
-
-
+  // No role, including PRACTITIONER, bypasses the mood gate.
   if (
     !hasCompletedMoodGate()
   ) {
@@ -477,6 +452,24 @@ function MarketplaceRoleEntry() {
 /* =====================================================
    ROUTES
    ===================================================== */
+
+/* Resort management uses the existing owner JWT and is not token-gated. */
+function RequireResortOwner({ children }) {
+  if (!getStoredToken()) {
+    return <Navigate to="/login" replace />;
+  }
+  // Match the role source used by BottomNav (authApi first).
+  // The generic storage user can be stale from a previous login.
+  const user = getStoredAuthUser() || getStoredUser();
+  if (user?.role !== "RESORT_OWNER") {
+    return <Navigate to="/marketplace" replace />;
+  }
+  // An owner also finishes mood check-in before using My Property.
+  if (!hasCompletedMoodGate()) {
+    return <Navigate to="/mood-quick" replace />;
+  }
+  return children;
+}
 
 function AppRoutes() {
   return (
@@ -531,6 +524,16 @@ function AppRoutes() {
         />
 
 
+        {/* Existing login welcome screen: keep for every account type. */}
+        <Route
+          path="/welcome"
+          element={
+            <RequireAuth>
+              <WelcomeLoadingPage />
+            </RequireAuth>
+          }
+        />
+
         {/* =================================================
             RESORT OWNER ONBOARDING
             Public during signup: no account exists yet.
@@ -542,6 +545,20 @@ function AppRoutes() {
           element={<ResortOnboardingEntry />}
         />
 
+
+        {/* =================================================
+            RESORT OWNER — MY PROPERTY (free owner management)
+            ================================================= */}
+        <Route
+          path="/app/my-property"
+          element={
+            <RequireResortOwner>
+              <AppLayout>
+                <MyPropertiesPage />
+              </AppLayout>
+            </RequireResortOwner>
+          }
+        />
 
         {/* =================================================
             PRACTITIONER ONBOARDING

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { loginUser, getStoredPractitionerOnboarding } from "../api/authApi";
+import { loginUser } from "../api/authApi";
 import { resetMoodGate, saveAuthSession } from "../utils/storage";
 
 import leafFrame11 from "../assets/loginpage/Property 1=Frame 11.png";
@@ -222,33 +222,20 @@ function LoginPage() {
       });
 
       saveAuthSession({
-        token: loginData.token,
+        // Both response shapes are supported; the backend returns accessToken.
+        token: loginData.accessToken ?? loginData.token,
         refreshToken: loginData.refreshToken,
         user: loginData.user,
       });
 
       resetMoodGate();
 
-      // Do not interrupt a practitioner's unfinished onboarding.
-      const practitionerOnboarding =
-        loginData.practitionerOnboarding || getStoredPractitionerOnboarding();
-
-      if (
-        loginData.user?.role === "PRACTITIONER" &&
-        practitionerOnboarding?.completed !== true
-      ) {
-        navigate("/practitioner/onboarding", { replace: true });
-      } else {
-        navigate("/welcome", {
-          replace: true,
-          state: {
-            next:
-              loginData.user?.role === "PRACTITIONER"
-                ? "/dashboard"
-                : "/mood-quick",
-          },
-        });
-      }
+      // Every account type follows exactly the same login journey.
+      // The welcome screen routes to the mandatory quick mood check-in.
+      navigate("/welcome", {
+        replace: true,
+        state: { next: "/mood-quick" },
+      });
     } catch (error) {
       setApiError(
         getUserFriendlyError(
