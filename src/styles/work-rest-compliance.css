@@ -1,0 +1,22 @@
+/* Scoped compliance feedback; existing Figma Work/Rest layout remains unchanged. */
+.wr-compliance-feedback {
+  margin: 12px 0 20px;
+  padding: 14px 18px;
+  border: 1px solid #dcd7d0;
+  border-radius: 12px;
+  background: #faf8f5;
+  color: #343536;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.wr-compliance-feedback > strong { display: block; font-size: 14px; margin-bottom: 5px; }
+.wr-compliance-feedback p { margin: 6px 0 0; }
+.wr-compliance-feedback--violation { border-color: #e2b2aa; background: #fff7f5; }
+.wr-compliance-feedback--violation > strong { color: #9d352a; }
+.wr-compliance-feedback--incomplete { border-color: #e4d6b0; background: #fffcf5; }
+.wr-compliance-feedback--incomplete > strong { color: #75592b; }
+.wr-compliance-feedback ul { padding: 0; margin: 9px 0; list-style: none; }
+.wr-compliance-feedback li { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; }
+.wr-compliance-feedback li + li { border-top: 1px solid rgba(0,0,0,.08); }
+.wr-compliance-feedback li strong { font-size: 13px; }
+.wr-compliance-feedback li span { color: #5d5e64; }

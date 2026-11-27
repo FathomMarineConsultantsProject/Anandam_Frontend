@@ -51,6 +51,7 @@ import avatar9 from "../assets/profile/avatar 9.png";
 import avatar10 from "../assets/profile/avatar 10.png";
 
 import "../styles/work-rest.css";
+import "../styles/work-rest-compliance.css";
 
 const EMPTY_BLOCKS = Array(48).fill("UNRECORDED");
 const MINUTES_PER_SLOT = 30;
@@ -81,17 +82,18 @@ const SHIP_LOCATIONS = [
 ];
 
 const MLC_REQUIREMENTS = [
-  "Minimum 10 hours rest in any 24-hour period",
-  "Minimum 6 hours continuous rest period",
-  "Maximum 14 hours work in any 24-hour period",
-  "Maximum 72 hours work in any 7-day period",
+  "At least 10 hours rest in any rolling 24-hour period (rest-based standard)",
+  "At least 77 hours rest in any rolling seven-day period (rest-based standard)",
+  "At least one continuous six-hour rest period, with no more than two rest periods and no more than 14 hours between them",
+  "No more than 14 hours work in any rolling 24-hour period (work-based standard)",
+  "No more than 72 hours work in any rolling seven-day period (work-based standard)",
 ];
 
 const REMARKS = [
-  "ILO Rest requirements strictly followed as per MLC 2.3",
-  "All crew members briefed on work/rest hour regulations",
-  "Emergency duties may require deviation from schedule - will be recorded separately",
-  "Schedule reviewed and approved by Master",
+  "The dashboard screens both the maximum-work and minimum-rest thresholds. MLC A2.3 uses the basis established by the relevant flag State.",
+  "On completed days, the grid may display unentered time as REST. The MLC check counts only saved REST entries and confirmed reminder entries.",
+  "Short MEAL/TEA/BREAK periods are not counted as qualifying rest. Record longer rest periods explicitly as REST.",
+  "An incomplete record is not a compliant record; confirm exceptions, emergency duties and compensatory rest under applicable ship procedures.",
 ];
 
 const STATUS_META = {
@@ -491,7 +493,7 @@ function normalizeSummary(summary, blocks) {
   const derivedRestHours =
     safeBlocks.filter((status) => status === "REST").length * 0.5;
 
-  const compliance = safeSummary?.compliance || safeSummary;
+  const compliance = safeSummary?.mlcScreening || safeSummary?.compliance || safeSummary;
 
   const violations = firstNumber(compliance, [
     "violationCount",
@@ -529,6 +531,13 @@ function normalizeSummary(summary, blocks) {
         "totalRestHours",
         "totalRest",
       ]) ?? derivedRestHours,
+    // New MLC checks are added under `summary.mlcScreening` so the
+    // original day summary and all Work/Rest actions stay unchanged.
+    complianceStatus: compliance.complianceStatus || "INCOMPLETE",
+    violationDetails: Array.isArray(compliance.violations)
+      ? compliance.violations.filter((item) => item && typeof item === "object")
+      : [],
+    missingElapsedSlots: Number(compliance.missingElapsedSlots || 0),
   };
 }
 
@@ -1951,6 +1960,35 @@ function WorkRestPage() {
                 value={stats.restRecorded}
               />
             </div>
+
+            {stats.complianceStatus === "NON_COMPLIANT" && (
+              <div className="wr-compliance-feedback wr-compliance-feedback--violation" role="alert">
+                <strong>{stats.violations} confirmed MLC screening {stats.violations === 1 ? "breach" : "breaches"}</strong>
+                {stats.violationDetails.length > 0 && (
+                  <ul>
+                    {stats.violationDetails.map((item) => (
+                      <li key={item.code}>
+                        <strong>{item.label}</strong>
+                        <span>{item.message}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p>These are distinct breached rules, not the number of overlapping 30-minute windows.</p>
+              </div>
+            )}
+            {stats.complianceStatus === "INCOMPLETE" && (
+              <div className="wr-compliance-feedback wr-compliance-feedback--incomplete" role="status">
+                <strong>Compliance assessment incomplete</strong>
+                <p>
+                  {stats.missingElapsedSlots > 0
+                    ? `${stats.missingElapsedSlots} elapsed half-hour slots are unrecorded. `
+                    : ""}
+                  The rolling 24-hour or seven-day period does not yet contain enough recorded time to confirm compliance.
+                  Unentered time is not accepted as verified rest for this check, even if a completed-day grid displays it as rest.
+                </p>
+              </div>
+            )}
 
             <div className="wr-accordion-stack">
               <Accordion

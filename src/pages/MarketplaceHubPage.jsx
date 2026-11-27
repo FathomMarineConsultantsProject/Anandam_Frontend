@@ -1,14 +1,16 @@
 import { useSearchParams } from "react-router-dom";
 import MarketplaceEntryPage from "./MarketplaceEntryPage";
 import MarketplaceFamiliesPage from "./MarketplaceFamiliesPage";
+import MarketplaceProgrammesPage from "./MarketplaceProgrammesPage";
+import MarketplaceChildrenPage from "./MarketplaceChildrenPage";
 import "../styles/marketplaceFamilies.css";
 
 const TABS = [
   ["care", "Care"],
-  ["programmes", "Programmes"],
   ["families", "Families"],
-  ["experiences", "Experiences"],
   ["children", "Children & Abode"],
+  ["experiences", "Experiences"],
+  ["programmes", "Programmes"],
   ["gifts", "Gifts"],
   ["community", "Community"],
 ];
@@ -42,6 +44,10 @@ export default function MarketplaceHubPage() {
         <MarketplaceEntryPage />
       ) : tab === "families" ? (
         <MarketplaceFamiliesPage />
+      ) : tab === "programmes" ? (
+        <MarketplaceProgrammesPage />
+      ) : tab === "children" ? (
+        <MarketplaceChildrenPage />
       ) : (
         <section className="fm-unavailable"><h2>{TABS.find(([value]) => value === tab)?.[1]}</h2>
           <p>This marketplace section is coming soon.</p></section>

@@ -5,6 +5,7 @@ import {
   Users, LockKeyhole, RefreshCw,
 } from "lucide-react";
 import { myPropertyApi } from "../api/myPropertyApi";
+import ChildrenEventWizard from "./ChildrenEventWizard";
 
 const dateKey = (date) => {
   const d = new Date(date);
@@ -209,6 +210,7 @@ const toLocalInput = (value) => {
 };
 
 export function EventsRetreatsTab({ property }) {
+  const [childrenWizard, setChildrenWizard] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -235,6 +237,7 @@ export function EventsRetreatsTab({ property }) {
   const change = (key, value) => setDraft((current) => ({ ...current, [key]: value }));
 
   function open(event) {
+    if (event?.childrenDetails) { setChildrenWizard(event); return; }
     setError(""); setSuccess(""); setSelected(event);
     setDatesTouched(false); setAllocationsTouched(false);
     setDraft({ ...blankEvent(), ...event,
@@ -307,9 +310,18 @@ export function EventsRetreatsTab({ property }) {
     finally { setSaving(false); }
   }
 
+  if (childrenWizard !== null) return <div className="mp-tab-panel"><ChildrenEventWizard
+    property={property} initialEvent={childrenWizard}
+    onClose={() => { setChildrenWizard(null); load().catch((e) => setError(e.message)); }}
+    onChanged={() => load()}
+  /></div>;
+
   return <div className="mp-tab-panel">
     <TabHeader title="Events & Retreats" description="Create and manage events, programmes and retreats." action={
-      <button type="button" className="mp-primary-button" disabled={saving} onClick={createDraft}><Plus size={16} />New event</button>
+      <div className="mp-event-actions" style={{ paddingTop: 0 }}>
+        <button type="button" className="mp-secondary-button" disabled={saving} onClick={() => setChildrenWizard({})}><Plus size={16} />Children's event</button>
+        <button type="button" className="mp-primary-button" disabled={saving} onClick={createDraft}><Plus size={16} />New event</button>
+      </div>
     } />
     <Message error={error} success={success} />
     {selected ? <div className="mp-surface">
@@ -359,7 +371,7 @@ export function EventsRetreatsTab({ property }) {
     </div> : <div className="mp-surface">
       {loading ? <p className="mp-empty-copy">Loading events…</p> : events.length ? <div className="mp-event-list">{events.map((event) => <article key={event.id} className="mp-manage-row">
         <div className="mp-mini-photo">{event.images?.[0]?.url ? <img src={event.images[0].url} alt="Event" /> : <CalendarDays size={27} />}</div>
-        <div className="mp-manage-row__info"><h3>{event.name || "Untitled draft"}</h3><p>{titleCase(event.listingType || "EVENT")} · {event.occurrences?.length ? formatDate(event.occurrences[0].startAt) : "No dates added"}</p><strong>{event.pricingType === "FREE" ? "Free" : money(event.price, event.currency)}</strong></div>
+        <div className="mp-manage-row__info"><h3>{event.name || "Untitled draft"}</h3><p>{event.childrenDetails ? "Children’s event or retreat" : titleCase(event.listingType || "EVENT")} · {event.occurrences?.length ? formatDate(event.occurrences[0].startAt) : "No dates added"}</p><strong>{event.pricingType === "FREE" ? "Free" : money(event.price, event.currency)}</strong></div>
         <span className={`mp-event-status ${event.status === "PUBLISHED" ? "is-published" : ""}`}>{titleCase(event.status)}</span>
         <button className="mp-secondary-button" type="button" onClick={() => open(event)}><Pencil size={15} />Manage</button>
       </article>)}</div> : <div className="mp-empty-inline"><CalendarDays size={28} /><p>No events or retreats created yet.</p></div>}
