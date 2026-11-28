@@ -357,3 +357,14 @@ export async function getWorkRestHistory() {
 
   return Array.isArray(data) ? data : [];
 }
+
+// Read-only monthly compliance screening. Existing API methods are unchanged.
+export async function getWorkRestMonthlyCompliance(month) {
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(String(month))) {
+    throw new Error("Invalid month. Expected YYYY-MM.");
+  }
+  const response = await apiRequest(`/work-hours/compliance/month/${month}`, {
+    method: "GET",
+  });
+  return unwrapData(response);
+}

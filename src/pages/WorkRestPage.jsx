@@ -29,6 +29,7 @@ import {
   updateExistingWorkSession,
   deleteExistingWorkSession,
   getWorkRestSummary,
+  getWorkRestMonthlyCompliance,
   getWorkRestErrorMessage,
 } from "../api/workRestApi";
 
@@ -517,20 +518,16 @@ function normalizeSummary(summary, blocks) {
   return {
     complianceRate,
     violations,
+    // The old summary derives hours from the visually finalised grid.
+    // Use raw saved-record MLC figures first; never show inferred REST as recorded.
     hoursWorked:
-      firstNumber(safeSummary, [
-        "hoursWorked",
-        "workHours",
-        "totalWorkHours",
-        "totalWork",
-      ]) ?? derivedWorkHours,
+      firstNumber(compliance, ["hoursWorked", "workHours"]) ??
+      firstNumber(safeSummary, ["hoursWorked", "workHours", "totalWorkHours", "totalWork"]) ??
+      derivedWorkHours,
     restRecorded:
-      firstNumber(safeSummary, [
-        "restRecorded",
-        "restHours",
-        "totalRestHours",
-        "totalRest",
-      ]) ?? derivedRestHours,
+      firstNumber(compliance, ["restRecorded", "restHours"]) ??
+      firstNumber(safeSummary, ["restRecorded", "restHours", "totalRestHours", "totalRest"]) ??
+      derivedRestHours,
     // New MLC checks are added under `summary.mlcScreening` so the
     // original day summary and all Work/Rest actions stay unchanged.
     complianceStatus: compliance.complianceStatus || "INCOMPLETE",
@@ -538,6 +535,9 @@ function normalizeSummary(summary, blocks) {
       ? compliance.violations.filter((item) => item && typeof item === "object")
       : [],
     missingElapsedSlots: Number(compliance.missingElapsedSlots || 0),
+    evaluatedWindows:
+      Number(compliance.fullyRecorded24hWindows || 0) +
+      Number(compliance.fullyRecorded7DayWindows || 0),
   };
 }
 
@@ -1280,6 +1280,7 @@ function WorkRestPage() {
 
   const [dayData, setDayData] = useState(null);
   const [summaryData, setSummaryData] = useState(null);
+  const [monthlyData, setMonthlyData] = useState(null);
   const [activeSession, setActiveSession] = useState(null);
 
   const [loading, setLoading] = useState(true);
@@ -1342,15 +1343,21 @@ function WorkRestPage() {
       setError("");
 
       try {
-        const [day, summary, active] = await Promise.all([
+        const [day, summary, active, monthlyOutcome] = await Promise.all([
           getWorkRestDay(selectedDate),
           getWorkRestSummary(selectedDate),
           getActiveWorkSession(),
+          // A monthly-screening error must not block the original page.
+          getWorkRestMonthlyCompliance(selectedDate.slice(0, 7))
+            .then((data) => ({ data }))
+            .catch((monthlyError) => ({ error: monthlyError })),
         ]);
 
         setDayData(day);
         setSummaryData(summary);
         setActiveSession(active || null);
+        setMonthlyData(monthlyOutcome.data || null);
+        if (monthlyOutcome.error) console.warn("Monthly work/rest screening unavailable:", monthlyOutcome.error);
       } catch (loadError) {
         console.error("Failed to load work/rest page:", loadError);
         setError(getWorkRestErrorMessage(loadError, "load"));
@@ -1397,15 +1404,15 @@ function WorkRestPage() {
     setCommentDeleteConfirm(false);
   }, [selectedDate, dayData?.commentOfDay]);
 
+  // Keep the selected day's cards current even if the user logs REST
+  // through the reminder or another browser tab. No changes to entries.
   useEffect(() => {
-    if (!activeSession?.id) return undefined;
-
+    if (selectedDate !== todayKey && !activeSession?.id) return undefined;
     const intervalId = window.setInterval(() => {
       refreshDateData(false);
     }, 60_000);
-
     return () => window.clearInterval(intervalId);
-  }, [activeSession?.id, refreshDateData]);
+  }, [activeSession?.id, refreshDateData, selectedDate, todayKey]);
 
   useEffect(() => {
     if (!datePickerOpen) return undefined;
@@ -1553,6 +1560,10 @@ function WorkRestPage() {
     } else {
       setSummaryData(await getWorkRestSummary(selectedDate));
     }
+    // Refresh monthly rate after any saved REST, MEAL, WORK or note edit.
+    getWorkRestMonthlyCompliance(selectedDate.slice(0, 7))
+      .then(setMonthlyData)
+      .catch((monthlyError) => console.warn("Monthly rate refresh failed:", monthlyError));
   }
 
   function openDatePicker() {
@@ -1959,7 +1970,21 @@ function WorkRestPage() {
                 label="Rest recorded"
                 value={stats.restRecorded}
               />
+              <StatCard
+                icon={complianceRateIcon}
+                tone="compliance"
+                label={`Monthly rate (${selectedDate.slice(0, 7)})`}
+                value={monthlyData?.complianceRate ?? null}
+                suffix="%"
+              />
             </div>
+            <p className="wr-screening-explanation">
+              Daily rate: percentage of sufficiently recorded rolling 24-hour and seven-day
+              windows passing the screened limits. Monthly rate: {monthlyData
+                ? `${monthlyData.compliantDays} compliant of ${monthlyData.assessedDays} assessed days; ${monthlyData.incompleteDays} incomplete days excluded.`
+                : "monthly figures unavailable."}
+              Missing time is never counted as compliant.
+            </p>
 
             {stats.complianceStatus === "NON_COMPLIANT" && (
               <div className="wr-compliance-feedback wr-compliance-feedback--violation" role="alert">
@@ -1970,11 +1995,19 @@ function WorkRestPage() {
                       <li key={item.code}>
                         <strong>{item.label}</strong>
                         <span>{item.message}</span>
+                        {item.windowStart && item.windowEnd && (
+                          <small className="wr-violation-window">
+                            {new Date(item.windowStart).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" })}
+                            {" – "}
+                            {new Date(item.windowEnd).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" })} IST
+                          </small>
+                        )}
                       </li>
                     ))}
                   </ul>
                 )}
                 <p>These are distinct breached rules, not the number of overlapping 30-minute windows.</p>
+                {stats.missingElapsedSlots > 0 && <p>{stats.missingElapsedSlots} elapsed half-hour slots remain unrecorded; the listed breaches are already confirmed despite the gaps.</p>}
               </div>
             )}
             {stats.complianceStatus === "INCOMPLETE" && (
